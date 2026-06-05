@@ -357,23 +357,48 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzusUr_MSBdNLBXhVq_1Yav
 // ============================================================
 let COURSES = {};  // GASから取得後に格納
 
-async function loadCourses() {
-  const loader = document.getElementById('seriesLoader');
-  const grid   = document.getElementById('seriesGrid');
-  try {
-    const res  = await fetch(`${GAS_URL}?action=getCourses`);
-    const data = await res.json();
-    if (data.status === 'ok' && data.series) {
-      COURSES = data.series;
-      renderSeriesGrid();
-      if (loader) loader.style.display = 'none';
-      if (grid)   grid.style.display   = 'grid';
-    } else {
-      showSeriesError();
-    }
-  } catch (e) {
-    showSeriesError();
-  }
+function loadCourses() {
+  return new Promise((resolve) => {
+    const loader = document.getElementById('seriesLoader');
+    const grid   = document.getElementById('seriesGrid');
+
+    // JSONPでCORSを回避
+    const callbackName = 'gasCallback_' + Date.now();
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.getElementById('gasScript')?.remove();
+      if (data.status === 'ok' && data.series) {
+        COURSES = data.series;
+        renderSeriesGrid();
+        if (loader) loader.style.display = 'none';
+        if (grid)   grid.style.display   = 'grid';
+      } else {
+        showSeriesError();
+      }
+      resolve();
+    };
+
+    const script = document.createElement('script');
+    script.id  = 'gasScript';
+    script.src = `${GAS_URL}?action=getCourses&callback=${callbackName}`;
+    script.onerror = () => {
+      delete window[callbackName];
+      // フォールバック：fetch で再試行
+      fetch(`${GAS_URL}?action=getCourses`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'ok' && data.series) {
+            COURSES = data.series;
+            renderSeriesGrid();
+            if (loader) loader.style.display = 'none';
+            if (grid)   grid.style.display   = 'grid';
+          } else { showSeriesError(); }
+        })
+        .catch(() => showSeriesError())
+        .finally(() => resolve());
+    };
+    document.head.appendChild(script);
+  });
 }
 
 function renderSeriesGrid() {
@@ -484,7 +509,7 @@ async function checkMember() {
   state.member = '';
 
   try {
-    const res  = await fetch(`${GAS_URL}?action=checkMember&email=${encodeURIComponent(email)}`);
+    const res  = await fetch(`${GAS_URL}?action=checkMember&email=${encodeURIComponent(email)}`, {mode:'cors'});
     const data = await res.json();
     if (data.isMember) {
       badge.className = 'member-badge is-member';
