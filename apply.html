@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>体質学講習会 2026 お申し込み | THE HERBS 植物美容学校</title>
+<meta name="description" content="体質学講習会2026のお申し込みページです。日程を選び、必要事項をご入力ください。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Shippori+Mincho:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream:    #f5f0e8;
+    --cream-dk: #ede5d4;
+    --brown:    #2c1f14;
+    --brown-md: #5c3d28;
+    --gold:     #b8905a;
+    --gold-lt:  #d4a96a;
+    --rose:     #c4a09a;
+    --muted:    #8a7060;
+    --border:   rgba(184,144,90,0.25);
+    --card-bg:  #2c2018;
+    --white:    #ffffff;
+    --input-bg: #faf7f2;
+    --success:  #4a7c5f;
+    --error:    #a04a3a;
+    --radius:   10px;
+    --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--brown);
+    font-size: 14px;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  .site-header {
+    background: var(--brown);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-emblem {
+    width: 28px; height: 28px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+  }
+
+  .header-text { color: var(--cream); }
+  .header-text strong { display: block; font-size: 10px; letter-spacing: 0.15em; font-weight: 500; color: var(--gold); }
+  .header-text span { font-size: 12px; color: rgba(245,240,232,0.7); }
+
+  /* ─── WRAPPER ─── */
+  .page-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ─── COURSE INFO CARD ─── */
+  .course-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .course-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--rose), var(--gold));
+  }
+
+  .course-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .course-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .course-desc {
+    font-size: 12.5px;
+    color: rgba(245,240,232,0.65);
+    line-height: 1.8;
+    margin-bottom: 18px;
+  }
+
+  .course-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 12px;
+    color: rgba(245,240,232,0.75);
+  }
+
+  .meta-icon {
+    color: var(--gold);
+    font-size: 11px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .course-price {
+    border-top: 1px solid rgba(184,144,90,0.2);
+    padding-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(245,240,232,0.55);
+  }
+
+  .price-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    color: var(--gold-lt);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── NOTICE ─── */
+  .notice-bar {
+    background: var(--cream-dk);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.7;
+  }
+
+  .notice-bar strong { color: var(--brown-md); }
+
+  /* ─── PROGRESS ─── */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    transition: color var(--transition);
+  }
+
+  .progress-step.active { color: var(--brown); font-weight: 500; }
+  .progress-step.done { color: var(--gold); }
+
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--cream-dk);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all var(--transition);
+  }
+
+  .progress-step.active .step-num {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+  }
+
+  .progress-step.done .step-num {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+  }
+
+  .progress-arrow {
+    margin: 0 8px;
+    color: var(--border);
+    font-size: 14px;
+  }
+
+  /* ─── STEPS ─── */
+  .form-step { display: none; }
+  .form-step.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SCHEDULE STEP ─── */
+  .step-heading {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--brown);
+    margin-bottom: 16px;
+  }
+
+  .schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .schedule-item {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all var(--transition);
+    background: white;
+    position: relative;
+  }
+
+  .schedule-item:hover {
+    border-color: var(--gold);
+    background: var(--cream);
+  }
+
+  .schedule-item.selected {
+    border-color: var(--gold);
+    background: var(--cream);
+    box-shadow: 0 0 0 3px rgba(184,144,90,0.12);
+  }
+
+  .schedule-item input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .schedule-vol {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .schedule-date {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--brown);
+    margin-bottom: 2px;
+  }
+
+  .schedule-name {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .schedule-check {
+    position: absolute;
+    top: 14px; right: 16px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+
+  .schedule-item.selected .schedule-check {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+  }
+
+  .schedule-check::after {
+    content: '✓';
+    font-size: 11px;
+    color: transparent;
+    transition: color var(--transition);
+  }
+
+  .schedule-item.selected .schedule-check::after { color: white; }
+
+  /* selected summary */
+  .selected-summary {
+    background: var(--cream-dk);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .summary-icon {
+    color: var(--gold);
+    font-size: 16px;
+    margin-top: 1px;
+  }
+
+  .summary-vol {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .summary-date { font-weight: 500; font-size: 13.5px; color: var(--brown); }
+  .summary-name { font-size: 12px; color: var(--muted); }
+
+  .summary-change {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--gold);
+    cursor: pointer;
+    text-decoration: underline;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  /* ─── FORM STEP ─── */
+  .form-section {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    margin-bottom: 16px;
+  }
+
+  .form-section-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brown);
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--input-bg);
+  }
+
+  .radio-option:hover { border-color: var(--gold); }
+  .radio-option.selected { border-color: var(--gold); background: var(--cream); }
+  .radio-option.locked { opacity: 0.6; cursor: default; pointer-events: none; }
+  .member-check-status {
+    font-size: 12px; color: var(--muted); margin-top: 8px; min-height: 18px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .member-check-status.is-member { color: var(--success); font-weight: 500; }
+  .member-check-status.checking::after {
+    content: ''; display: inline-block;
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  .radio-option input[type="radio"] {
+    width: 16px; height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+
+  .radio-label { font-size: 13.5px; color: var(--brown); }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--brown-md);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .required-badge {
+    font-size: 10px;
+    background: var(--rose);
+    color: white;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 400;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    background: var(--input-bg);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--brown);
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,144,90,0.12);
+    background: white;
+  }
+
+  input::placeholder { color: rgba(92,61,40,0.35); }
+
+  .field-error {
+    font-size: 11.5px;
+    color: var(--error);
+    display: none;
+  }
+
+  .field.invalid input { border-color: var(--error); }
+  .field.invalid .field-error { display: block; }
+
+  /* ─── BUTTONS ─── */
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: var(--gold);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+    letter-spacing: 0.05em;
+  }
+
+  .btn-primary:hover { background: var(--brown-md); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition);
+    margin-top: 10px;
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); color: var(--brown); }
+
+  .btn-wrap { margin-top: 20px; }
+
+  /* ─── CONFIRM STEP ─── */
+  .confirm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .confirm-table tr { border-bottom: 1px solid var(--border); }
+  .confirm-table tr:last-child { border-bottom: none; }
+
+  .confirm-table th {
+    padding: 12px 0;
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted);
+    width: 120px;
+    vertical-align: top;
+  }
+
+  .confirm-table td {
+    padding: 12px 0;
+    color: var(--brown);
+    font-weight: 500;
+  }
+
+  .confirm-highlight {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: var(--gold);
+  }
+
+  /* ─── SUCCESS ─── */
+  .success-wrap {
+    text-align: center;
+    padding: 48px 24px;
+  }
+
+  .success-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(74,124,95,0.1);
+    border: 2px solid var(--success);
+    color: var(--success);
+    font-size: 26px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  .success-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 20px;
+    color: var(--brown);
+    margin-bottom: 12px;
+  }
+
+  .success-msg {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 360px;
+    margin: 0 auto 24px;
+  }
+
+  /* ─── LOADING ─── */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44,31,20,0.5);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loading-overlay.show { display: flex; }
+
+  .loading-spinner {
+    width: 48px; height: 48px;
+    border: 3px solid rgba(245,240,232,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── ERROR BANNER ─── */
+  .error-banner {
+    display: none;
+    background: #fdf0ee;
+    border: 1px solid #e0a090;
+    border-radius: 7px;
+    padding: 12px 16px;
+    font-size: 12.5px;
+    color: var(--error);
+    margin-bottom: 16px;
+  }
+
+  .error-banner.show { display: block; }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 600px) {
+    .course-meta { grid-template-columns: 1fr; }
+    .page-wrap { padding: 28px 16px 60px; }
+    .form-section { padding: 18px 16px; }
+    .course-card { padding: 22px 18px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-emblem">✦</div>
+  <div class="header-text">
+    <strong>THE HERBS 植物美容学校</strong>
+    <span>講習会お申し込み</span>
+  </div>
+</header>
+
+<div class="page-wrap">
+
+  <!-- 講座情報カード -->
+  <div class="course-card">
+    <p class="course-eyebrow">BEAUTICIAN'S FACE CARE PROGRAM 2026 — VOL.05–07</p>
+    <h1 class="course-title">体質学講習会 2026</h1>
+    <p class="course-desc">受精卵から始まる三つの胚葉の組み合わせから、人の体質・気質・肌質・髪質を読み解く学問。植物美容と組み合わせ、お一人おひとりに合うパーソナルケアを提案できる美容師・エステティシャンになるための3日間集中講習会。</p>
+    <div class="course-meta">
+      <div class="meta-item"><span class="meta-icon">◎</span><span>THE HERBS 植物美容学校（神戸）</span></div>
+      <div class="meta-item"><span class="meta-icon">◷</span><span>10:00〜16:00（食事休憩あり）</span></div>
+      <div class="meta-item"><span class="meta-icon">✦</span><span>対象：美容師・エステティシャン</span></div>
+      <div class="meta-item"><span class="meta-icon">□</span><span>形式：座学のみ</span></div>
+    </div>
+    <div class="course-price">
+      <span>受講料（税込・各回）</span>
+      <span class="price-val">お取引会員 ¥11,000 / 非会員 ¥22,000</span>
+    </div>
+  </div>
+
+  <!-- 注意事項 -->
+  <div class="notice-bar">
+    <strong>受講順について：</strong>体質学(2)・(3)は、体質学(1)の受講者を対象としています。まずは体質学(1)からお申し込みください。
+  </div>
+
+  <!-- プログレス -->
+  <div class="progress" id="progress">
+    <div class="progress-step active" id="prog-1">
+      <span class="step-num">1</span><span>日程を選ぶ</span>
+    </div>
+    <span class="progress-arrow">›</span>
+    <div class="progress-step" id="prog-2">
+      <span class="step-num">2</span><span>情報を入力</span>
+    </div>
+    <span class="progress-arrow">›</span>
+    <div class="progress-step" id="prog-3">
+      <span class="step-num">3</span><span>確認・送信</span>
+    </div>
+  </div>
+
+  <!-- エラーバナー -->
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- STEP 1: 日程選択 -->
+  <div class="form-step active" id="step1">
+    <p class="step-heading">日程を選んでください</p>
+    <div class="schedule-list" id="scheduleList">
+
+      <label class="schedule-item" data-vol="VOL.05" data-date="2026年6月15日（月）" data-name="体質学基礎(1) — 3つのタイプで、お客様を見極める" data-id="C001">
+        <input type="radio" name="schedule" value="C001" />
+        <div class="schedule-vol">VOL.05 — 体質学基礎 第1回</div>
+        <div class="schedule-date">2026年6月15日（月）</div>
+        <div class="schedule-name">3つのタイプで、お客様を見極める</div>
+        <span class="schedule-check"></span>
+      </label>
+
+      <label class="schedule-item" data-vol="VOL.06" data-date="2026年7月13日（月）" data-name="体質学基礎(2) — 気質とライフスタイルの特徴" data-id="C002">
+        <input type="radio" name="schedule" value="C002" />
+        <div class="schedule-vol">VOL.06 — 体質学基礎 第2回</div>
+        <div class="schedule-date">2026年7月13日（月）</div>
+        <div class="schedule-name">気質とライフスタイルの特徴</div>
+        <span class="schedule-check"></span>
+      </label>
+
+      <label class="schedule-item" data-vol="VOL.07" data-date="2026年8月10日（月）" data-name="体質学基礎(3) — 肌質・髪質、体のサインを読む" data-id="C003">
+        <input type="radio" name="schedule" value="C003" />
+        <div class="schedule-vol">VOL.07 — 体質学基礎 第3回</div>
+        <div class="schedule-date">2026年8月10日（月）</div>
+        <div class="schedule-name">肌質・髪質、体のサインを読む</div>
+        <span class="schedule-check"></span>
+      </label>
+
+    </div>
+    <div class="btn-wrap">
+      <button class="btn-primary" id="btn1" disabled onclick="goStep2()">次へ — 情報を入力する</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: 情報入力 -->
+  <div class="form-step" id="step2">
+
+    <!-- 選択日程サマリー -->
+    <div class="selected-summary" id="selectedSummary">
+      <span class="summary-icon">◎</span>
+      <div>
+        <div class="summary-vol" id="sumVol"></div>
+        <div class="summary-date" id="sumDate"></div>
+        <div class="summary-name" id="sumName"></div>
+      </div>
+      <button class="summary-change" onclick="goStep1()">変更</button>
+    </div>
+
+    <!-- 会員種別 -->
+    <div class="form-section">
+      <p class="form-section-title">会員種別</p>
+      <div class="radio-group" id="memberGroup">
+        <label class="radio-option" id="opt-member">
+          <input type="radio" name="memberType" value="member" onchange="selectMember(this)" />
+          <span class="radio-label">お取引会員（¥11,000 税込）</span>
+        </label>
+        <label class="radio-option" id="opt-nonmember">
+          <input type="radio" name="memberType" value="nonmember" onchange="selectMember(this)" />
+          <span class="radio-label">非会員（¥22,000 税込）</span>
+        </label>
+      </div>
+      <div class="member-check-status" id="memberStatus"></div>
+    </div>
+
+    <!-- 申し込み情報 -->
+    <div class="form-section">
+      <p class="form-section-title">お申し込み情報</p>
+      <div class="field-group">
+        <div class="field" id="f-name">
+          <label for="inp-name">お名前 <span class="required-badge">必須</span></label>
+          <input type="text" id="inp-name" placeholder="山田 花子" autocomplete="name" />
+          <span class="field-error">お名前を入力してください</span>
+        </div>
+        <div class="field" id="f-email">
+          <label for="inp-email">メールアドレス <span class="required-badge">必須</span></label>
+          <input type="email" id="inp-email" placeholder="your@email.com" autocomplete="email" onblur="checkMember()" />
+          <span class="field-error">正しいメールアドレスを入力してください</span>
+        </div>
+        <div class="field" id="f-phone">
+          <label for="inp-phone">電話番号 <span class="required-badge">必須</span></label>
+          <input type="tel" id="inp-phone" placeholder="090-0000-0000" autocomplete="tel" />
+          <span class="field-error">電話番号を入力してください</span>
+        </div>
+        <div class="field" id="f-affil">
+          <label for="inp-affil">ご所属（サロン名など） <span class="required-badge">必須</span></label>
+          <input type="text" id="inp-affil" placeholder="○○サロン / 個人" autocomplete="organization" />
+          <span class="field-error">ご所属を入力してください</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-wrap">
+      <button class="btn-primary" onclick="goStep3()">内容を確認する</button>
+      <button class="btn-secondary" onclick="goStep1()">← 日程選択に戻る</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: 確認 -->
+  <div class="form-step" id="step3">
+    <div class="form-section">
+      <p class="form-section-title">お申し込み内容のご確認</p>
+      <table class="confirm-table" id="confirmTable">
+        <tr><th>日程</th><td id="c-date"></td></tr>
+        <tr><th>講座</th><td id="c-name"></td></tr>
+        <tr><th>会員種別</th><td id="c-member"></td></tr>
+        <tr><th>受講料</th><td><span class="confirm-highlight" id="c-price"></span></td></tr>
+        <tr><th>お名前</th><td id="c-fname"></td></tr>
+        <tr><th>メール</th><td id="c-email"></td></tr>
+        <tr><th>電話</th><td id="c-phone"></td></tr>
+        <tr><th>ご所属</th><td id="c-affil"></td></tr>
+      </table>
+    </div>
+    <div class="notice-bar" style="font-size:12px;">
+      送信後、ご入力のメールアドレスにStripeの決済リンクをお送りします。<strong>7日以内</strong>にお支払いをお済ませください。
+    </div>
+    <div class="btn-wrap">
+      <button class="btn-primary" id="btnSubmit" onclick="submitForm()">申し込みを送信する</button>
+      <button class="btn-secondary" onclick="goStep2()">← 内容を修正する</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: 完了 -->
+  <div class="form-step" id="step4">
+    <div class="success-wrap">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title">お申し込みありがとうございます</h2>
+      <p class="success-msg">
+        受付が完了しました。<br/>
+        ご入力のメールアドレスに受講料お支払いのご案内をお送りします。<br/>
+        7日以内にお手続きをお願いいたします。
+      </p>
+      <a href="index.html" class="btn-primary" style="display:inline-block;max-width:280px;text-decoration:none;text-align:center;">講習会ページに戻る</a>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<!-- ローディング -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-spinner"></div>
+</div>
+
+<script>
+// ============================================================
+// 設定：GASウェブアプリのURLをここに貼り付ける
+// ============================================================
+const GAS_URL = 'YOUR_GAS_WEBAPP_URL_HERE';
+
+// ============================================================
+// 状態管理
+// ============================================================
+const state = {
+  courseId:   '',
+  courseVol:  '',
+  courseDate: '',
+  courseName: '',
+  member:     '',
+  price:      '',
+  name:       '',
+  email:      '',
+  phone:      '',
+  affil:      ''
+};
+
+// ============================================================
+// STEP 1: 日程選択
+// ============================================================
+document.querySelectorAll('.schedule-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.schedule-item').forEach(i => i.classList.remove('selected'));
+    item.classList.add('selected');
+    item.querySelector('input').checked = true;
+    state.courseId   = item.dataset.id;
+    state.courseVol  = item.dataset.vol;
+    state.courseDate = item.dataset.date;
+    state.courseName = item.dataset.name;
+    document.getElementById('btn1').disabled = false;
+  });
+});
+
+function goStep1() {
+  setStep(1);
+}
+
+function goStep2() {
+  if (!state.courseId) return;
+  document.getElementById('sumVol').textContent  = state.courseVol;
+  document.getElementById('sumDate').textContent = state.courseDate;
+  document.getElementById('sumName').textContent = state.courseName;
+  setStep(2);
+}
+
+// ============================================================
+// STEP 2: 情報入力
+// ============================================================
+function selectMember(radio) {
+  document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+  radio.closest('.radio-option').classList.add('selected');
+  state.member = radio.value;
+  state.price  = radio.value === 'member' ? '¥11,000（税込）' : '¥22,000（税込）';
+}
+
+async function checkMember() {
+  const email = document.getElementById('inp-email').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+
+  const statusEl = document.getElementById('memberStatus');
+  const optMember    = document.getElementById('opt-member');
+  const optNonmember = document.getElementById('opt-nonmember');
+
+  // 照合中表示
+  statusEl.className = 'member-check-status checking';
+  statusEl.textContent = '会員情報を確認中...';
+
+  try {
+    const res = await fetch(`${GAS_URL}?action=checkMember&email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+
+    if (data.isMember) {
+      // 会員確認済み → お取引会員を自動選択してロック
+      optMember.querySelector('input').checked = true;
+      optMember.classList.add('selected');
+      optNonmember.classList.remove('selected');
+      optMember.classList.remove('locked');
+      optNonmember.classList.add('locked');
+      state.member = 'member';
+      state.price  = '¥11,000（税込）';
+      statusEl.className = 'member-check-status is-member';
+      statusEl.textContent = `✓ お取引会員として確認されました${data.salon ? '（' + data.salon + '）' : ''}`;
+      // サロン名を自動入力
+      if (data.salon) document.getElementById('inp-affil').value = data.salon;
+    } else {
+      // 非会員 → 両方選択可能に戻す
+      optMember.classList.remove('locked');
+      optNonmember.classList.remove('locked');
+      statusEl.className = 'member-check-status';
+      statusEl.textContent = '会員登録が確認できませんでした。該当する種別をお選びください。';
+    }
+  } catch (err) {
+    // 照合失敗時は手動選択に委ねる
+    optMember.classList.remove('locked');
+    optNonmember.classList.remove('locked');
+    statusEl.className = 'member-check-status';
+    statusEl.textContent = '';
+  }
+}
+
+function validateStep2() {
+  let valid = true;
+  const fields = [
+    { id: 'f-name',  input: 'inp-name',  check: v => v.trim().length > 0 },
+    { id: 'f-email', input: 'inp-email', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+    { id: 'f-phone', input: 'inp-phone', check: v => v.trim().length > 0 },
+    { id: 'f-affil', input: 'inp-affil', check: v => v.trim().length > 0 },
+  ];
+  fields.forEach(f => {
+    const val = document.getElementById(f.input).value;
+    const field = document.getElementById(f.id);
+    if (!f.check(val)) { field.classList.add('invalid'); valid = false; }
+    else { field.classList.remove('invalid'); }
+  });
+
+  if (!state.member) {
+    showError('会員種別を選択してください');
+    valid = false;
+  }
+  return valid;
+}
+
+function goStep3() {
+  hideError();
+  if (!validateStep2()) return;
+
+  state.name  = document.getElementById('inp-name').value.trim();
+  state.email = document.getElementById('inp-email').value.trim();
+  state.phone = document.getElementById('inp-phone').value.trim();
+  state.affil = document.getElementById('inp-affil').value.trim();
+
+  document.getElementById('c-date').textContent   = state.courseDate;
+  document.getElementById('c-name').textContent   = state.courseName;
+  document.getElementById('c-member').textContent = state.member === 'member' ? 'お取引会員' : '非会員';
+  document.getElementById('c-price').textContent  = state.price;
+  document.getElementById('c-fname').textContent  = state.name;
+  document.getElementById('c-email').textContent  = state.email;
+  document.getElementById('c-phone').textContent  = state.phone;
+  document.getElementById('c-affil').textContent  = state.affil;
+
+  setStep(3);
+}
+
+// ============================================================
+// STEP 3: 送信
+// ============================================================
+async function submitForm() {
+  hideError();
+  document.getElementById('btnSubmit').disabled = true;
+  document.getElementById('loading').classList.add('show');
+
+  const payload = {
+    courseId:   state.courseId,
+    courseDate: state.courseDate,
+    courseName: state.courseName,
+    member:     state.member,
+    price:      state.price,
+    name:       state.name,
+    email:      state.email,
+    phone:      state.phone,
+    affil:      state.affil
+  };
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    // no-corsではレスポンスが読めないので成功とみなす
+    setStep(4);
+  } catch (err) {
+    showError('送信に失敗しました。しばらくしてから再度お試しください。');
+    document.getElementById('btnSubmit').disabled = false;
+  } finally {
+    document.getElementById('loading').classList.remove('show');
+  }
+}
+
+// ============================================================
+// ユーティリティ
+// ============================================================
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById(`step${i}`).classList.toggle('active', i === n);
+    const prog = document.getElementById(`prog-${i}`);
+    if (prog) {
+      prog.classList.remove('active', 'done');
+      if (i === n) prog.classList.add('active');
+      else if (i < n) prog.classList.add('done');
+    }
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBanner');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function hideError() {
+  document.getElementById('errorBanner').classList.remove('show');
+}
+</script>
+</body>
+</html>
