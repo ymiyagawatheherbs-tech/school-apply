@@ -204,43 +204,10 @@ input::placeholder{color:rgba(92,61,40,.35)}
   <!-- STEP 1: シリーズ選択 -->
   <div class="form-step active" id="step1">
     <p class="step-heading">講習会シリーズを選んでください</p>
-    <div class="series-grid">
-      <button class="series-card" onclick="selectSeries('体質学講習会')" id="s-tai">
-        
-        <div class="series-name">体質学講習会</div>
-        <div class="series-count">全12回シリーズ</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('フェイスケア全12回')" id="s-face">
-        
-        <div class="series-name">フェイスケア全12回</div>
-        <div class="series-count">フェイスケアシリーズ</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('美容師向けハーブケア')" id="s-herb">
-        
-        <div class="series-name">美容師向けハーブケア</div>
-        <div class="series-count">ハーブケアシリーズ</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('ハーブスチーマー')" id="s-steam">
-        
-        <div class="series-name">ハーブスチーマー</div>
-        <div class="series-count">スチーマー講習</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('頭皮用ハーブゴマージュ')" id="s-scalp">
-        
-        <div class="series-name">頭皮用ハーブゴマージュ</div>
-        <div class="series-count">スカルプ講習</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('ビオゴマージュ')" id="s-bio">
-        
-        <div class="series-name">ビオゴマージュ</div>
-        <div class="series-count">ゴマージュ講習</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('スカルプラボ')" id="s-labo">
-        
-        <div class="series-name">スカルプラボ</div>
-        <div class="series-count">スカルプラボ講習</div>
-      </button>
+    <div id="seriesLoader" style="padding:24px 0;text-align:center;font-size:13px;color:var(--muted);">
+      講座情報を読み込み中...
     </div>
+    <div class="series-grid" id="seriesGrid" style="display:none;"></div>
   </div>
 
   <!-- STEP 2: 日程選択 -->
