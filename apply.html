@@ -350,48 +350,58 @@ input::placeholder{color:rgba(92,61,40,.35)}
 // ============================================================
 // 設定
 // ============================================================
-const GAS_URL = 'https://docs.google.com/spreadsheets/d/1PLax7zeRky9aRAtj8QIWtT9PvKgmPXtXwQhgoWbYic4/edit?gid=0#gid=0';
+const GAS_URL = 'YOUR_GAS_WEBAPP_URL_HERE';
 
 // ============================================================
-// 講座データ（講座マスタと対応）
-// シリーズ名 → 講座一覧
-// 新しい講座を追加するときはここに追記するだけ
+// 講座データ（スプレッドシートから動的取得）
 // ============================================================
-const COURSES = {
-  'フェイスケア全12回': [
-    { id:'FA-05-B-260615', title:'体質学(1) — 3つのタイプで、お客様を見極める',              date:'2026年6月15日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-01-F-260629', title:'【フォローアップ】体質学(1) — 3つのタイプで、お客様を見極める', date:'2026年6月29日（月）10:00〜13:00',  tag:'フォローアップ' },
-    { id:'FA-06-B-260713', title:'体質学(2) — 体質と気質から、ライフスタイルを提案する',       date:'2026年7月13日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-06-F-260727', title:'【フォローアップ】体質学(2) — 体質と気質から、ライフスタイルを提案する', date:'2026年7月27日（月）10:00〜13:00', tag:'フォローアップ' },
-    { id:'FA-07-B-260810', title:'体質学(3) — 肌質・髪質と体のサインを読む',                 date:'2026年8月10日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-07-F-260824', title:'【フォローアップ】体質学(3) — 肌質・髪質と体のサインを読む', date:'2026年8月24日（月）10:00〜13:00',  tag:'フォローアップ' },
-    { id:'FA-08-B-260914', title:'体質カウンセリング — スキンケアの売上につなげる',            date:'2026年9月14日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-08-F-260928', title:'【フォローアップ】体質カウンセリング — スキンケアの売上につなげる', date:'2026年9月28日（月）10:00〜13:00', tag:'フォローアップ' },
-    { id:'FA-09-B-261005', title:'経絡・ツボ押し — シミ・くすみのない透明感へ',               date:'2026年10月5日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-09-F-261026', title:'【フォローアップ】経絡・ツボ押し — シミ・くすみのない透明感へ', date:'2026年10月26日（月）10:00〜13:00', tag:'フォローアップ' },
-    { id:'FA-10-B-261109', title:'筋肉・筋膜ケア — シワとたるみに効く、ハリの手技',           date:'2026年11月9日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-10-F-261130', title:'【フォローアップ】筋肉・筋膜ケア — シワとたるみに効く、ハリの手技', date:'2026年11月30日（月）10:00〜13:00', tag:'フォローアップ' },
-    { id:'FA-10-B-261207', title:'骨格・ゆがみ矯正 — 左右対称の整った顔へ',                  date:'2026年12月7日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-10-F-261221', title:'【フォローアップ】骨格・ゆがみ矯正 — 左右対称の整った顔へ', date:'2026年12月21日（月）10:00〜13:00', tag:'フォローアップ' },
-    { id:'FA-10-B-270111', title:'【総仕上げ】サロンのパーソナルメニューを作る',               date:'2027年1月11日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-10-F-270125', title:'【フォローアップ】【総仕上げ】サロンのパーソナルメニューを作る', date:'2027年1月25日（月）10:00〜13:00', tag:'フォローアップ' },
-  ],
-  '体質学講習会': [
-    { id:'TA-01-B-260615', title:'体質学(1) — 3つのタイプで、お客様を見極める',              date:'2026年6月15日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-01-F-260629', title:'【フォローアップ】体質学(1) — 3つのタイプで、お客様を見極める', date:'2026年6月29日（月）10:00〜13:00', tag:'フォローアップ' },
-    { id:'TA-02-B-260713', title:'体質学(2) — 体質と気質から、ライフスタイルを提案する',       date:'2026年7月13日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-02-F-260727', title:'【フォローアップ】体質学(2) — 体質と気質から、ライフスタイルを提案する', date:'2026年7月27日（月）10:00〜13:00', tag:'フォローアップ' },
-    { id:'TA-03-B-260810', title:'体質学(3) — 肌質・髪質と体のサインを読む',                 date:'2026年8月10日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-03-F-260824', title:'【フォローアップ】体質学(3) — 肌質・髪質と体のサインを読む', date:'2026年8月24日（月）10:00〜13:00',  tag:'フォローアップ' },
-    { id:'TA-04-B-260914', title:'体質カウンセリング — スキンケアの売上につなげる',            date:'2026年9月14日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-04-F-260928', title:'【フォローアップ】体質カウンセリング — スキンケアの売上につなげる', date:'2026年9月28日（月）10:00〜13:00', tag:'フォローアップ' },
-  ],
-  '美容師向けハーブケア':   [],
-  'ハーブスチーマー':       [],
-  '頭皮用ハーブゴマージュ': [],
-  'ビオゴマージュ':         [],
-  'スカルプラボ':           [],
-};
+let COURSES = {};  // GASから取得後に格納
+
+async function loadCourses() {
+  const loader = document.getElementById('seriesLoader');
+  const grid   = document.getElementById('seriesGrid');
+  try {
+    const res  = await fetch(`${GAS_URL}?action=getCourses`);
+    const data = await res.json();
+    if (data.status === 'ok' && data.series) {
+      COURSES = data.series;
+      renderSeriesGrid();
+      if (loader) loader.style.display = 'none';
+      if (grid)   grid.style.display   = 'grid';
+    } else {
+      showSeriesError();
+    }
+  } catch (e) {
+    showSeriesError();
+  }
+}
+
+function renderSeriesGrid() {
+  const grid = document.getElementById('seriesGrid');
+  grid.innerHTML = '';
+
+  // シリーズ表示順の定義
+  const ORDER = ['フェイスケア全12回','体質学講習会','美容師向けハーブケア','ハーブスチーマー','頭皮用ハーブゴマージュ','ビオゴマージュ','スカルプラボ'];
+  const keys  = ORDER.filter(k => COURSES[k] !== undefined)
+                     .concat(Object.keys(COURSES).filter(k => !ORDER.includes(k)));
+
+  keys.forEach(name => {
+    const courses = COURSES[name] || [];
+    const count   = courses.filter(c => c.tag !== 'フォローアップ').length;
+    const btn = document.createElement('button');
+    btn.className = 'series-card';
+    btn.innerHTML = `
+      <div class="series-name">${name}</div>
+      <div class="series-count">${count > 0 ? count + '回' : '近日公開'}</div>`;
+    btn.onclick = () => selectSeries(name);
+    grid.appendChild(btn);
+  });
+}
+
+function showSeriesError() {
+  const loader = document.getElementById('seriesLoader');
+  if (loader) loader.innerHTML = '<p style="color:var(--error);font-size:13px;">講座情報の読み込みに失敗しました。ページを再読み込みしてください。</p>';
+}
 
 // ============================================================
 // 状態
@@ -589,7 +599,9 @@ function hideError(){ document.getElementById('errorBanner').classList.remove('s
 // ============================================================
 // URLパラメーター処理（?series=体質学講習会 で直接日程選択へ）
 // ============================================================
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadCourses();
+  // URLパラメーター処理（?series=体質学講習会 で直接日程選択へ）
   const params = new URLSearchParams(window.location.search);
   const series = params.get('series');
   if (series && COURSES[series] !== undefined) {
