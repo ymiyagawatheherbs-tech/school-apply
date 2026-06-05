@@ -361,15 +361,24 @@ const STATIC_COURSES = {
   'スカルプラボ':           [],
 };
 
-function loadCourses() {
-  // 静的データをそのまま使用（スプレッドシートと同期する場合はGASメニューからcourses.jsonを生成してアップロード）
-  COURSES = STATIC_COURSES;
+async function loadCourses() {
   const loader = document.getElementById('seriesLoader');
   const grid   = document.getElementById('seriesGrid');
+  try {
+    // courses.json を読み込む（同じリポジトリなのでCORSなし）
+    const res  = await fetch('courses.json?v=' + Date.now());
+    const data = await res.json();
+    if (data.status === 'ok' && data.series) {
+      COURSES = data.series;
+    } else {
+      COURSES = STATIC_COURSES; // フォールバック
+    }
+  } catch(e) {
+    COURSES = STATIC_COURSES; // courses.jsonがない場合は静的データを使用
+  }
   renderSeriesGrid();
   if (loader) loader.style.display = 'none';
   if (grid)   grid.style.display   = 'grid';
-  return Promise.resolve();
 }
 
 function renderSeriesGrid() {
