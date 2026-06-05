@@ -350,7 +350,7 @@ input::placeholder{color:rgba(92,61,40,.35)}
 // ============================================================
 // 設定
 // ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzusUr_MSBdNLBXhVq_1Yav3YvmT7j3kHk3lfDuiXI/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzhjYEG-wpSluuQqFKs-DgTF3-EEXxuDStQ/exec';
 
 // ============================================================
 // 講座データ（スプレッドシートから動的取得）
@@ -361,12 +361,11 @@ function loadCourses() {
   return new Promise((resolve) => {
     const loader = document.getElementById('seriesLoader');
     const grid   = document.getElementById('seriesGrid');
+    const cbName = 'cb_' + Date.now();
 
-    // JSONPでCORSを回避
-    const callbackName = 'gasCallback_' + Date.now();
-    window[callbackName] = function(data) {
-      delete window[callbackName];
-      document.getElementById('gasScript')?.remove();
+    window[cbName] = function(data) {
+      delete window[cbName];
+      document.getElementById('_gas_script')?.remove();
       if (data.status === 'ok' && data.series) {
         COURSES = data.series;
         renderSeriesGrid();
@@ -378,26 +377,11 @@ function loadCourses() {
       resolve();
     };
 
-    const script = document.createElement('script');
-    script.id  = 'gasScript';
-    script.src = `${GAS_URL}?action=getCourses&callback=${callbackName}`;
-    script.onerror = () => {
-      delete window[callbackName];
-      // フォールバック：fetch で再試行
-      fetch(`${GAS_URL}?action=getCourses`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.status === 'ok' && data.series) {
-            COURSES = data.series;
-            renderSeriesGrid();
-            if (loader) loader.style.display = 'none';
-            if (grid)   grid.style.display   = 'grid';
-          } else { showSeriesError(); }
-        })
-        .catch(() => showSeriesError())
-        .finally(() => resolve());
-    };
-    document.head.appendChild(script);
+    const s = document.createElement('script');
+    s.id  = '_gas_script';
+    s.src = GAS_URL + '?action=getCourses&callback=' + cbName;
+    s.onerror = () => { showSeriesError(); resolve(); };
+    document.head.appendChild(s);
   });
 }
 
