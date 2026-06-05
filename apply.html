@@ -1,622 +1,766 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>講習会お申し込み | THE HERBS 植物美容学校</title>
-<meta name="description" content="THE HERBS植物美容学校の講習会お申し込みページです。シリーズを選んで日程をお選びください。" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
-<style>
-:root {
-  --cream:    #ffffff;
-  --cream-dk: #f2f6f1;
-  --brown:    #2C2319;
-  --brown-md: #4a3f35;
-  --gold:     #ABBAA9;
-  --gold-lt:  #c8d4c7;
-  --rose:     #ABBAA9;
-  --muted:    #7a8c79;
-  --border:   rgba(171,186,169,0.4);
-  --card-bg:  #2a3329;
-  --input-bg: #f8faf8;
-  --success:  #4a7c5f;
-  --error:    #a04a3a;
-  --radius:   10px;
-  --t: 0.25s cubic-bezier(0.4,0,0.2,1);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--cream);color:var(--brown);font-size:14px;line-height:1.8;min-height:100vh}
-
-/* HEADER */
-.site-header{background:var(--brown);padding:14px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
-.header-emblem{width:28px;height:28px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:'Noto Sans JP',sans-serif;font-size:13px}
-.header-text strong{display:block;font-size:10px;letter-spacing:.08em;font-weight:500;color:var(--gold)}
-.header-text span{font-size:12px;color:rgba(245,240,232,.7)}
-
-/* LAYOUT */
-.page-wrap{max-width:900px;margin:0 auto;padding:36px 20px 80px}
-
-/* HERO CARD */
-.hero-card{background:var(--card-bg);border-radius:var(--radius);padding:24px 26px 20px;margin-bottom:20px;position:relative;overflow:hidden}
-.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--rose),var(--gold))}
-.hero-eyebrow{font-family:'Noto Sans JP',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
-.hero-title{font-family:'Noto Sans JP',sans-serif;font-size:20px;font-weight:600;color:var(--cream);margin-bottom:8px;line-height:1.4}
-.hero-desc{font-size:12px;color:rgba(245,240,232,.6);line-height:1.8}
-
-/* PROGRESS */
-.progress{display:flex;align-items:center;margin:24px 0 20px}
-.progress-step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);transition:color var(--t)}
-.progress-step.active{color:var(--brown);font-weight:500}
-.progress-step.done{color:var(--gold)}
-.step-num{width:22px;height:22px;border-radius:50%;background:var(--cream-dk);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;transition:all var(--t)}
-.progress-step.active .step-num{background:var(--gold);border-color:var(--gold);color:white}
-.progress-step.done .step-num{background:var(--gold);border-color:var(--gold);color:white}
-.progress-arrow{margin:0 8px;color:var(--border);font-size:14px}
-
-/* STEPS */
-.form-step{display:none}
-.form-step.active{display:block;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-/* STEP HEADING */
-.step-heading{font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:600;color:var(--brown);margin-bottom:14px}
-
-/* SERIES GRID */
-.series-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
-.series-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 14px;cursor:pointer;transition:all var(--t);text-align:left}
-.series-card:hover{border-color:var(--gold);background:var(--cream)}
-.series-card.selected{border-color:var(--gold);background:var(--cream);box-shadow:0 0 0 3px rgba(184,144,90,.12)}
-
-.series-name{font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:600;color:var(--brown);line-height:1.4}
-.series-count{font-size:11px;color:var(--muted);margin-top:3px}
-
-/* SCHEDULE LIST */
-.schedule-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-.schedule-item{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:all var(--t);position:relative;display:flex;align-items:flex-start;gap:12px}
-.schedule-item:hover{border-color:var(--gold);background:var(--cream)}
-.schedule-item.selected{border-color:var(--gold);background:var(--cream);box-shadow:0 0 0 3px rgba(184,144,90,.12)}
-.schedule-item input[type="radio"]{position:absolute;opacity:0;width:0;height:0}
-.schedule-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);background:white;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all var(--t)}
-.schedule-item.selected .schedule-check{background:var(--gold);border-color:var(--gold)}
-.schedule-check::after{content:'✓';font-size:10px;color:transparent;transition:color var(--t)}
-.schedule-item.selected .schedule-check::after{color:white}
-.schedule-body{flex:1;min-width:0}
-.schedule-tag{font-family:'Noto Sans JP',sans-serif;font-size:10px;letter-spacing:.08em;color:var(--gold);text-transform:uppercase;margin-bottom:2px}
-.schedule-title{font-size:13px;font-weight:500;color:var(--brown);line-height:1.5;margin-bottom:2px}
-.schedule-meta{font-size:12px;color:var(--muted)}
-
-/* BACK LINK */
-.back-link{font-size:12px;color:var(--gold);cursor:pointer;background:none;border:none;padding:0;margin-bottom:16px;display:flex;align-items:center;gap:4px}
-.back-link:hover{color:var(--brown-md)}
-
-/* SELECTED SUMMARY */
-.selected-summary{background:var(--cream-dk);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:20px}
-.summary-body{flex:1;min-width:0}
-.summary-series{font-size:10px;letter-spacing:.1em;color:var(--gold);font-family:'Noto Sans JP',sans-serif;text-transform:uppercase}
-.summary-title{font-size:13px;font-weight:500;color:var(--brown)}
-.summary-date{font-size:12px;color:var(--muted)}
-.summary-change{margin-left:auto;font-size:12px;color:var(--gold);cursor:pointer;text-decoration:underline;white-space:nowrap;background:none;border:none;padding:0;flex-shrink:0}
-
-/* FORM SECTION */
-.form-section{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px 20px;margin-bottom:14px}
-.form-section-title{font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:600;color:var(--brown);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-
-/* MEMBER BADGE */
-.member-badge{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);min-height:52px}
-.member-badge.is-member{border-color:var(--success);background:rgba(74,124,95,.06)}
-.badge-left{flex:1}
-.badge-label{font-size:13px;color:var(--brown);font-weight:500}
-.badge-note{font-size:11px;color:var(--muted);margin-top:2px}
-.badge-price{font-family:'Noto Sans JP',sans-serif;font-size:18px;color:var(--gold)}
-.badge-spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite}
-
-/* FIELDS */
-.field-group{display:flex;flex-direction:column;gap:12px}
-.field{display:flex;flex-direction:column;gap:4px}
-label{font-size:12px;font-weight:500;color:var(--brown-md);display:flex;align-items:center;gap:6px}
-.req{font-size:10px;background:var(--rose);color:white;padding:1px 5px;border-radius:3px;font-weight:400}
-input[type="text"],input[type="email"],input[type="tel"]{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:7px;background:var(--input-bg);font-family:'Noto Sans JP',sans-serif;font-size:14px;color:var(--brown);transition:border-color var(--t),box-shadow var(--t);outline:none;-webkit-appearance:none}
-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,144,90,.12);background:white}
-input::placeholder{color:rgba(92,61,40,.35)}
-.field-error{font-size:11px;color:var(--error);display:none}
-.field.invalid input{border-color:var(--error)}
-.field.invalid .field-error{display:block}
-
-/* BUTTONS */
-.btn-primary{width:100%;padding:14px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background var(--t),transform var(--t);letter-spacing:.05em}
-.btn-primary:hover{background:var(--brown-md);transform:translateY(-1px)}
-.btn-primary:disabled{background:var(--muted);cursor:not-allowed;transform:none}
-.btn-secondary{width:100%;padding:12px;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;transition:all var(--t);margin-top:8px}
-.btn-secondary:hover{border-color:var(--gold);color:var(--brown)}
-.btn-wrap{margin-top:18px}
-
-/* CONFIRM */
-.confirm-table{width:100%;border-collapse:collapse;font-size:13px}
-.confirm-table tr{border-bottom:1px solid var(--border)}
-.confirm-table tr:last-child{border-bottom:none}
-.confirm-table th{padding:11px 0;text-align:left;font-weight:500;color:var(--muted);width:110px;vertical-align:top}
-.confirm-table td{padding:11px 0;color:var(--brown);font-weight:500}
-.confirm-price{font-family:'Noto Sans JP',sans-serif;font-size:17px;color:var(--gold)}
-
-/* NOTICE */
-.notice{background:var(--cream-dk);border:1px solid var(--border);border-radius:6px;padding:11px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7}
-.notice strong{color:var(--brown-md)}
-
-/* ERROR BANNER */
-.error-banner{display:none;background:#fdf0ee;border:1px solid #e0a090;border-radius:7px;padding:11px 14px;font-size:12px;color:var(--error);margin-bottom:14px}
-.error-banner.show{display:block}
-
-/* SUCCESS */
-.success-wrap{text-align:center;padding:48px 20px}
-.success-icon{width:60px;height:60px;border-radius:50%;background:rgba(74,124,95,.1);border:2px solid var(--success);color:var(--success);font-size:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
-.success-title{font-family:'Noto Sans JP',sans-serif;font-size:20px;color:var(--brown);margin-bottom:10px}
-.success-msg{font-size:13px;color:var(--muted);line-height:1.8;max-width:340px;margin:0 auto 24px}
-
-/* LOADING */
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(44,31,20,.5);z-index:999;align-items:center;justify-content:center}
-.loading-overlay.show{display:flex}
-.loading-spinner{width:44px;height:44px;border:3px solid rgba(245,240,232,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* NO COURSES */
-.no-courses{text-align:center;padding:32px 20px;color:var(--muted);font-size:13px;background:white;border:1px solid var(--border);border-radius:var(--radius)}
-
-@media(max-width:600px){
-  .series-grid{grid-template-columns:1fr 1fr}
-  .page-wrap{padding:24px 16px 60px}
-  .form-section{padding:16px 14px}
-}
-</style>
-</head>
-<body>
-
-<header class="site-header">
-  <div class="header-emblem">✦</div>
-  <div class="header-text">
-    <strong>THE HERBS 植物美容学校</strong>
-    <span>講習会お申し込み</span>
-  </div>
-</header>
-
-<div class="page-wrap">
-
-  <div class="hero-card">
-    <p class="hero-eyebrow">THE HERBS 植物美容学校 — 講習会申し込み窓口</p>
-    <h1 class="hero-title">シリーズを選んでお申し込みください</h1>
-    <p class="hero-desc">美容師・エステティシャン向け講習会の一括お申し込み窓口です。シリーズと日程を選んで必要事項をご入力ください。</p>
-  </div>
-
-  <div class="progress" id="progress">
-    <div class="progress-step active" id="prog-1"><span class="step-num">1</span><span>シリーズ</span></div>
-    <span class="progress-arrow">›</span>
-    <div class="progress-step" id="prog-2"><span class="step-num">2</span><span>日程</span></div>
-    <span class="progress-arrow">›</span>
-    <div class="progress-step" id="prog-3"><span class="step-num">3</span><span>情報入力</span></div>
-    <span class="progress-arrow">›</span>
-    <div class="progress-step" id="prog-4"><span class="step-num">4</span><span>確認・送信</span></div>
-  </div>
-
-  <div class="error-banner" id="errorBanner"></div>
-
-  <!-- STEP 1: シリーズ選択 -->
-  <div class="form-step active" id="step1">
-    <p class="step-heading">講習会シリーズを選んでください</p>
-    <div class="series-grid">
-      <button class="series-card" onclick="selectSeries('体質学講習会')" id="s-tai">
-        
-        <div class="series-name">体質学講習会</div>
-        <div class="series-count">全12回シリーズ</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('フェイスケア全12回')" id="s-face">
-        
-        <div class="series-name">フェイスケア全12回</div>
-        <div class="series-count">フェイスケアシリーズ</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('美容師向けハーブケア')" id="s-herb">
-        
-        <div class="series-name">美容師向けハーブケア</div>
-        <div class="series-count">ハーブケアシリーズ</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('ハーブスチーマー')" id="s-steam">
-        
-        <div class="series-name">ハーブスチーマー</div>
-        <div class="series-count">スチーマー講習</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('頭皮用ハーブゴマージュ')" id="s-scalp">
-        
-        <div class="series-name">頭皮用ハーブゴマージュ</div>
-        <div class="series-count">スカルプ講習</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('ビオゴマージュ')" id="s-bio">
-        
-        <div class="series-name">ビオゴマージュ</div>
-        <div class="series-count">ゴマージュ講習</div>
-      </button>
-      <button class="series-card" onclick="selectSeries('スカルプラボ')" id="s-labo">
-        
-        <div class="series-name">スカルプラボ</div>
-        <div class="series-count">スカルプラボ講習</div>
-      </button>
-    </div>
-  </div>
-
-  <!-- STEP 2: 日程選択 -->
-  <div class="form-step" id="step2">
-    <button class="back-link" onclick="goStep(1)">← シリーズ選択に戻る</button>
-    <p class="step-heading" id="step2-heading">日程を選んでください</p>
-    <div class="schedule-list" id="scheduleList"></div>
-    <div class="btn-wrap">
-      <button class="btn-primary" id="btn2" disabled onclick="goStep(3)">次へ — 情報を入力する</button>
-    </div>
-  </div>
-
-  <!-- STEP 3: 情報入力 -->
-  <div class="form-step" id="step3">
-    <button class="back-link" onclick="goStep(2)">← 日程選択に戻る</button>
-
-    <div class="selected-summary">
-      <div class="summary-body">
-        <div class="summary-series" id="sum-series"></div>
-        <div class="summary-title" id="sum-title"></div>
-        <div class="summary-date" id="sum-date"></div>
-      </div>
-      <button class="summary-change" onclick="goStep(2)">変更</button>
-    </div>
-
-    <div class="form-section">
-      <p class="form-section-title">受講料</p>
-      <div class="member-badge" id="memberBadge">
-        <div class="badge-left">
-          <div class="badge-label" id="badgeLabel">メールアドレスを入力すると自動で表示されます</div>
-          <div class="badge-note" id="badgeNote"></div>
-        </div>
-        <div id="badgeRight"></div>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <p class="form-section-title">お申し込み情報</p>
-      <div class="field-group">
-        <div class="field" id="f-name">
-          <label for="inp-name">お名前 <span class="req">必須</span></label>
-          <input type="text" id="inp-name" placeholder="山田 花子" autocomplete="name" />
-          <span class="field-error">お名前を入力してください</span>
-        </div>
-        <div class="field" id="f-email">
-          <label for="inp-email">メールアドレス <span class="req">必須</span></label>
-          <input type="email" id="inp-email" placeholder="your@email.com" autocomplete="email" onblur="checkMember()" />
-          <span class="field-error">正しいメールアドレスを入力してください</span>
-        </div>
-        <div class="field" id="f-phone">
-          <label for="inp-phone">電話番号 <span class="req">必須</span></label>
-          <input type="tel" id="inp-phone" placeholder="090-0000-0000" autocomplete="tel" />
-          <span class="field-error">電話番号を入力してください</span>
-        </div>
-        <div class="field" id="f-affil">
-          <label for="inp-affil">ご所属（サロン名など） <span class="req">必須</span></label>
-          <input type="text" id="inp-affil" placeholder="○○サロン / 個人" autocomplete="organization" />
-          <span class="field-error">ご所属を入力してください</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="btn-wrap">
-      <button class="btn-primary" onclick="goStep(4)">内容を確認する</button>
-    </div>
-  </div>
-
-  <!-- STEP 4: 確認 -->
-  <div class="form-step" id="step4">
-    <button class="back-link" onclick="goStep(3)">← 内容を修正する</button>
-    <div class="form-section">
-      <p class="form-section-title">お申し込み内容のご確認</p>
-      <table class="confirm-table">
-        <tr><th>シリーズ</th><td id="c-series"></td></tr>
-        <tr><th>講座</th><td id="c-title"></td></tr>
-        <tr><th>日程</th><td id="c-date"></td></tr>
-        <tr><th>受講料</th><td><span class="confirm-price" id="c-price"></span></td></tr>
-        <tr><th>お名前</th><td id="c-name"></td></tr>
-        <tr><th>メール</th><td id="c-email"></td></tr>
-        <tr><th>電話</th><td id="c-phone"></td></tr>
-        <tr><th>ご所属</th><td id="c-affil"></td></tr>
-      </table>
-    </div>
-    <div class="notice">
-      送信後、ご入力のメールアドレスにStripeの決済リンクをお送りします。<strong>7日以内</strong>にお支払いをお済ませください。
-    </div>
-    <div class="btn-wrap">
-      <button class="btn-primary" id="btnSubmit" onclick="submitForm()">申し込みを送信する</button>
-    </div>
-  </div>
-
-  <!-- STEP 5: 完了 -->
-  <div class="form-step" id="step5">
-    <div class="success-wrap">
-      <div class="success-icon">✓</div>
-      <h2 class="success-title">お申し込みありがとうございます</h2>
-      <p class="success-msg">受付が完了しました。ご入力のメールアドレスに受講料お支払いのご案内をお送りします。7日以内にお手続きをお願いいたします。</p>
-      <a href="https://www.the-herbs.co.jp/school" class="btn-primary" style="display:inline-block;max-width:280px;text-decoration:none;text-align:center;">講習会一覧に戻る</a>
-    </div>
-  </div>
-
-</div>
-
-<div class="loading-overlay" id="loading"><div class="loading-spinner"></div></div>
-
-<script>
-// ============================================================
-// 設定
-// ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzhjYEG-wpSluuQqFKs-DgTF3-EEXxuDStQvmvuTveQu_eC_whxNUwNyjdb5XA6Frko/exec';
+/**
+ * THE HERBS 講習会予約管理システム
+ * Google Apps Script - メインコード（Stripe版）
+ *
+ * 【スプレッドシート構成】
+ * シート1: 講座マスタ
+ * シート2: 予約台帳
+ * シート3: 設定
+ *
+ * 【設定シートに必要な項目】
+ * 会社名 / 管理者メール / 連絡先メール / 電話番号 / フォームID
+ * Stripeシークレットキー / フォームID
+ */
 
 // ============================================================
-// 講座データ（スプレッドシートから動的取得）
+// 定数
 // ============================================================
-let COURSES = {};  // GASから取得後に格納
 
-function loadCourses() {
-  return new Promise((resolve) => {
-    const loader = document.getElementById('seriesLoader');
-    const grid   = document.getElementById('seriesGrid');
-    const cbName = 'cb_' + Date.now();
-
-    window[cbName] = function(data) {
-      delete window[cbName];
-      document.getElementById('_gas_script')?.remove();
-      if (data.status === 'ok' && data.series) {
-        COURSES = data.series;
-        renderSeriesGrid();
-        if (loader) loader.style.display = 'none';
-        if (grid)   grid.style.display   = 'grid';
-      } else {
-        showSeriesError();
-      }
-      resolve();
-    };
-
-    const s = document.createElement('script');
-    s.id  = '_gas_script';
-    s.src = GAS_URL + '?action=getCourses&callback=' + cbName;
-    s.onerror = () => { showSeriesError(); resolve(); };
-    document.head.appendChild(s);
-  });
-}
-
-function renderSeriesGrid() {
-  const grid = document.getElementById('seriesGrid');
-  grid.innerHTML = '';
-
-  // シリーズ表示順の定義
-  const ORDER = ['フェイスケア全12回','体質学講習会','美容師向けハーブケア','ハーブスチーマー','頭皮用ハーブゴマージュ','ビオゴマージュ','スカルプラボ'];
-  const keys  = ORDER.filter(k => COURSES[k] !== undefined)
-                     .concat(Object.keys(COURSES).filter(k => !ORDER.includes(k)));
-
-  keys.forEach(name => {
-    const courses = COURSES[name] || [];
-    const count   = courses.filter(c => c.tag !== 'フォローアップ').length;
-    const btn = document.createElement('button');
-    btn.className = 'series-card';
-    btn.innerHTML = `
-      <div class="series-name">${name}</div>
-      <div class="series-count">${count > 0 ? count + '回' : '近日公開'}</div>`;
-    btn.onclick = () => selectSeries(name);
-    grid.appendChild(btn);
-  });
-}
-
-function showSeriesError() {
-  const loader = document.getElementById('seriesLoader');
-  if (loader) loader.innerHTML = '<p style="color:var(--error);font-size:13px;">講座情報の読み込みに失敗しました。ページを再読み込みしてください。</p>';
-}
+const SHEET_MASTER  = '講座マスタ';
+const SHEET_BOOKING = '予約台帳';
+const SHEET_CONFIG  = '設定';
+const SHEET_MEMBER  = '会員マスタ';
 
 // ============================================================
-// 状態
+// 設定取得
 // ============================================================
-const state = {
-  series:'', courseId:'', courseTitle:'', courseDate:'',
-  member:'', price:'',
-  name:'', email:'', phone:'', affil:''
-};
 
-// ============================================================
-// STEP 1: シリーズ選択
-// ============================================================
-function selectSeries(name) {
-  state.series = name;
-  document.querySelectorAll('.series-card').forEach(c => c.classList.remove('selected'));
-  const courses = COURSES[name] || [];
-  document.getElementById('step2-heading').textContent = `「${name}」の日程を選んでください`;
-
-  const list = document.getElementById('scheduleList');
-  list.innerHTML = '';
-
-  if (courses.length === 0) {
-    list.innerHTML = '<div class="no-courses">現在募集中の講座はありません。<br>近日公開予定です。</div>';
-    document.getElementById('btn2').disabled = true;
-  } else {
-    courses.forEach(c => {
-      const el = document.createElement('label');
-      el.className = 'schedule-item';
-      el.dataset.id    = c.id;
-      el.dataset.title = c.title;
-      el.dataset.date  = c.date;
-      el.innerHTML = `
-        <input type="radio" name="schedule" value="${c.id}" />
-        <span class="schedule-check"></span>
-        <div class="schedule-body">
-          <div class="schedule-tag">${c.tag} — ${c.id}</div>
-          <div class="schedule-title">${c.title}</div>
-          <div class="schedule-meta">${c.date}</div>
-        </div>`;
-      el.addEventListener('click', () => {
-        document.querySelectorAll('.schedule-item').forEach(i => i.classList.remove('selected'));
-        el.classList.add('selected');
-        el.querySelector('input').checked = true;
-        state.courseId    = c.id;
-        state.courseTitle = c.title;
-        state.courseDate  = c.date;
-        document.getElementById('btn2').disabled = false;
-      });
-      list.appendChild(el);
-    });
-    document.getElementById('btn2').disabled = true;
+function getConfig(key) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_CONFIG);
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === key) return String(data[i][1]).trim();
   }
-
-  state.courseId = ''; state.courseTitle = ''; state.courseDate = '';
-  goStep(2);
+  return null;
 }
 
 // ============================================================
-// STEP 3: 会員照合
+// Stripe：決済リンク自動生成
 // ============================================================
-async function checkMember() {
-  const email = document.getElementById('inp-email').value.trim();
-  const badge = document.getElementById('memberBadge');
-  const label = document.getElementById('badgeLabel');
-  const note  = document.getElementById('badgeNote');
-  const right = document.getElementById('badgeRight');
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    badge.className = 'member-badge';
-    label.textContent = 'メールアドレスを入力すると自動で表示されます';
-    note.textContent = ''; right.innerHTML = '';
-    state.member = ''; state.price = '';
-    return;
-  }
+/**
+ * Stripe Payment Links APIで決済URLを自動生成
+ * 講座マスタのH列（Square URL）は不要になります
+ */
+function createStripePaymentLink(course, bookingId) {
+  const secretKey = getConfig('Stripeシークレットキー');
+  if (!secretKey) throw new Error('Stripeシークレットキーが設定されていません');
 
-  badge.className = 'member-badge';
-  label.textContent = '会員情報を確認中...';
-  note.textContent = ''; right.innerHTML = '<div class="badge-spinner"></div>';
-  state.member = '';
+  const adminName = getConfig('会社名') || 'THE HERBS';
 
+  // Step1: Product作成
+  const productRes = UrlFetchApp.fetch('https://api.stripe.com/v1/products', {
+    method: 'post',
+    headers: { Authorization: 'Bearer ' + secretKey },
+    payload: {
+      name: `${course.name}${course.session ? '（' + course.session + '）' : ''}`,
+      description: `${course.date}｜${course.location}｜予約ID:${bookingId}`
+    },
+    muteHttpExceptions: true
+  });
+  const product = JSON.parse(productRes.getContentText());
+  if (product.error) throw new Error('Stripe Product作成エラー: ' + product.error.message);
+
+  // Step2: Price作成（円・1回払い）
+  const priceRes = UrlFetchApp.fetch('https://api.stripe.com/v1/prices', {
+    method: 'post',
+    headers: { Authorization: 'Bearer ' + secretKey },
+    payload: {
+      product: product.id,
+      unit_amount: String(course.price),
+      currency: 'jpy'
+    },
+    muteHttpExceptions: true
+  });
+  const price = JSON.parse(priceRes.getContentText());
+  if (price.error) throw new Error('Stripe Price作成エラー: ' + price.error.message);
+
+  // Step3: Payment Link作成
+  const linkRes = UrlFetchApp.fetch('https://api.stripe.com/v1/payment_links', {
+    method: 'post',
+    headers: { Authorization: 'Bearer ' + secretKey },
+    payload: {
+      'line_items[0][price]': price.id,
+      'line_items[0][quantity]': '1',
+      'after_completion[type]': 'redirect',
+      'after_completion[redirect][url]': getConfig('支払い完了URL') || 'https://herb-esthe.com'
+    },
+    muteHttpExceptions: true
+  });
+  const link = JSON.parse(linkRes.getContentText());
+  if (link.error) throw new Error('Stripe PaymentLink作成エラー: ' + link.error.message);
+
+  return link.url; // 例: https://buy.stripe.com/xxxxx
+}
+
+// ============================================================
+// フォーム送信トリガー（予約受付）
+// ============================================================
+
+/**
+ * Googleフォーム送信時に自動実行
+ * フォームの質問順序：
+ *   1: タイムスタンプ（自動）
+ *   2: お名前
+ *   3: メールアドレス
+ *   4: 電話番号
+ *   5: ご所属（サロン名など）
+ *   6: 希望講座（「C001_植物美容基礎講座 第1回」形式）
+ */
+function onFormSubmit(e) {
   try {
-    const res  = await fetch(`${GAS_URL}?action=checkMember&email=${encodeURIComponent(email)}`, {mode:'cors'});
-    const data = await res.json();
-    if (data.isMember) {
-      badge.className = 'member-badge is-member';
-      label.textContent = `✓ お取引会員${data.salon ? '（' + data.salon + '）' : ''}`;
-      note.textContent = '会員価格が適用されます';
-      right.innerHTML = '<span class="badge-price">¥11,000</span>';
-      state.member = 'member'; state.price = '¥11,000（税込）';
-      if (data.salon) document.getElementById('inp-affil').value = data.salon;
-    } else {
-      badge.className = 'member-badge';
-      label.textContent = '非会員';
-      note.textContent = 'お取引会員の方は登録メールアドレスでお申し込みください';
-      right.innerHTML = '<span class="badge-price">¥22,000</span>';
-      state.member = 'nonmember'; state.price = '¥22,000（税込）';
+    const responses = e.values;
+    const timestamp = responses[0];
+    const name      = responses[1];
+    const email     = responses[2];
+    const phone     = responses[3];
+    const affil     = responses[4];
+    const courseRaw = responses[5];
+
+    const courseId = courseRaw.split('_')[0].trim();
+
+    // 講座マスタから情報取得
+    const course = getCourseById(courseId);
+    if (!course) {
+      sendErrorNotice(email, name, courseRaw);
+      return;
     }
-  } catch {
-    badge.className = 'member-badge';
-    label.textContent = '非会員';
-    note.textContent = '';
-    right.innerHTML = '<span class="badge-price">¥22,000</span>';
-    state.member = 'nonmember'; state.price = '¥22,000（税込）';
-  }
-}
 
-// ============================================================
-// バリデーション
-// ============================================================
-function validate() {
-  let ok = true;
-  [
-    {id:'f-name',  inp:'inp-name',  fn: v => v.trim().length > 0},
-    {id:'f-email', inp:'inp-email', fn: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)},
-    {id:'f-phone', inp:'inp-phone', fn: v => v.trim().length > 0},
-    {id:'f-affil', inp:'inp-affil', fn: v => v.trim().length > 0},
-  ].forEach(f => {
-    const v = document.getElementById(f.inp).value;
-    const el = document.getElementById(f.id);
-    if (!f.fn(v)) { el.classList.add('invalid'); ok = false; }
-    else           { el.classList.remove('invalid'); }
-  });
-  if (!state.member) { showError('メールアドレスを入力して受講料を確認してください'); ok = false; }
-  return ok;
-}
+    // 定員チェック
+    const currentCount = getBookingCount(courseId);
+    if (currentCount >= course.capacity) {
+      sendFullNotice(email, name, course);
+      return;
+    }
 
-// ============================================================
-// ステップ移動
-// ============================================================
-function goStep(n) {
-  hideError();
+    // 予約ID発行
+    const bookingId = generateBookingId();
 
-  if (n === 4) {
-    if (!validate()) return;
-    state.name  = document.getElementById('inp-name').value.trim();
-    state.email = document.getElementById('inp-email').value.trim();
-    state.phone = document.getElementById('inp-phone').value.trim();
-    state.affil = document.getElementById('inp-affil').value.trim();
-    document.getElementById('c-series').textContent = state.series;
-    document.getElementById('c-title').textContent  = state.courseTitle;
-    document.getElementById('c-date').textContent   = state.courseDate;
-    document.getElementById('c-price').textContent  = state.price;
-    document.getElementById('c-name').textContent   = state.name;
-    document.getElementById('c-email').textContent  = state.email;
-    document.getElementById('c-phone').textContent  = state.phone;
-    document.getElementById('c-affil').textContent  = state.affil;
-  }
+    // Stripe決済リンク自動生成
+    const paymentUrl = createStripePaymentLink(course, bookingId);
 
-  if (n === 3) {
-    document.getElementById('sum-series').textContent = state.series;
-    document.getElementById('sum-title').textContent  = state.courseTitle;
-    document.getElementById('sum-date').textContent   = state.courseDate;
-  }
-
-  for (let i = 1; i <= 5; i++) {
-    document.getElementById(`step${i}`).classList.toggle('active', i === n);
-    const p = document.getElementById(`prog-${i}`);
-    if (p) { p.classList.remove('active','done'); if(i===n) p.classList.add('active'); else if(i<n) p.classList.add('done'); }
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-// ============================================================
-// 送信
-// ============================================================
-async function submitForm() {
-  hideError();
-  document.getElementById('btnSubmit').disabled = true;
-  document.getElementById('loading').classList.add('show');
-  try {
-    await fetch(GAS_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        courseId: state.courseId, courseDate: state.courseDate,
-        courseName: state.courseTitle, series: state.series,
-        member: state.member, price: state.price,
-        name: state.name, email: state.email,
-        phone: state.phone, affil: state.affil
-      })
+    // 予約台帳に記録
+    addBookingRow({
+      bookingId, timestamp, name, email, phone, affil,
+      courseId, courseName: course.name, courseDate: course.date,
+      price: course.price, status: '未入金', paymentUrl
     });
-    goStep(5);
-  } catch {
-    showError('送信に失敗しました。しばらく経ってから再度お試しください。');
-    document.getElementById('btnSubmit').disabled = false;
-  } finally {
-    document.getElementById('loading').classList.remove('show');
+
+    // 決済リンク付きメール送付
+    sendPaymentEmail(email, name, course, bookingId, paymentUrl);
+
+    // 管理者通知
+    sendAdminNotice(name, email, course, bookingId, currentCount + 1);
+
+  } catch (err) {
+    Logger.log('onFormSubmit error: ' + err.message);
+    MailApp.sendEmail(
+      getConfig('管理者メール'),
+      '[エラー] 予約受付処理失敗',
+      err.message
+    );
   }
 }
 
-function showError(msg){ const e=document.getElementById('errorBanner'); e.textContent=msg; e.classList.add('show'); }
-function hideError(){ document.getElementById('errorBanner').classList.remove('show'); }
+// ============================================================
+// 講座マスタ操作
+// ============================================================
+
+/**
+ * 列定義
+ * A:講座ID  B:講座名  C:回数  D:開催日時  E:場所
+ * F:定員    G:受講料  H:備考  I:ステータス
+ * ※ Square版のH列（決済URL）は不要になりました
+ */
+function getCourseById(courseId) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_MASTER);
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(courseId)) {
+      return {
+        id:       data[i][0],
+        name:     data[i][1],
+        session:  data[i][2],
+        date:     data[i][3],
+        location: data[i][4],
+        capacity: Number(data[i][5]),
+        price:    Number(data[i][6]),
+        notes:    data[i][7],
+        status:   data[i][8]
+      };
+    }
+  }
+  return null;
+}
 
 // ============================================================
-// URLパラメーター処理（?series=体質学講習会 で直接日程選択へ）
+// 予約台帳操作
 // ============================================================
-window.addEventListener('DOMContentLoaded', async () => {
-  await loadCourses();
-  // URLパラメーター処理（?series=体質学講習会 で直接日程選択へ）
-  const params = new URLSearchParams(window.location.search);
-  const series = params.get('series');
-  if (series && COURSES[series] !== undefined) {
-    selectSeries(series);
+
+/**
+ * 列定義
+ * A:予約ID  B:受付日時  C:氏名  D:メール  E:電話
+ * F:所属    G:講座ID   H:講座名  I:開催日時  J:受講料
+ * K:決済URL  L:入金状況  M:入金確認日  N:備考
+ */
+function addBookingRow(data) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_BOOKING);
+  sheet.appendRow([
+    data.bookingId,       // A: 予約ID
+    data.timestamp,       // B: 受付日時
+    data.name,            // C: 氏名
+    data.email,           // D: メール
+    data.phone,           // E: 電話
+    data.affil,           // F: 所属
+    data.courseId,        // G: 講座ID
+    data.courseName,      // H: 講座名
+    data.courseDate,      // I: 開催日時
+    data.price,           // J: 受講料
+    data.memberType || '', // K: 会員種別（お取引会員 / 非会員）
+    data.paymentUrl || '', // L: 決済URL
+    data.status,          // M: 入金状況
+    '',                   // N: 入金確認日
+    ''                    // O: 備考
+  ]);
+}
+
+function getBookingCount(courseId) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_BOOKING);
+  const data = sheet.getDataRange().getValues();
+  let count = 0;
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][6]) === String(courseId) &&
+        data[i][12] !== 'キャンセル') {
+      count++;
+    }
   }
-});
-</script>
-</body>
-</html>
+  return count;
+}
+
+function generateBookingId() {
+  const now = new Date();
+  const dateStr = Utilities.formatDate(now, 'Asia/Tokyo', 'yyyyMMdd');
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_BOOKING);
+  const seq = String(Math.max(sheet.getLastRow(), 1)).padStart(4, '0');
+  return `BK${dateStr}-${seq}`;
+}
+
+// ============================================================
+// メール送信
+// ============================================================
+
+function sendPaymentEmail(email, name, course, bookingId, paymentUrl) {
+  const adminName = getConfig('会社名') || 'THE HERBS';
+  const subject = `【${adminName}】ご予約受付のご確認と受講料お支払いのお願い`;
+  const body = `
+${name} 様
+
+この度は「${course.name}」にお申し込みいただきありがとうございます。
+以下の内容でご予約を受け付けました。
+
+━━━━━━━━━━━━━━━━━━━━━━
+■ ご予約内容
+━━━━━━━━━━━━━━━━━━━━━━
+予約ID　：${bookingId}
+講座名　：${course.name}${course.session ? '（' + course.session + '）' : ''}
+開催日時：${course.date}
+場所　　：${course.location}
+受講料　：¥${course.price.toLocaleString()}
+━━━━━━━━━━━━━━━━━━━━━━
+
+■ 受講料のお支払い
+
+下記のリンクよりカード決済をお願いいたします。
+お支払い確認後に予約確定メールをお送りします。
+
+${paymentUrl}
+
+※ ご不明な点はお気軽にご連絡ください。
+
+${adminName}
+${getConfig('連絡先メール') || ''}
+${getConfig('電話番号') || ''}
+`.trim();
+
+  MailApp.sendEmail({ to: email, subject, body });
+}
+
+function sendConfirmEmail(email, name, course, bookingId) {
+  const adminName = getConfig('会社名') || 'THE HERBS';
+  const subject = `【${adminName}】ご予約確定のご連絡`;
+  const body = `
+${name} 様
+
+受講料のお支払いを確認いたしました。
+ご予約が確定しましたのでお知らせいたします。
+
+━━━━━━━━━━━━━━━━━━━━━━
+■ 確定ご予約内容
+━━━━━━━━━━━━━━━━━━━━━━
+予約ID　：${bookingId}
+講座名　：${course.name}${course.session ? '（' + course.session + '）' : ''}
+開催日時：${course.date}
+場所　　：${course.location}
+${course.notes ? '持ち物等：' + course.notes : ''}
+━━━━━━━━━━━━━━━━━━━━━━
+
+当日はどうぞよろしくお願いいたします。
+
+${adminName}
+${getConfig('連絡先メール') || ''}
+${getConfig('電話番号') || ''}
+`.trim();
+
+  MailApp.sendEmail({ to: email, subject, body });
+}
+
+function sendReminderEmail(email, name, course, bookingId) {
+  const adminName = getConfig('会社名') || 'THE HERBS';
+  const subject = `【${adminName}】明日の講習会リマインド：${course.name}`;
+  const body = `
+${name} 様
+
+明日の講習会についてリマインドいたします。
+
+━━━━━━━━━━━━━━━━━━━━━━
+講座名　：${course.name}${course.session ? '（' + course.session + '）' : ''}
+開催日時：${course.date}
+場所　　：${course.location}
+${course.notes ? '持ち物等：' + course.notes : ''}
+━━━━━━━━━━━━━━━━━━━━━━
+
+明日お会いできることを楽しみにしております。
+
+${adminName}
+${getConfig('連絡先メール') || ''}
+${getConfig('電話番号') || ''}
+`.trim();
+
+  MailApp.sendEmail({ to: email, subject, body });
+}
+
+function sendFullNotice(email, name, course) {
+  const adminName = getConfig('会社名') || 'THE HERBS';
+  MailApp.sendEmail({
+    to: email,
+    subject: `【${adminName}】満席のお知らせ`,
+    body: `${name} 様\n\n誠に申し訳ございませんが、「${course.name}」は定員に達しております。\n次回開催の際に優先的にご案内いたします。\n\n${adminName}`
+  });
+}
+
+function sendErrorNotice(email, name, courseRaw) {
+  const adminName = getConfig('会社名') || 'THE HERBS';
+  MailApp.sendEmail({
+    to: email,
+    subject: `【${adminName}】お申し込みを受け付けました（確認中）`,
+    body: `${name} 様\n\nお申し込みありがとうございます。内容を確認の上、改めてご連絡いたします。\n\n${adminName}`
+  });
+}
+
+function sendAdminNotice(name, email, course, bookingId, count) {
+  const adminEmail = getConfig('管理者メール');
+  if (!adminEmail) return;
+  MailApp.sendEmail({
+    to: adminEmail,
+    subject: `[予約受付] ${course.name} - ${name}様`,
+    body: `予約ID: ${bookingId}\n氏名: ${name}\nメール: ${email}\n講座: ${course.name}\n現在の予約数: ${count}/${course.capacity}`
+  });
+}
+
+// ============================================================
+// Stripe Webhook受信（自動入金確認）
+// ============================================================
+
+/**
+ * StripeのWebhookを受け取るdoPost関数
+ * GASをWebアプリとしてデプロイすることで、
+ * Stripe側の入金イベントを自動で受信できます
+ */
+function doPost(e) {
+  try {
+    const payload = JSON.parse(e.postData.contents);
+
+    // ── HTMLフォームからの予約申し込み ──
+    if (payload.name && payload.email && payload.courseId) {
+      return handleFormSubmit(payload);
+    }
+
+    // ── Stripe Webhook（入金確認） ──
+    if (payload.type === 'checkout.session.completed') {
+      return handleStripeWebhook(payload);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    Logger.log('doPost error: ' + err.message);
+    return ContentService.createTextOutput(JSON.stringify({ error: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * HTMLフォームからの予約受付処理
+ * apply.html から POST されるデータを受け取る
+ */
+function handleFormSubmit(payload) {
+  const { courseId, courseDate, courseName, member, price, name, email, phone, affil } = payload;
+
+  // 講座マスタから情報取得
+  const course = getCourseById(courseId);
+  if (!course) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: '講座が見つかりません' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 定員チェック
+  const currentCount = getBookingCount(courseId);
+  if (currentCount >= course.capacity) {
+    sendFullNotice(email, name, course);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'full' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 予約ID発行
+  const bookingId = generateBookingId();
+
+  // 受講料を会員種別で上書き（フォームの選択値を優先）
+  const priceNum = member === 'member' ? 11000 : 22000;
+  const courseForStripe = Object.assign({}, course, { price: priceNum });
+
+  // Stripe決済リンク自動生成
+  const paymentUrl = createStripePaymentLink(courseForStripe, bookingId);
+
+  // 会員種別ラベル
+  const memberLabel = member === 'member' ? 'お取引会員' : '非会員';
+
+  // 予約台帳に記録
+  addBookingRow({
+    bookingId,
+    timestamp: new Date(),
+    name, email, phone, affil,
+    courseId,
+    courseName: course.name,
+    courseDate: course.date,
+    price: priceNum,
+    memberType: memberLabel,
+    status: '未入金',
+    paymentUrl
+  });
+
+  // 決済リンク付きメール送付
+  sendPaymentEmail(email, name, courseForStripe, bookingId, paymentUrl);
+
+  // 管理者通知
+  sendAdminNotice(name, email, course, bookingId, currentCount + 1);
+
+  return ContentService.createTextOutput(JSON.stringify({ status: 'ok', bookingId }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Stripe Webhook（決済完了）処理
+ */
+function handleStripeWebhook(payload) {
+  const session = payload.data.object;
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_BOOKING);
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][10] && String(data[i][10]).includes(session.payment_link)) {
+      const bookingId = data[i][0];
+      const email     = data[i][3];
+      const name      = data[i][2];
+      const courseId  = data[i][6];
+
+      sheet.getRange(i + 1, 13).setValue('予約確定');
+      sheet.getRange(i + 1, 14).setValue(new Date());
+
+      const course = getCourseById(courseId);
+      if (course) sendConfirmEmail(email, name, course, bookingId);
+      break;
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({ status: 'ok' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ============================================================
+// 入金確認・予約確定（手動実行用）
+// ============================================================
+
+/**
+ * K列（入金状況）を「入金済」に変更した行に確定メールを送る
+ * Webhookを設定しない場合の手動代替手段
+ */
+function confirmPayments() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_BOOKING);
+  const data = sheet.getDataRange().getValues();
+
+  let confirmed = 0;
+  for (let i = 1; i < data.length; i++) {
+    const status         = data[i][12];
+    const confirmedDate  = data[i][13];
+    const email          = data[i][3];
+    const name           = data[i][2];
+    const courseId       = data[i][6];
+    const bookingId      = data[i][0];
+
+    if (status === '入金済' && !confirmedDate) {
+      const course = getCourseById(courseId);
+      if (course) {
+        sendConfirmEmail(email, name, course, bookingId);
+        sheet.getRange(i + 1, 13).setValue('予約確定');
+        sheet.getRange(i + 1, 14).setValue(new Date());
+        confirmed++;
+      }
+    }
+  }
+
+  SpreadsheetApp.getUi().alert(`${confirmed}件の予約を確定しました。`);
+}
+
+// ============================================================
+// リマインドメール（毎朝9時に自動実行）
+// ============================================================
+
+function sendReminders() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_BOOKING);
+  const data = sheet.getDataRange().getValues();
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = Utilities.formatDate(tomorrow, 'Asia/Tokyo', 'yyyy/MM/dd');
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][12] !== '予約確定') continue;
+
+    const courseId  = data[i][6];
+    const email     = data[i][3];
+    const name      = data[i][2];
+    const bookingId = data[i][0];
+    const course    = getCourseById(courseId);
+    if (!course) continue;
+
+    const courseDateStr = Utilities.formatDate(new Date(course.date), 'Asia/Tokyo', 'yyyy/MM/dd');
+    if (courseDateStr === tomorrowStr) {
+      sendReminderEmail(email, name, course, bookingId);
+    }
+  }
+}
+
+// ============================================================
+// トリガー設定（初回のみ実行）
+// ============================================================
+
+function setupTriggers() {
+  ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
+
+  const formId = getConfig('フォームID');
+  if (formId) {
+    ScriptApp.newTrigger('onFormSubmit')
+      .forForm(FormApp.openById(formId))
+      .onFormSubmit()
+      .create();
+  }
+
+  ScriptApp.newTrigger('sendReminders')
+    .timeBased()
+    .atHour(9)
+    .everyDays(1)
+    .inTimezone('Asia/Tokyo')
+    .create();
+
+  SpreadsheetApp.getUi().alert('トリガーを設定しました。');
+}
+
+// ============================================================
+// カスタムメニュー
+// ============================================================
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('📋 講習会管理')
+    .addItem('入金確認・予約確定（手動）', 'confirmPayments')
+    .addSeparator()
+    .addItem('リマインド手動送信', 'sendReminders')
+    .addSeparator()
+    .addItem('courses.json を生成してダウンロード', 'generateCoursesJson')
+    .addSeparator()
+    .addItem('トリガー初期設定', 'setupTriggers')
+    .addToUi();
+}
+
+// ============================================================
+// courses.json 生成（申し込みサイト用）
+// ============================================================
+
+function generateCoursesJson() {
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_MASTER);
+  const rows  = sheet.getDataRange().getValues();
+
+  const series = {};
+
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const id      = String(r[0]).trim();
+    const sName   = String(r[1]).trim();
+    const title   = String(r[2]).trim();
+    const session = String(r[3]).trim();
+    const dateStr = String(r[4]).trim();
+    const place   = String(r[5]).trim();
+    const cap     = Number(r[6]) || 0;
+    const price   = Number(r[7]) || 0;
+    const notes   = String(r[8]).trim();
+    const status  = String(r[9]).trim();
+
+    if (!id || !sName || !title) continue;
+    if (status === '終了' || status === '非公開') continue;
+
+    const tag = id.includes('-F-') ? 'フォローアップ' : '本講座';
+
+    if (!series[sName]) series[sName] = [];
+    series[sName].push({ id, title, session, date: dateStr, place, capacity: cap, price, notes, status, tag });
+  }
+
+  const json = JSON.stringify({ status: 'ok', series }, null, 2);
+
+  // Googleドライブに保存
+  const fileName = 'courses.json';
+  const files = DriveApp.getFilesByName(fileName);
+  while (files.hasNext()) files.next().setTrashed(true);
+
+  const file = DriveApp.createFile(fileName, json, 'application/json');
+  const url  = file.getDownloadUrl();
+
+  SpreadsheetApp.getUi().showModalDialog(
+    HtmlService.createHtmlOutput(
+      `<p style="font-family:sans-serif;font-size:14px;line-height:1.8;">
+        courses.json を生成しました。<br>
+        <a href="${url}" target="_blank" style="color:#ABBAA9;font-weight:bold;">
+          ここをクリックしてダウンロード
+        </a><br><br>
+        ダウンロードしたファイルを<br>
+        GitHubの <code>school-apply</code> リポジトリに<br>
+        アップロードしてください。
+      </p>`
+    ).setWidth(360).setHeight(180),
+    'courses.json ダウンロード'
+  );
+}
+
+// ============================================================
+// 会員マスタ操作
+// ============================================================
+
+/**
+ * 会員マスタ列定義
+ * A: メールアドレス  B: サロン名  C: 担当者名  D: 登録日  E: 備考
+ */
+
+/**
+ * メールアドレスで会員照合
+ * @returns {object|null} 会員情報 or null（非会員）
+ */
+function getMemberByEmail(email) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_MEMBER);
+  if (!sheet) return null;
+  const data = sheet.getDataRange().getValues();
+  const normalizedEmail = String(email).trim().toLowerCase();
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]).trim().toLowerCase() === normalizedEmail) {
+      return {
+        email:    data[i][0],
+        salon:    data[i][1],
+        contact:  data[i][2],
+        joinDate: data[i][3],
+        notes:    data[i][4]
+      };
+    }
+  }
+  return null;
+}
+
+/**
+ * GASウェブアプリのGETリクエスト
+ * apply.html からメール照合に使用
+ * 例: ?action=checkMember&email=xxx@yyy.com
+ */
+function doGet(e) {
+  const action = e.parameter.action;
+
+  // JSONP対応レスポンス生成（CORSを回避）
+  const callback = e.parameter.callback;
+  function jsonResponse(obj) {
+    const json = JSON.stringify(obj);
+    if (callback) {
+      // JSONPモード：callback関数で包む
+      return ContentService
+        .createTextOutput(`${callback}(${json})`)
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return ContentService
+      .createTextOutput(json)
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // ── 会員照合 ──
+  if (action === 'checkMember') {
+    const email  = e.parameter.email || '';
+    const member = getMemberByEmail(email);
+    return jsonResponse({
+      isMember: !!member,
+      salon:    member ? member.salon   : '',
+      contact:  member ? member.contact : ''
+    });
+  }
+
+  // ── 講座マスタ取得 ──
+  if (action === 'getCourses') {
+    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_MASTER);
+    const rows  = sheet.getDataRange().getValues();
+    const now   = new Date();
+
+    // シリーズごとにグループ化
+    const series = {};
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      const id      = String(r[0]).trim();
+      const sName   = String(r[1]).trim();  // B列: シリーズ名
+      const title   = String(r[2]).trim();  // C列: 講座名
+      const session = String(r[3]).trim();  // D列: 回数
+      const dateStr = String(r[4]).trim();  // E列: 開催日時
+      const place   = String(r[5]).trim();  // F列: 場所
+      const cap     = Number(r[6]) || 0;    // G列: 定員
+      const price   = Number(r[7]) || 0;    // H列: 受講料（会員）
+      const notes   = String(r[8]).trim();  // I列: 備考
+      const status  = String(r[9]).trim();  // J列: ステータス
+
+      if (!id || !sName || !title) continue;
+      if (status === '終了' || status === '非公開') continue;
+
+      // タグ判定（IDにFが含まれればフォローアップ）
+      const tag = id.includes('-F-') ? 'フォローアップ' : '本講座';
+
+      if (!series[sName]) series[sName] = [];
+      series[sName].push({ id, title, session, date: dateStr, place, capacity: cap, price, notes, status, tag });
+    }
+
+    return jsonResponse({ status: 'ok', series });
+  }
+
+  return jsonResponse({ status: 'ok' });
+}
