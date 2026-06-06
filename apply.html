@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>講習会お申し込み | THE HERBS 植物美容学校</title>
-<meta name="description" content="THE HERBS植物美容学校の講習会お申し込みページです。シリーズを選んで日程をお選びください。" />
+<meta name="description" content="THE HERBS植物美容学校の講習会お申し込みページです。参加を希望される講座、日程をお選びください。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -201,9 +201,9 @@ input::placeholder{color:rgba(92,61,40,.35)}
 
   <div class="error-banner" id="errorBanner"></div>
 
-  <!-- STEP 1: シリーズ選択 -->
+  <!-- STEP 1: 講座の選択 -->
   <div class="form-step active" id="step1">
-    <p class="step-heading">講習会シリーズを選んでください</p>
+    <p class="step-heading">参加を希望される講座をお選びください。</p>
     <div id="seriesLoader" style="padding:24px 0;text-align:center;font-size:13px;color:var(--muted);">
       講座情報を読み込み中...
     </div>
@@ -212,7 +212,7 @@ input::placeholder{color:rgba(92,61,40,.35)}
 
   <!-- STEP 2: 日程選択 -->
   <div class="form-step" id="step2">
-    <button class="back-link" onclick="goStep(1)">← シリーズ選択に戻る</button>
+    <button class="back-link" onclick="goStep(1)">← 講座選択に戻る</button>
     <p class="step-heading" id="step2-heading">日程を選んでください</p>
     <div class="schedule-list" id="scheduleList"></div>
     <div class="btn-wrap">
