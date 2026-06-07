@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>講習会お申し込み | THE HERBS 植物美容学校</title>
-<meta name="description" content="THE HERBS植物美容学校の講習会お申し込みページです。参加を希望される講座、日程をお選びください。" />
+<meta name="description" content="THE HERBS植物美容学校の講習会お申し込みページです。シリーズを選んで日程をお選びください。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -201,9 +201,9 @@ input::placeholder{color:rgba(92,61,40,.35)}
 
   <div class="error-banner" id="errorBanner"></div>
 
-  <!-- STEP 1: 講座の選択 -->
+  <!-- STEP 1: シリーズ選択 -->
   <div class="form-step active" id="step1">
-    <p class="step-heading">参加を希望される講座をお選びください。</p>
+    <p class="step-heading">講習会シリーズを選んでください</p>
     <div id="seriesLoader" style="padding:24px 0;text-align:center;font-size:13px;color:var(--muted);">
       講座情報を読み込み中...
     </div>
@@ -212,7 +212,7 @@ input::placeholder{color:rgba(92,61,40,.35)}
 
   <!-- STEP 2: 日程選択 -->
   <div class="form-step" id="step2">
-    <button class="back-link" onclick="goStep(1)">← 講座選択に戻る</button>
+    <button class="back-link" onclick="goStep(1)">← シリーズ選択に戻る</button>
     <p class="step-heading" id="step2-heading">日程を選んでください</p>
     <div class="schedule-list" id="scheduleList"></div>
     <div class="btn-wrap">
@@ -317,7 +317,7 @@ input::placeholder{color:rgba(92,61,40,.35)}
 // ============================================================
 // 設定
 // ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzhjYEG-wpSluuQqFKs-DgTF3-EEXxuDStQvmvuTveQu_eC_whxNUwNyjdb5XA6Frko/exec';
+const API_URL = 'https://herbs-booking-api.vercel.app';
 
 // ============================================================
 // 講座データ（静的定義 / スプレッドシートと同期）
@@ -365,16 +365,15 @@ async function loadCourses() {
   const loader = document.getElementById('seriesLoader');
   const grid   = document.getElementById('seriesGrid');
   try {
-    // courses.json を読み込む（同じリポジトリなのでCORSなし）
-    const res  = await fetch('courses.json?v=' + Date.now());
+    const res  = await fetch(`${API_URL}/api/courses`);
     const data = await res.json();
     if (data.status === 'ok' && data.series) {
       COURSES = data.series;
     } else {
-      COURSES = STATIC_COURSES; // フォールバック
+      COURSES = STATIC_COURSES;
     }
   } catch(e) {
-    COURSES = STATIC_COURSES; // courses.jsonがない場合は静的データを使用
+    COURSES = STATIC_COURSES;
   }
   renderSeriesGrid();
   if (loader) loader.style.display = 'none';
@@ -489,7 +488,7 @@ async function checkMember() {
   state.member = '';
 
   try {
-    const res  = await fetch(`${GAS_URL}?action=checkMember&email=${encodeURIComponent(email)}`, {mode:'cors'});
+    const res  = await fetch(`${API_URL}/api/check-member?email=${encodeURIComponent(email)}`);
     const data = await res.json();
     if (data.isMember) {
       badge.className = 'member-badge is-member';
@@ -578,17 +577,20 @@ async function submitForm() {
   document.getElementById('btnSubmit').disabled = true;
   document.getElementById('loading').classList.add('show');
   try {
-    await fetch(GAS_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
+    const res = await fetch(`${API_URL}/api/bookings`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        courseId: state.courseId, courseDate: state.courseDate,
-        courseName: state.courseTitle, series: state.series,
-        member: state.member, price: state.price,
-        name: state.name, email: state.email,
-        phone: state.phone, affil: state.affil
+        courseId:    state.courseId,
+        name:        state.name,
+        email:       state.email,
+        phone:       state.phone,
+        affiliation: state.affil,
+        memberType:  state.member,
       })
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '送信に失敗しました');
     goStep(5);
   } catch {
     showError('送信に失敗しました。しばらく経ってから再度お試しください。');
