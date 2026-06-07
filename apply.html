@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>講習会お申し込み | THE HERBS 植物美容学校</title>
-<meta name="description" content="THE HERBS植物美容学校の講習会お申し込みページです。シリーズを選んで日程をお選びください。" />
+<meta name="description" content="THE HERBS植物美容学校の講習会お申し込みページです。参加を希望される講習会をお選びください。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -177,7 +177,7 @@ input::placeholder{color:rgba(92,61,40,.35)}
   <div class="header-emblem">✦</div>
   <div class="header-text">
     <strong>THE HERBS 植物美容学校</strong>
-    <span>講習会お申し込み</span>
+    <span>講習会お申し込みサイト</span>
   </div>
 </header>
 
@@ -185,12 +185,12 @@ input::placeholder{color:rgba(92,61,40,.35)}
 
   <div class="hero-card">
     <p class="hero-eyebrow">THE HERBS 植物美容学校 — 講習会申し込み窓口</p>
-    <h1 class="hero-title">シリーズを選んでお申し込みください</h1>
-    <p class="hero-desc">美容師・エステティシャン向け講習会の一括お申し込み窓口です。シリーズと日程を選んで必要事項をご入力ください。</p>
+    <h1 class="hero-title">参加を希望される講習会をお選びください</h1>
+    <p class="hero-desc">美容師・エステティシャン向け講習会の一括お申し込み窓口です。講座と日程を選んで必要事項をご入力ください。</p>
   </div>
 
   <div class="progress" id="progress">
-    <div class="progress-step active" id="prog-1"><span class="step-num">1</span><span>シリーズ</span></div>
+    <div class="progress-step active" id="prog-1"><span class="step-num">1</span><span>講座</span></div>
     <span class="progress-arrow">›</span>
     <div class="progress-step" id="prog-2"><span class="step-num">2</span><span>日程</span></div>
     <span class="progress-arrow">›</span>
@@ -203,7 +203,7 @@ input::placeholder{color:rgba(92,61,40,.35)}
 
   <!-- STEP 1: シリーズ選択 -->
   <div class="form-step active" id="step1">
-    <p class="step-heading">講習会シリーズを選んでください</p>
+    <p class="step-heading">講習会を選んでください</p>
     <div id="seriesLoader" style="padding:24px 0;text-align:center;font-size:13px;color:var(--muted);">
       講座情報を読み込み中...
     </div>
@@ -212,7 +212,7 @@ input::placeholder{color:rgba(92,61,40,.35)}
 
   <!-- STEP 2: 日程選択 -->
   <div class="form-step" id="step2">
-    <button class="back-link" onclick="goStep(1)">← シリーズ選択に戻る</button>
+    <button class="back-link" onclick="goStep(1)">← 講座選択に戻る</button>
     <p class="step-heading" id="step2-heading">日程を選んでください</p>
     <div class="schedule-list" id="scheduleList"></div>
     <div class="btn-wrap">
@@ -328,13 +328,9 @@ let COURSES = {};
 const STATIC_COURSES = {
   'フェイスケア全12回': [
     { id:'FA-05-B-260615', title:'体質基礎(1) — 3つのタイプで、お客様を見極める',                    date:'2026年6月15日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-05-F-260629', title:'【フォローアップ】体質基礎(1) — 3つのタイプで、お客様を見極める',    date:'2026年6月29日（月）10:00〜13:00',  tag:'フォローアップ' },
     { id:'FA-06-B-260713', title:'体質学(2) — 体質と気質から、ライフスタイルを提案する',              date:'2026年7月13日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-06-F-260727', title:'【フォローアップ】体質学(2) — 体質と気質から、ライフスタイルを提案する', date:'2026年7月27日（月）10:00〜13:00', tag:'フォローアップ' },
     { id:'FA-07-B-260810', title:'体質学(3) — 肌質・髪質と体のサインを読む',                         date:'2026年8月10日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-07-F-260824', title:'【フォローアップ】体質学(3) — 肌質・髪質と体のサインを読む',         date:'2026年8月24日（月）10:00〜13:00',  tag:'フォローアップ' },
     { id:'FA-08-B-260914', title:'体質カウンセリング — パーソナルカウンセリングを学ぶ',               date:'2026年9月14日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'FA-08-F-260928', title:'【フォローアップ】体質カウンセリング — パーソナルカウンセリングを学ぶ', date:'2026年9月28日（月）10:00〜13:00', tag:'フォローアップ' },
     { id:'FA-09-B-261005', title:'経絡・ツボ押し — シミ・くすみのない透明感へ',                      date:'2026年10月5日（月）10:00〜16:00',  tag:'本講座' },
     { id:'FA-09-F-261026', title:'【フォローアップ】経絡・ツボ押し — シミ・くすみのない透明感へ',      date:'2026年10月26日（月）10:00〜13:00', tag:'フォローアップ' },
     { id:'FA-10-B-261109', title:'筋肉・筋膜ケア — シワとたるみに効く、ハリの手技',                  date:'2026年11月9日（月）10:00〜16:00',  tag:'本講座' },
@@ -346,13 +342,9 @@ const STATIC_COURSES = {
   ],
   '体質学講習会': [
     { id:'TA-01-B-260615', title:'体質学基礎(1) — 3つのタイプで、お客様を見極める',                   date:'2026年6月15日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-01-F-260629', title:'【フォローアップ】体質学基礎(1) — 3つのタイプで、お客様を見極める',   date:'2026年6月29日（月）10:00〜13:00',  tag:'フォローアップ' },
     { id:'TA-02-B-260713', title:'体質学基礎(2) — 体質と気質から、ライフスタイルを提案する',           date:'2026年7月13日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-02-F-260727', title:'【フォローアップ】体質学基礎(2) — 体質と気質から、ライフスタイルを提案する', date:'2026年7月27日（月）10:00〜13:00', tag:'フォローアップ' },
     { id:'TA-03-B-260810', title:'体質学基礎(3) — 肌質・髪質と体のサインを読む',                      date:'2026年8月10日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-03-F-260824', title:'【フォローアップ】体質学基礎(3) — 肌質・髪質と体のサインを読む',      date:'2026年8月24日（月）10:00〜13:00',  tag:'フォローアップ' },
     { id:'TA-04-B-260914', title:'体質カウンセリング — パーソナルカウンセリングを学ぶ',                date:'2026年9月14日（月）10:00〜16:00',  tag:'本講座' },
-    { id:'TA-04-F-260928', title:'【フォローアップ】体質カウンセリング — パーソナルカウンセリングを学ぶ', date:'2026年9月28日（月）10:00〜13:00', tag:'フォローアップ' },
   ],
   '美容師向けハーブケア':   [],
   'ハーブスチーマー':       [],
