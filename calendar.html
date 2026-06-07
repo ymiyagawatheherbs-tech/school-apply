@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>講習会スケジュール | THE HERBS 植物美容学校</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --accent:   #ABBAA9;
+  --accent-dk:#7a9678;
+  --base:     #ffffff;
+  --base-dk:  #f2f6f1;
+  --text:     #2C2319;
+  --muted:    #7a8c79;
+  --border:   rgba(171,186,169,0.35);
+  --card-bg:  #2a3329;
+  --radius:   8px;
+  --t:        0.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--base);color:var(--text);font-size:14px;line-height:1.7;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--card-bg);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-emblem{width:26px;height:26px;border:1px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:12px}
+.header-title strong{display:block;font-size:10px;letter-spacing:.15em;color:var(--accent);font-weight:500}
+.header-title span{font-size:12px;color:rgba(255,255,255,.6)}
+.header-nav{display:flex;gap:8px}
+.header-nav a{color:rgba(255,255,255,.7);text-decoration:none;font-size:12px;padding:6px 12px;border-radius:4px;transition:all var(--t)}
+.header-nav a:hover{background:rgba(171,186,169,.15);color:white}
+
+/* TOOLBAR */
+.toolbar{background:var(--base-dk);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.month-nav{display:flex;align-items:center;gap:12px}
+.month-nav button{background:none;border:1.5px solid var(--border);border-radius:6px;width:32px;height:32px;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all var(--t)}
+.month-nav button:hover{border-color:var(--accent);color:var(--accent-dk)}
+.month-label{font-size:16px;font-weight:700;color:var(--text);min-width:120px;text-align:center}
+.view-toggle{display:flex;gap:4px}
+.view-btn{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);transition:all var(--t);font-family:'Noto Sans JP',sans-serif}
+.view-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+.today-btn{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);background:white;font-size:12px;cursor:pointer;color:var(--text);transition:all var(--t);font-family:'Noto Sans JP',sans-serif}
+.today-btn:hover{border-color:var(--accent)}
+
+/* WRAP */
+.page-wrap{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
+
+/* LEGEND */
+.legend{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.dot-course{background:#ABBAA9}
+.dot-followup{background:#c8d4c7}
+.dot-other{background:#d4c4aa}
+
+/* CALENDAR */
+.cal-grid{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);background:var(--card-bg)}
+.cal-head-cell{padding:10px 0;text-align:center;font-size:12px;font-weight:500;color:rgba(255,255,255,.7)}
+.cal-head-cell.sun{color:#e8a0a0}
+.cal-head-cell.sat{color:#a0b8e8}
+.cal-body{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-cell{min-height:90px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 4px;position:relative;background:white;transition:background var(--t)}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell.other-month{background:var(--base-dk);opacity:.5}
+.cal-cell.today .date-num{background:var(--accent);color:white;border-radius:50%}
+.date-num{width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;margin-bottom:4px}
+.cal-cell.sun .date-num{color:#c0706a}
+.cal-cell.sat .date-num{color:#6a90c0}
+.event-chip{font-size:10px;padding:2px 6px;border-radius:3px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--t);line-height:1.5}
+.event-chip:hover{opacity:.8}
+.chip-course{background:#ABBAA9;color:white}
+.chip-followup{background:#c8d4c7;color:#2a3329}
+.chip-other{background:#d4c4aa;color:#2a3329}
+.more-link{font-size:10px;color:var(--muted);cursor:pointer;padding:1px 4px}
+.more-link:hover{color:var(--accent-dk)}
+
+/* LIST VIEW */
+.list-view{display:flex;flex-direction:column;gap:0}
+.list-month-header{background:var(--card-bg);color:white;padding:10px 18px;font-size:13px;font-weight:700;letter-spacing:.05em;border-radius:6px 6px 0 0;margin-top:20px}
+.list-month-header:first-child{margin-top:0}
+.list-item{display:flex;align-items:flex-start;gap:16px;padding:14px 18px;border:1px solid var(--border);border-top:none;background:white;transition:background var(--t);cursor:pointer}
+.list-item:hover{background:var(--base-dk)}
+.list-item:last-child{border-radius:0 0 6px 6px}
+.list-date-col{min-width:80px;text-align:center}
+.list-date-day{font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.list-date-week{font-size:11px;color:var(--muted);margin-top:2px}
+.list-date-week.sun{color:#c0706a}
+.list-date-week.sat{color:#6a90c0}
+.list-divider{width:1px;background:var(--border);align-self:stretch;margin:0 4px}
+.list-body{flex:1;min-width:0}
+.list-tag{font-size:10px;padding:2px 8px;border-radius:12px;display:inline-block;margin-bottom:4px}
+.tag-course{background:#ABBAA9;color:white}
+.tag-followup{background:#c8d4c7;color:#2a3329}
+.list-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.list-meta{font-size:12px;color:var(--muted)}
+.list-apply{margin-left:auto;flex-shrink:0}
+.list-apply a{display:inline-block;padding:6px 14px;background:var(--accent);color:white;border-radius:6px;text-decoration:none;font-size:12px;font-weight:500;transition:background var(--t)}
+.list-apply a:hover{background:var(--accent-dk)}
+
+/* EVENT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(42,51,41,.5);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:white;border-radius:12px;padding:28px;max-width:440px;width:100%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1}
+.modal-tag{font-size:11px;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:10px}
+.modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:12px;line-height:1.4}
+.modal-info{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.modal-row{display:flex;gap:10px;font-size:13px}
+.modal-label{color:var(--muted);min-width:60px;flex-shrink:0}
+.modal-value{color:var(--text)}
+.modal-apply{display:block;text-align:center;padding:12px;background:var(--accent);color:white;border-radius:8px;text-decoration:none;font-weight:500;font-size:14px;transition:background var(--t)}
+.modal-apply:hover{background:var(--accent-dk)}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;background:var(--base-dk);border-radius:var(--radius)}
+
+@media(max-width:640px){
+  .toolbar{padding:10px 16px}
+  .page-wrap{padding:16px 12px 40px}
+  .cal-cell{min-height:60px;padding:4px 2px}
+  .event-chip{display:none}
+  .more-link{font-size:9px}
+  .list-date-col{min-width:60px}
+  .list-date-day{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="header-emblem">✦</div>
+    <div class="header-title">
+      <strong>THE HERBS 植物美容学校</strong>
+      <span>講習会スケジュール</span>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a href="apply.html">お申し込み</a>
+    <a href="apply.html" style="background:rgba(171,186,169,.2);color:white;">予約する</a>
+  </nav>
+</header>
+
+<div class="toolbar">
+  <div class="month-nav">
+    <button onclick="prevMonth()">‹</button>
+    <div class="month-label" id="monthLabel"></div>
+    <button onclick="nextMonth()">›</button>
+    <button class="today-btn" onclick="goToday()">今月</button>
+  </div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="btnMonth" onclick="setView('month')">月</button>
+    <button class="view-btn" id="btnList" onclick="setView('list')">リスト</button>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-course"></div>本講座</div>
+    <div class="legend-item"><div class="legend-dot dot-followup"></div>フォローアップ</div>
+  </div>
+
+  <div id="calendarView">
+    <div class="cal-grid">
+      <div class="cal-head">
+        <div class="cal-head-cell sun">日</div>
+        <div class="cal-head-cell">月</div>
+        <div class="cal-head-cell">火</div>
+        <div class="cal-head-cell">水</div>
+        <div class="cal-head-cell">木</div>
+        <div class="cal-head-cell">金</div>
+        <div class="cal-head-cell sat">土</div>
+      </div>
+      <div class="cal-body" id="calBody"></div>
+    </div>
+  </div>
+
+  <div id="listView" style="display:none;"></div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-tag" id="modalTag"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-info">
+      <div class="modal-row"><span class="modal-label">日程</span><span class="modal-value" id="modalDate"></span></div>
+      <div class="modal-row"><span class="modal-label">場所</span><span class="modal-value" id="modalPlace"></span></div>
+      <div class="modal-row"><span class="modal-label">定員</span><span class="modal-value" id="modalCap"></span></div>
+      <div class="modal-row"><span class="modal-label">受講料</span><span class="modal-value" id="modalPrice"></span></div>
+    </div>
+    <a href="" id="modalApply" class="modal-apply" target="_blank">このシリーズに申し込む</a>
+  </div>
+</div>
+
+<script>
+const APPLY_URL = 'apply.html';
+
+// ============================================================
+// 状態
+// ============================================================
+let currentDate = new Date();
+let currentView = 'month';
+let allEvents   = []; // { date: Date, title, tag, series, place, capacity, price, id }
+
+// ============================================================
+// データ読み込み
+// ============================================================
+async function loadEvents() {
+  try {
+    const res  = await fetch('courses.json?v=' + Date.now());
+    const data = await res.json();
+    if (data.status === 'ok' && data.series) {
+      buildEvents(data.series);
+    }
+  } catch(e) {
+    buildEvents(STATIC_COURSES);
+  }
+  render();
+}
+
+function buildEvents(series) {
+  allEvents = [];
+  Object.entries(series).forEach(([seriesName, courses]) => {
+    courses.forEach(c => {
+      // 日付をパース（「2026年6月15日」形式）
+      const dateMatch = c.date.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+      if (!dateMatch) return;
+      const d = new Date(
+        parseInt(dateMatch[1]),
+        parseInt(dateMatch[2]) - 1,
+        parseInt(dateMatch[3])
+      );
+      allEvents.push({
+        date:     d,
+        title:    c.title,
+        tag:      c.tag,
+        series:   seriesName,
+        place:    c.place || '植物美容学校',
+        capacity: c.capacity || 6,
+        price:    c.price || 0,
+        id:       c.id,
+        dateStr:  c.date,
+      });
+    });
+  });
+  // 日付順にソート
+  allEvents.sort((a, b) => a.date - b.date);
+}
+
+// ============================================================
+// 月カレンダー描画
+// ============================================================
+function renderMonth() {
+  const y = currentDate.getFullYear();
+  const m = currentDate.getMonth();
+  document.getElementById('monthLabel').textContent = `${y}年${m+1}月`;
+
+  const firstDay = new Date(y, m, 1);
+  const lastDay  = new Date(y, m+1, 0);
+  const startDow = firstDay.getDay();
+  const today    = new Date();
+
+  const body = document.getElementById('calBody');
+  body.innerHTML = '';
+
+  // 前月の余白
+  for (let i = 0; i < startDow; i++) {
+    const d = new Date(y, m, -startDow + i + 1);
+    body.appendChild(makeCell(d, true));
+  }
+
+  // 当月
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const date = new Date(y, m, d);
+    const isToday = date.toDateString() === today.toDateString();
+    body.appendChild(makeCell(date, false, isToday));
+  }
+
+  // 翌月の余白
+  const total = startDow + lastDay.getDate();
+  const remain = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= remain; i++) {
+    const d = new Date(y, m+1, i);
+    body.appendChild(makeCell(d, true));
+  }
+}
+
+function makeCell(date, otherMonth, isToday) {
+  const cell = document.createElement('div');
+  cell.className = 'cal-cell' + (otherMonth ? ' other-month' : '') + (isToday ? ' today' : '');
+  const dow = date.getDay();
+  if (dow === 0) cell.classList.add('sun');
+  if (dow === 6) cell.classList.add('sat');
+
+  const numEl = document.createElement('div');
+  numEl.className = 'date-num';
+  numEl.textContent = date.getDate();
+  cell.appendChild(numEl);
+
+  // この日のイベント
+  const dayEvents = allEvents.filter(e =>
+    e.date.getFullYear() === date.getFullYear() &&
+    e.date.getMonth()    === date.getMonth() &&
+    e.date.getDate()     === date.getDate()
+  );
+
+  const maxShow = 2;
+  dayEvents.slice(0, maxShow).forEach(ev => {
+    const chip = document.createElement('div');
+    chip.className = 'event-chip ' + (ev.tag === 'フォローアップ' ? 'chip-followup' : 'chip-course');
+    chip.textContent = ev.title.replace(/【.*?】/g, '').trim();
+    chip.onclick = () => openModal(ev);
+    cell.appendChild(chip);
+  });
+
+  if (dayEvents.length > maxShow) {
+    const more = document.createElement('div');
+    more.className = 'more-link';
+    more.textContent = `+${dayEvents.length - maxShow}件`;
+    more.onclick = () => openModal(dayEvents[maxShow]);
+    cell.appendChild(more);
+  }
+
+  return cell;
+}
+
+// ============================================================
+// リスト表示描画
+// ============================================================
+function renderList() {
+  const y = currentDate.getFullYear();
+  const m = currentDate.getMonth();
+  document.getElementById('monthLabel').textContent = `${y}年${m+1}月`;
+
+  const listEl = document.getElementById('listView');
+  listEl.innerHTML = '';
+
+  // 当月のイベント
+  const monthEvents = allEvents.filter(e =>
+    e.date.getFullYear() === y && e.date.getMonth() === m
+  );
+
+  if (monthEvents.length === 0) {
+    listEl.innerHTML = '<div class="empty">この月の講習会はありません</div>';
+    return;
+  }
+
+  const header = document.createElement('div');
+  header.className = 'list-month-header';
+  header.textContent = `${y}年${m+1}月`;
+  listEl.appendChild(header);
+
+  const WEEKS = ['日','月','火','水','木','金','土'];
+  monthEvents.forEach(ev => {
+    const item = document.createElement('div');
+    item.className = 'list-item';
+    const dow = ev.date.getDay();
+    const weekClass = dow === 0 ? 'sun' : dow === 6 ? 'sat' : '';
+
+    item.innerHTML = `
+      <div class="list-date-col">
+        <div class="list-date-day">${ev.date.getDate()}</div>
+        <div class="list-date-week ${weekClass}">${WEEKS[dow]}曜日</div>
+      </div>
+      <div class="list-divider"></div>
+      <div class="list-body">
+        <div class="list-tag ${ev.tag === 'フォローアップ' ? 'tag-followup' : 'tag-course'}">${ev.tag}</div>
+        <div class="list-title">${ev.title}</div>
+        <div class="list-meta">${ev.dateStr} ／ ${ev.place}</div>
+      </div>
+      <div class="list-apply">
+        <a href="${APPLY_URL}?series=${encodeURIComponent(ev.series)}">申し込む</a>
+      </div>`;
+    item.onclick = (e) => { if (!e.target.closest('a')) openModal(ev); };
+    listEl.appendChild(item);
+  });
+}
+
+// ============================================================
+// モーダル
+// ============================================================
+function openModal(ev) {
+  const isFollowup = ev.tag === 'フォローアップ';
+  const tag = document.getElementById('modalTag');
+  tag.textContent = ev.tag;
+  tag.className   = 'modal-tag ' + (isFollowup ? 'tag-followup' : 'tag-course');
+
+  document.getElementById('modalTitle').textContent  = ev.title;
+  document.getElementById('modalDate').textContent   = ev.dateStr;
+  document.getElementById('modalPlace').textContent  = ev.place;
+  document.getElementById('modalCap').textContent    = `${ev.capacity}名`;
+  document.getElementById('modalPrice').textContent  = ev.price > 0
+    ? `会員 ¥${ev.price.toLocaleString()} / 非会員 ¥${(ev.price * 2).toLocaleString()}（税込）`
+    : '無料';
+
+  const applyEl = document.getElementById('modalApply');
+  applyEl.href = `${APPLY_URL}?series=${encodeURIComponent(ev.series)}`;
+
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('show');
+  }
+}
+
+// ============================================================
+// ナビゲーション
+// ============================================================
+function prevMonth() {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  render();
+}
+
+function nextMonth() {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  render();
+}
+
+function goToday() {
+  currentDate = new Date();
+  render();
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('btnMonth').classList.toggle('active', v === 'month');
+  document.getElementById('btnList').classList.toggle('active', v === 'list');
+  document.getElementById('calendarView').style.display = v === 'month' ? 'block' : 'none';
+  document.getElementById('listView').style.display     = v === 'list'  ? 'block' : 'none';
+  render();
+}
+
+function render() {
+  if (currentView === 'month') renderMonth();
+  else renderList();
+}
+
+// ============================================================
+// 静的フォールバックデータ
+// ============================================================
+const STATIC_COURSES = {
+  'フェイスケア全12回': [
+    { id:'FA-05-B-260615', title:'体質基礎(1) — 3つのタイプで、お客様を見極める',    date:'2026年6月15日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-05-F-260629', title:'【フォローアップ】体質基礎(1)',                     date:'2026年6月29日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'FA-06-B-260713', title:'体質学(2) — 体質と気質からライフスタイルを提案する', date:'2026年7月13日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-06-F-260727', title:'【フォローアップ】体質学(2)',                       date:'2026年7月27日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'FA-07-B-260810', title:'体質学(3) — 肌質・髪質と体のサインを読む',          date:'2026年8月10日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-07-F-260824', title:'【フォローアップ】体質学(3)',                       date:'2026年8月24日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'FA-08-B-260914', title:'体質カウンセリング — スキンケアの売上につなげる',    date:'2026年9月14日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-08-F-260928', title:'【フォローアップ】体質カウンセリング',               date:'2026年9月28日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'FA-09-B-261005', title:'経絡・ツボ押し — シミ・くすみのない透明感へ',       date:'2026年10月5日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-09-F-261026', title:'【フォローアップ】経絡・ツボ押し',                  date:'2026年10月26日（月）10:00〜13:00', place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'FA-10-B-261109', title:'筋肉・筋膜ケア — シワとたるみに効く、ハリの手技',   date:'2026年11月9日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-10-F-261130', title:'【フォローアップ】筋肉・筋膜ケア',                  date:'2026年11月30日（月）10:00〜13:00', place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'FA-10-B-261207', title:'骨格・ゆがみ矯正 — 左右対称の整った顔へ',           date:'2026年12月7日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-10-F-261221', title:'【フォローアップ】骨格・ゆがみ矯正',                date:'2026年12月21日（月）10:00〜13:00', place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'FA-10-B-270111', title:'【総仕上げ】サロンのパーソナルメニューを作る',       date:'2027年1月11日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'FA-10-F-270125', title:'【フォローアップ】総仕上げ',                        date:'2027年1月25日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+  ],
+  '体質学講習会': [
+    { id:'TA-01-B-260615', title:'体質学基礎(1) — 3つのタイプで、お客様を見極める',   date:'2026年6月15日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'TA-01-F-260629', title:'【フォローアップ】体質学基礎(1)',                   date:'2026年6月29日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'TA-02-B-260713', title:'体質学基礎(2) — 体質と気質からライフスタイルを提案', date:'2026年7月13日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'TA-02-F-260727', title:'【フォローアップ】体質学基礎(2)',                   date:'2026年7月27日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'TA-03-B-260810', title:'体質学基礎(3) — 肌質・髪質と体のサインを読む',      date:'2026年8月10日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'TA-03-F-260824', title:'【フォローアップ】体質学基礎(3)',                   date:'2026年8月24日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+    { id:'TA-04-B-260914', title:'体質カウンセリング — スキンケアの売上につなげる',    date:'2026年9月14日（月）10:00〜16:00',  place:'植物美容学校', capacity:6, price:10000, tag:'本講座' },
+    { id:'TA-04-F-260928', title:'【フォローアップ】体質カウンセリング',               date:'2026年9月28日（月）10:00〜13:00',  place:'植物美容学校', capacity:6, price:2000,  tag:'フォローアップ' },
+  ],
+};
+
+// ============================================================
+// 初期化
+// ============================================================
+window.addEventListener('DOMContentLoaded', loadEvents);
+</script>
+</body>
+</html>
