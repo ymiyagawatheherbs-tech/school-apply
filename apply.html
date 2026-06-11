@@ -544,7 +544,9 @@ function selectSeries(name, filter) {
         state.courseDate  = c.date;
         state.coursePriceMember = c.price_member;
         state.coursePriceNormal = c.price_normal;
-        document.getElementById('btn2').disabled = false;
+        const _b = document.getElementById('btn2');
+        _b.disabled = false;
+        _b.click();   // 日程を押したら自動で次の画面へ
       });
       list.appendChild(el);
     });
