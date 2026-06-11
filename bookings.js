@@ -1,11 +1,8 @@
 import { supabase } from '../lib/supabase.js';
 import { handleCors } from '../lib/cors.js';
-import { sendMail, getFromAddress } from '../lib/mailer.js';
-import { bookingReceivedHtml, adminNotificationHtml } from '../lib/email-templates.js';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const LSTEP_URL = 'https://rcv.linestep.net/v3/call/2009645127';
 
 export default async function handler(req, res) {
   if (handleCors(req, res)) return;
@@ -33,93 +30,80 @@ export default async function handler(req, res) {
       .from('bookings').select('*', { count: 'exact', head: true });
     const bookingId = `BK${dateStr}-${String((totalCount || 0) + 1).padStart(4, '0')}`;
 
-    const product = await stripe.products.create({
-      name: course.title,
-      description: `${course.course_date} | ${course.place} | 予約ID: ${bookingId}`,
-    });
-    const priceObj = await stripe.prices.create({
-      product: product.id, unit_amount: price, currency: 'jpy',
-    });
-    const paymentLink = await stripe.paymentLinks.create({
-      line_items: [{ price: priceObj.id, quantity: 1 }],
-      after_completion: {
-        type: 'redirect',
-        redirect: { url: process.env.PAYMENT_SUCCESS_URL || 'https://herb-esthe.com' },
-      },
-    });
+    // 有料講座のみStripe決済リンクを生成（0円はスキップ）
+    let paymentUrl = null;
+    if (price > 0) {
+      const product = await stripe.products.create({
+        name: course.title,
+        description: `${course.course_date} | ${course.place} | 予約ID: ${bookingId}`,
+      });
+      const priceObj = await stripe.prices.create({
+        product: product.id, unit_amount: price, currency: 'jpy',
+      });
+      const paymentLink = await stripe.paymentLinks.create({
+        line_items: [{ price: priceObj.id, quantity: 1 }],
+        after_completion: {
+          type: 'redirect',
+          redirect: { url: process.env.PAYMENT_SUCCESS_URL || 'https://herb-esthe.com' },
+        },
+      });
+      paymentUrl = paymentLink.url;
+    }
 
     const { error: insertError } = await supabase.from('bookings').insert({
-      id: bookingId, course_id: courseId,
-      name, email: email.toLowerCase().trim(), phone, affiliation,
+      id: bookingId,
+      course_id: courseId,
+      name,
+      email: email.toLowerCase().trim(),
+      phone,
+      affiliation,
       member_type: memberType === 'member' ? 'お取引会員' : '非会員',
-      price, payment_url: paymentLink.url, payment_status: '未入金',
+      price,
+      payment_url: paymentUrl,
+      payment_status: price > 0 ? '未入金' : '無料',
     });
     if (insertError) throw insertError;
 
-    const from = getFromAddress('salon');
     const courseDate = course.course_date
       ? new Date(course.course_date).toLocaleString('ja-JP', {
-          timeZone: 'Asia/Tokyo', year: 'numeric', month: 'long',
-          day: 'numeric', hour: '2-digit', minute: '2-digit'
+          timeZone: 'Asia/Tokyo',
+          year: 'numeric', month: 'long', day: 'numeric',
+          hour: '2-digit', minute: '2-digit',
         })
       : '';
 
-    // 受講者へメール送信
     try {
-      await sendMail({
-        to: email, from,
-        subject: '【THE HERBS植物美容学校】ご予約受付のご確認と受講料お支払いのお願い',
-        html: bookingReceivedHtml({
-          name, bookingId, courseTitle: course.title,
-          courseDate, place: course.place, price, paymentUrl: paymentLink.url,
-        }),
-      });
-      console.log('受講者メール送信成功:', email);
-    } catch (mailErr) {
-      console.error('受講者メール送信エラー:', mailErr.message);
-    }
+      const message = [
+        '【新規予約】講習会申し込みがありました', '',
+        `■ お名前：${name}`,
+        `■ 電話：${phone}`,
+        `■ メール：${email}`,
+        `■ 所属：${affiliation || 'なし'}`,
+        `■ 講座：${course.title}`,
+        `■ 日程：${courseDate}`,
+        `■ 種別：${memberType === 'member' ? 'お取引会員' : '非会員'}`,
+        `■ 受講料：${price > 0 ? '¥' + price.toLocaleString() : '無料'}`,
+        `■ 予約ID：${bookingId}`,
+        ...(paymentUrl ? [`■ 決済リンク：${paymentUrl}`] : []),
+      ].join('\n');
 
-    // 管理者通知メール
-    try {
-      await sendMail({
-        to: process.env.ADMIN_EMAIL_SALON || 'mv@the-herbs.co.jp',
-        from,
-        subject: `[新規予約] ${course.title} - ${name}様`,
-        html: adminNotificationHtml({
-          type: '講習会予約',
-          name, phone, email,
-          detail: `${course.title} / ${courseDate} / ${memberType === 'member' ? 'お取引会員' : '非会員'} / 予約ID: ${bookingId}`,
-        }),
-      });
-      console.log('管理者メール送信成功');
-    } catch (mailErr) {
-      console.error('管理者メール送信エラー:', mailErr.message);
-    }
-
-    // Lステップへ予約データ送信
-    try {
-      await fetch(LSTEP_URL, {
+      await fetch('https://api.line.me/v2/bot/message/push', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.LINE_CHANNEL_TOKEN}`,
+        },
         body: JSON.stringify({
-          name,
-          email,
-          phone,
-          course_title: course.title,
-          course_date:  courseDate,
-          place:        course.place,
-          member_type:  memberType === 'member' ? 'お取引会員' : '非会員',
-          price:        price,
-          booking_id:   bookingId,
-          payment_url:  paymentLink.url,
+          to: process.env.LINE_ADMIN_USER_ID,
+          messages: [{ type: 'text', text: message }],
         }),
       });
-      console.log('Lステップ送信成功');
-    } catch (lstepErr) {
-      console.error('Lステップ送信エラー:', lstepErr.message);
+      console.log('LINE管理者通知送信成功');
+    } catch (lineErr) {
+      console.error('LINE通知エラー:', lineErr.message);
     }
 
-    return res.status(200).json({ status: 'ok', bookingId, paymentUrl: paymentLink.url });
+    return res.status(200).json({ status: 'ok', bookingId, paymentUrl });
 
   } catch (err) {
     console.error('booking error:', err);
