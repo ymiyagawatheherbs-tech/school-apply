@@ -557,7 +557,54 @@ function selectSeries(name, filter) {
 // ============================================================
 // STEP 3: 会員照合
 // ============================================================
-checkMember
+async function checkMember() {
+  const email = document.getElementById('inp-email').value.trim();
+  const badge = document.getElementById('memberBadge');
+  const label = document.getElementById('badgeLabel');
+  const note  = document.getElementById('badgeNote');
+  const right = document.getElementById('badgeRight');
+
+  // 金額を整形（0円は「無料」）
+  const yen = n => (Number(n) > 0 ? `¥${Number(n).toLocaleString()}（税込）` : '無料');
+  const pm = state.coursePriceMember;   // 会員価格
+  const pn = state.coursePriceNormal;   // 非会員価格
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    badge.className = 'member-badge';
+    label.textContent = 'メールアドレスを入力すると自動で表示されます';
+    note.textContent = ''; right.innerHTML = '';
+    state.member = ''; state.price = '';
+    return;
+  }
+  badge.className = 'member-badge';
+  label.textContent = '会員情報を確認中...';
+  note.textContent = ''; right.innerHTML = '<div class="badge-spinner"></div>';
+  state.member = '';
+  try {
+    const res  = await fetch(`${API_URL}/api/check-member?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    if (data.isMember) {
+      badge.className = 'member-badge is-member';
+      label.textContent = `✓ お取引会員${data.salon ? '（' + data.salon + '）' : ''}`;
+      note.textContent = '会員価格が適用されます';
+      right.innerHTML = `<span class="badge-price">${yen(pm)}</span>`;
+      state.member = 'member'; state.price = yen(pm);
+      if (data.salon) document.getElementById('inp-affil').value = data.salon;
+    } else {
+      badge.className = 'member-badge';
+      label.textContent = '非会員';
+      note.textContent = 'お取引会員の方は登録メールアドレスでお申し込みください';
+      right.innerHTML = `<span class="badge-price">${yen(pn)}</span>`;
+      state.member = 'nonmember'; state.price = yen(pn);
+    }
+  } catch {
+    badge.className = 'member-badge';
+    label.textContent = '非会員';
+    note.textContent = '';
+    right.innerHTML = `<span class="badge-price">${yen(pn)}</span>`;
+    state.member = 'nonmember'; state.price = yen(pn);
+  }
+}
 // ============================================================
 // バリデーション
 // ============================================================
