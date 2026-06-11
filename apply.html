@@ -235,7 +235,6 @@ body{ background:#FFFCF7; }
     <span>講習会お申し込み</span>
   </div>
 </header>
-
 <div class="page-wrap">
 
   <div class="hero-card">
@@ -366,26 +365,22 @@ body{ background:#FFFCF7; }
 
   <!-- STEP 5: 完了 -->
   <div class="form-step" id="step5">
-    <div class="success-wrap">
-      <div class="success-icon">✓</div>
-      <h2 class="success-title">お申し込みありがとうございます</h2>
-      <p class="success-msg">受付が完了しました。ご入力のメールアドレスに受講料お支払いのご案内をお送りします。7日以内にお手続きをお願いいたします。</p>
-
-      <div style="background:#f0f9f0;border:1.5px solid #ABBAA9;border-radius:10px;padding:20px;margin:20px auto;max-width:340px;text-align:center;">
-        <p style="font-size:13px;font-weight:700;color:#2C2319;margin-bottom:6px;">📩 講習会後のフォローをLINEで受け取る</p>
-        <p style="font-size:12px;color:#7a8c79;margin-bottom:14px;line-height:1.7;">復習コンテンツや次回講座のご案内を<br>LINEでお届けします。</p>
-        <a href="https://line.me/ti/p/%40723lsjqi" target="_blank"
-           style="display:inline-block;background:#06C755;color:white;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;">
-          LINE友だち追加
-        </a>
-      </div>
-
-      <a href="https://www.the-herbs.co.jp/school" class="btn-primary" style="display:inline-block;max-width:280px;text-decoration:none;text-align:center;margin-top:8px;">講習会一覧に戻る</a>
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <h2 class="success-title">お申し込みを受け付けました</h2>
+    <p class="success-msg">続けて、LINEでお支払い案内（無料講座の場合はご確認）をお送りします。下のボタンを押し、開いたメッセージ（予約番号）を<strong>そのまま送信</strong>してください。</p>
+    <p style="font-size:13px;color:#544739;margin:6px 0 14px;">予約番号：<strong id="bookingNo">—</strong></p>
+    <div style="background:#FFFCF7;border:1.5px solid #859A93;border-radius:10px;padding:20px;margin:8px auto 16px;max-width:340px;text-align:center;">
+      <p style="font-size:13px;font-weight:700;color:#544739;margin-bottom:10px;">LINEでお支払い案内を受け取る</p>
+      <a id="lineFollowBtn" href="https://line.me/ti/p/%40723lsjqi" target="_blank"
+         style="display:inline-block;background:#06C755;color:white;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;">
+        LINEで予約番号を送る
+      </a>
+      <p style="font-size:11px;color:#7a8c79;margin-top:10px;line-height:1.7;">※ 友だち追加がまだの方は、追加後にこのボタンから予約番号メッセージを送信してください。</p>
     </div>
+    <a href="https://www.the-herbs.co.jp/school" class="btn-primary" style="display:inline-block;max-width:280px;text-decoration:none;text-align:center;margin-top:8px;">講習会一覧に戻る</a>
   </div>
-
 </div>
-
 <div class="loading-overlay" id="loading"><div class="loading-spinner"></div></div>
 
 <script>
