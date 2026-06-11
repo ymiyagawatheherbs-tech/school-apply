@@ -633,6 +633,8 @@ function validate() {
 // ============================================================
 function goStep(n) {
   hideError();
+  const _hero = document.querySelector('.hero-card');
+  if (_hero) _hero.style.display = (n === 1) ? '' : 'none';
 
   if (n === 4) {
     if (!validate()) return;
