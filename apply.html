@@ -684,6 +684,17 @@ async function submitForm() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || '送信に失敗しました');
+
+    // 予約番号をLINE自動入力リンクと画面にセット
+    const bookingId = data.bookingId || '';
+    const bn = document.getElementById('bookingNo');
+    if (bn) bn.textContent = bookingId;
+    const lineBtn = document.getElementById('lineFollowBtn');
+    if (lineBtn && bookingId) {
+      const msg = `【予約完了】予約番号 ${bookingId}\nこのまま送信してください（お支払い案内が届きます）`;
+      lineBtn.href = `https://line.me/R/oaMessage/%40723lsjqi/?${encodeURIComponent(msg)}`;
+    }
+
     goStep(5);
   } catch {
     showError('送信に失敗しました。しばらく経ってから再度お試しください。');
