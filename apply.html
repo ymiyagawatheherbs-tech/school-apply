@@ -476,14 +476,20 @@ const state = {
 // ============================================================
 // STEP 1: シリーズ選択
 // ============================================================
-function selectSeries(name) {
-  // 選択中シリーズをヘッダーに表示
+function selectSeries(name, filter) {
   const hdr = document.getElementById('selectedSeriesHeader');
   const nm  = document.getElementById('selectedSeriesName');
   if (hdr && nm) { nm.textContent = name; hdr.style.display = 'block'; }
   state.series = name;
   document.querySelectorAll('.series-card').forEach(c => c.classList.remove('selected'));
-  const courses = (COURSES[name] || []).slice();
+
+  let courses = (COURSES[name] || []).slice();
+  // URLで特定の講座だけに絞り込む（?course=SC-z など）
+  if (filter) {
+    const f = String(filter).toLowerCase();
+    courses = courses.filter(c => (c.id + ' ' + c.title).toLowerCase().includes(f));
+  }
+
   document.getElementById('step2-heading').textContent = `「${name}」の日程を選んでください`;
 
   const list = document.getElementById('scheduleList');
@@ -493,21 +499,17 @@ function selectSeries(name) {
     list.innerHTML = '<div class="no-courses">現在募集中の講座はありません。<br>近日公開予定です。</div>';
     document.getElementById('btn2').disabled = true;
   } else {
-    // 講座IDで並べ替え → 第1回→第2回… かつ各回の中は日付順になる
     courses.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-
     let currentTitle = null;
     courses.forEach(c => {
-      // 講座（タイトル）が変わったら見出しを出してグループ分け
       if (c.title !== currentTitle) {
         currentTitle = c.title;
         const head = document.createElement('div');
         head.className = 'schedule-group-head';
-        head.style.cssText = 'margin:18px 0 6px;padding-left:8px;border-left:3px solid var(--gold);font-weight:600;font-size:13px;color:var(--brown);';
+        head.style.cssText = 'margin:24px 0 10px;padding:9px 14px;background:var(--cream);border-left:4px solid var(--gold);border-radius:8px;font-weight:700;font-size:15px;color:var(--brown);';
         head.textContent = c.title;
         list.appendChild(head);
       }
-
       const el = document.createElement('label');
       el.className = 'schedule-item';
       el.dataset.id    = c.id;
@@ -681,11 +683,11 @@ function hideError(){ document.getElementById('errorBanner').classList.remove('s
 // ============================================================
 window.addEventListener('DOMContentLoaded', async () => {
   await loadCourses();
-  // URLパラメーター処理（?series=体質学講習会 で直接日程選択へ）
   const params = new URLSearchParams(window.location.search);
   const series = params.get('series');
+  const course = params.get('course');
   if (series && COURSES[series] !== undefined) {
-    selectSeries(series);
+    selectSeries(series, course || null);
   }
 });
 </script>
