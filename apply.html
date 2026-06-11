@@ -446,7 +446,7 @@ function selectSeries(name) {
   if (hdr && nm) { nm.textContent = name; hdr.style.display = 'block'; }
   state.series = name;
   document.querySelectorAll('.series-card').forEach(c => c.classList.remove('selected'));
-  const courses = COURSES[name] || [];
+  const courses = (COURSES[name] || []).slice();
   document.getElementById('step2-heading').textContent = `「${name}」の日程を選んでください`;
 
   const list = document.getElementById('scheduleList');
@@ -456,7 +456,21 @@ function selectSeries(name) {
     list.innerHTML = '<div class="no-courses">現在募集中の講座はありません。<br>近日公開予定です。</div>';
     document.getElementById('btn2').disabled = true;
   } else {
+    // 講座IDで並べ替え → 第1回→第2回… かつ各回の中は日付順になる
+    courses.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+
+    let currentTitle = null;
     courses.forEach(c => {
+      // 講座（タイトル）が変わったら見出しを出してグループ分け
+      if (c.title !== currentTitle) {
+        currentTitle = c.title;
+        const head = document.createElement('div');
+        head.className = 'schedule-group-head';
+        head.style.cssText = 'margin:18px 0 6px;padding-left:8px;border-left:3px solid var(--gold);font-weight:600;font-size:13px;color:var(--brown);';
+        head.textContent = c.title;
+        list.appendChild(head);
+      }
+
       const el = document.createElement('label');
       el.className = 'schedule-item';
       el.dataset.id    = c.id;
@@ -466,9 +480,8 @@ function selectSeries(name) {
         <input type="radio" name="schedule" value="${c.id}" />
         <span class="schedule-check"></span>
         <div class="schedule-body">
+          <div class="schedule-meta" style="font-size:13px;color:var(--brown);font-weight:500;">${c.date}</div>
           <div class="schedule-tag">${c.tag} — ${c.id}</div>
-          <div class="schedule-title">${c.title}</div>
-          <div class="schedule-meta">${c.date}</div>
         </div>`;
       el.addEventListener('click', () => {
         document.querySelectorAll('.schedule-item').forEach(i => i.classList.remove('selected'));
@@ -487,7 +500,6 @@ function selectSeries(name) {
   state.courseId = ''; state.courseTitle = ''; state.courseDate = '';
   goStep(2);
 }
-
 // ============================================================
 // STEP 3: 会員照合
 // ============================================================
