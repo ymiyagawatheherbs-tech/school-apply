@@ -170,14 +170,22 @@ input::placeholder{color:rgba(92,61,40,.35)}
   .form-section{padding:16px 14px}
 }
 </style>
-  <!-- ▼ ブラッシュアップ用スタイル（このブロックごと </head> の直前に貼る）▼ -->
+ <!-- ▼ ブラッシュアップ用スタイル（</head> の直前に。前のブロックがあれば差し替え）▼ -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&display=swap');
 
-/* 背景に淡いハーブ色のグラデ → 白いカードが浮く */
-body{ background:linear-gradient(180deg,#f4f7f2 0%,#eef3ec 100%); }
+/* === ブランドカラー === */
+:root{
+  --brown:  #544739;   /* テキスト */
+  --cream:  #FFFCF7;   /* ベース（白） */
+  --gold:   #859A93;   /* アクセント */
+  --rose:   #859A93;
+  --border: rgba(133,154,147,0.45);
+}
+body{ background:#FFFCF7; }
+.site-header{ background:#3a3127; }   /* 上のバーは濃いめのままキープ */
 
-/* 見出しを明朝体に（上品さと抑揚） */
+/* === 見出しを明朝体に === */
 .hero-title,.step-heading,.series-name,.success-title,.schedule-group-head{
   font-family:'Shippori Mincho',serif; letter-spacing:.02em;
 }
@@ -185,24 +193,34 @@ body{ background:linear-gradient(180deg,#f4f7f2 0%,#eef3ec 100%); }
 .step-heading{ font-size:17px; }
 .success-title{ font-size:22px; }
 
-/* 淡すぎて読みにくい小ラベルを少し濃いセージに */
+/* === 各回の見出し＝アクセント色の帯ではっきり目立たせる === */
+.schedule-group-head{
+  background:#859A93 !important;
+  color:#FFFCF7 !important;
+  border-left:0 !important;
+  border-radius:8px !important;
+  padding:10px 16px !important;
+  font-size:15px !important;
+}
+
+/* 小ラベルを読みやすく */
 .schedule-tag,.summary-series{ color:#5f7359; }
 
-/* シリーズカード：余白・角丸・影で立体感、名前に葉っぱの印 */
-.series-card{ padding:18px 16px; border-radius:14px; box-shadow:0 1px 2px rgba(44,51,41,.05); }
-.series-card:hover{ background:#fff; border-color:#7d9079; box-shadow:0 6px 18px rgba(95,115,86,.14); transform:translateY(-2px); }
+/* シリーズカード：立体感＋葉っぱの印 */
+.series-card{ padding:18px 16px; border-radius:14px; box-shadow:0 1px 2px rgba(84,71,57,.06); }
+.series-card:hover{ background:#fff; border-color:#859A93; box-shadow:0 6px 18px rgba(133,154,147,.18); transform:translateY(-2px); }
 .series-name{ display:flex; align-items:center; gap:8px; font-size:14px; }
-.series-name::before{ content:''; flex-shrink:0; width:8px; height:8px; background:#7d9079; border-radius:0 100% 0 100%; transform:rotate(45deg); }
+.series-name::before{ content:''; flex-shrink:0; width:8px; height:8px; background:#859A93; border-radius:0 100% 0 100%; transform:rotate(45deg); }
 
-/* 日程カード：影と、選択時のふんわり強調 */
-.schedule-item{ box-shadow:0 1px 2px rgba(44,51,41,.04); }
-.schedule-item:hover{ background:#fff; border-color:#7d9079; box-shadow:0 4px 14px rgba(95,115,86,.12); }
-.schedule-item.selected,.series-card.selected{ box-shadow:0 0 0 3px rgba(95,115,86,.18); }
+/* 日程カード */
+.schedule-item{ box-shadow:0 1px 2px rgba(84,71,57,.05); }
+.schedule-item:hover{ background:#fff; border-color:#859A93; box-shadow:0 4px 14px rgba(133,154,147,.16); }
+.schedule-item.selected,.series-card.selected{ box-shadow:0 0 0 3px rgba(133,154,147,.30); }
 
-/* フォーム枠もうっすら浮かせる */
-.form-section{ box-shadow:0 1px 3px rgba(44,51,41,.05); }
+/* フォーム枠 */
+.form-section{ box-shadow:0 1px 3px rgba(84,71,57,.06); }
 
-/* 申し込みボタンを、しっかり見える深めのグリーンに */
+/* 申し込みボタン：視認性のため濃いめグリーン */
 .btn-primary{ background:#5f7359; box-shadow:0 2px 8px rgba(95,115,86,.25); letter-spacing:.08em; }
 .btn-primary:hover{ background:#4f6149; }
 </style>
