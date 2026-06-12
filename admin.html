@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>THE HERBS 管理ページ</title>
+<style>
+  :root{
+    --ink:#544739; --sage:#859A93; --cream:#FFFCF7; --bg:#F5F2EC;
+    --muted:#8a8275; --line:#E5DFD3; --gold:#C9A86A;
+    --paid:#5C7F6B; --unpaid:#B07A2E; --cancel:#A85B52; --free:#6E7E96;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    line-height:1.6;font-size:15px;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px 60px;}
+  a{color:var(--ink);}
+
+  /* ヘッダー */
+  header{background:var(--ink);color:var(--cream);padding:16px 0;margin-bottom:20px;}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;padding-bottom:0;}
+  header h1{font-size:17px;margin:0;font-weight:600;letter-spacing:.04em;}
+  header .sub{font-size:11px;color:#cdd6cf;letter-spacing:.1em;}
+  .logout-btn{background:transparent;border:1px solid #6f6256;color:#e8e2d6;
+    padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;}
+  .logout-btn:hover{background:#6f6256;}
+
+  /* ログイン */
+  .login-card{max-width:380px;margin:60px auto;background:var(--cream);
+    border:1px solid var(--line);border-radius:14px;padding:32px 28px;text-align:center;}
+  .login-card h2{font-size:18px;margin:0 0 6px;}
+  .login-card p{font-size:13px;color:var(--muted);margin:0 0 20px;}
+  .login-card input{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;
+    font-size:15px;margin-bottom:14px;}
+  .err{color:var(--cancel);font-size:13px;min-height:18px;margin-bottom:8px;}
+
+  /* タブ */
+  .tabs{display:flex;gap:6px;margin-bottom:18px;}
+  .tab{flex:1;padding:12px;text-align:center;background:var(--cream);
+    border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:600;color:var(--muted);}
+  .tab.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+
+  /* ボタン */
+  .btn{border:none;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-weight:600;}
+  .btn-primary{background:var(--ink);color:var(--cream);}
+  .btn-primary:hover{opacity:.9;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink);}
+  .btn-sm{padding:6px 10px;font-size:12.5px;border-radius:7px;}
+  .btn-paid{background:var(--paid);color:#fff;}
+  .btn-cancel{background:transparent;border:1px solid var(--cancel);color:var(--cancel);}
+  .btn-undo{background:transparent;border:1px solid var(--line);color:var(--muted);}
+  .btn-del{background:transparent;border:1px solid var(--cancel);color:var(--cancel);}
+  .btn:disabled{opacity:.5;cursor:default;}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;}
+  .filters{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--cream);
+    cursor:pointer;font-size:13px;color:var(--muted);}
+  .chip.active{background:var(--sage);color:#fff;border-color:var(--sage);}
+  .spacer{flex:1;}
+  .count{font-size:13px;color:var(--muted);}
+
+  /* バッジ */
+  .badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;}
+  .b-paid{background:var(--paid);} .b-unpaid{background:var(--unpaid);}
+  .b-cancel{background:var(--cancel);} .b-free{background:var(--free);}
+
+  /* カード（予約） */
+  .card{background:var(--cream);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;margin-bottom:10px;}
+  .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .card .name{font-size:16px;font-weight:700;}
+  .card .meta{font-size:12.5px;color:var(--muted);}
+  .card .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:13.5px;margin:8px 0;}
+  .card .grid b{color:var(--muted);font-weight:600;font-size:12px;display:block;}
+  .card .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .line-yes{color:var(--paid);font-size:11.5px;}
+  .line-no{color:var(--unpaid);font-size:11.5px;}
+
+  /* 講座リスト */
+  .course-row{background:var(--cream);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;margin-bottom:10px;}
+  .course-row .ctop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .course-row .ctitle{font-size:15.5px;font-weight:700;}
+  .course-row .cseries{font-size:12px;color:var(--gold);font-weight:700;}
+  .course-row .cmeta{font-size:13px;color:var(--muted);margin-top:4px;}
+  .course-row .cactions{display:flex;gap:8px;margin-top:10px;}
+
+  /* フォーム */
+  .form-panel{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;}
+  .form-panel h3{margin:0 0 12px;font-size:16px;}
+  .fg{margin-bottom:12px;}
+  .fg label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:4px;}
+  .fg .hint{font-weight:400;color:var(--muted);font-size:11.5px;}
+  .fg input,.fg select,.fg textarea{width:100%;padding:10px;border:1px solid var(--line);
+    border-radius:8px;font-size:14.5px;background:#fff;}
+  .fg textarea{min-height:60px;resize:vertical;}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .form-actions{display:flex;gap:10px;margin-top:6px;}
+
+  .empty{text-align:center;color:var(--muted);padding:40px 0;font-size:14px;}
+  .hide{display:none !important;}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+    background:var(--ink);color:var(--cream);padding:11px 20px;border-radius:8px;
+    font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:50;}
+  .toast.show{opacity:1;}
+
+  @media(max-width:560px){
+    .card .grid{grid-template-columns:1fr;}
+    .frow{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ログイン画面 -->
+<div id="loginView">
+  <div class="login-card">
+    <h2>THE HERBS 管理ページ</h2>
+    <p>スタッフ用のパスワードを入力してください</p>
+    <div class="err" id="loginErr"></div>
+    <input type="password" id="pw" placeholder="パスワード" autocomplete="current-password" />
+    <button class="btn btn-primary" style="width:100%;" id="loginBtn">ログイン</button>
+  </div>
+</div>
+
+<!-- 管理画面 -->
+<div id="appView" class="hide">
+  <header>
+    <div class="wrap">
+      <div>
+        <h1>THE HERBS 管理ページ</h1>
+        <div class="sub">植物美容学校</div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">ログアウト</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="tabs">
+      <div class="tab active" id="tabBookings">予約管理</div>
+      <div class="tab" id="tabCourses">講座管理</div>
+    </div>
+
+    <!-- 予約管理 -->
+    <div id="viewBookings">
+      <div class="toolbar">
+        <div class="filters" id="bkFilters">
+          <span class="chip active" data-f="all">すべて</span>
+          <span class="chip" data-f="未入金">未入金</span>
+          <span class="chip" data-f="入金済">入金済</span>
+          <span class="chip" data-f="無料">無料</span>
+          <span class="chip" data-f="キャンセル">キャンセル</span>
+        </div>
+        <span class="spacer"></span>
+        <span class="count" id="bkCount"></span>
+        <button class="btn btn-ghost btn-sm" id="bkReload">更新</button>
+      </div>
+      <div id="bkList"></div>
+    </div>
+
+    <!-- 講座管理 -->
+    <div id="viewCourses" class="hide">
+      <div class="toolbar">
+        <button class="btn btn-primary btn-sm" id="newCourseBtn">＋ 新規講座を追加</button>
+        <span class="spacer"></span>
+        <span class="count" id="csCount"></span>
+        <button class="btn btn-ghost btn-sm" id="csReload">更新</button>
+      </div>
+
+      <!-- 講座フォーム -->
+      <div class="form-panel hide" id="courseForm">
+        <h3 id="formTitle">新規講座を追加</h3>
+        <div class="frow">
+          <div class="fg">
+            <label>講座ID <span class="hint">例：HS-v-260801（編集時は変更不可）</span></label>
+            <input id="f_id" placeholder="HS-v-260801" />
+          </div>
+          <div class="fg">
+            <label>シリーズ名 <span class="hint">URLと一致させる</span></label>
+            <input id="f_series" list="seriesList" placeholder="ヘアサロン向けハーブケア" />
+            <datalist id="seriesList"></datalist>
+          </div>
+        </div>
+        <div class="fg">
+          <label>タイトル</label>
+          <input id="f_title" placeholder="ヴェルデケア" />
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label>開催日時</label>
+            <input type="datetime-local" id="f_date" />
+          </div>
+          <div class="fg">
+            <label>場所 <span class="hint">オンラインは「オンライン（Zoom）」</span></label>
+            <input id="f_place" placeholder="植物美容学校 / オンライン（Zoom）" />
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>定員</label><input type="number" id="f_capacity" placeholder="10" /></div>
+          <div class="fg"><label>タグ <span class="hint">例：体験会 / 講習会</span></label><input id="f_tag" placeholder="講習会" /></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>会員価格（円）</label><input type="number" id="f_pm" placeholder="0" /></div>
+          <div class="fg"><label>通常価格（円）</label><input type="number" id="f_pn" placeholder="0" /></div>
+        </div>
+        <div class="fg">
+          <label>Zoom URL <span class="hint">オンラインのみ。入金済・無料の方にだけ送られます</span></label>
+          <input id="f_zoom" placeholder="https://us02web.zoom.us/j/..." />
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label>ステータス</label>
+            <select id="f_status"><option>募集中</option><option>終了</option><option>非公開</option></select>
+          </div>
+          <div class="fg"><label>備考</label><textarea id="f_notes" placeholder="2日間講習会の日程など"></textarea></div>
+        </div>
+        <div class="err" id="formErr"></div>
+        <div class="form-actions">
+          <button class="btn btn-primary" id="saveCourseBtn">保存</button>
+          <button class="btn btn-ghost" id="cancelCourseBtn">キャンセル</button>
+        </div>
+      </div>
+
+      <div id="csList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://herbs-booking-api.vercel.app/api/admin';
+let PW = sessionStorage.getItem('herbs_admin_pw') || '';
+let BOOKINGS = [], COURSES = [], BK_FILTER = 'all', EDIT_ID = null;
+
+const $ = id => document.getElementById(id);
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+async function call(action, extra={}){
+  const r = await fetch(API, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ password: PW, action, ...extra }),
+  });
+  let data={}; try{ data=await r.json(); }catch(e){}
+  if (r.status===401){ logout(); throw new Error(data.error||'パスワードが違います'); }
+  if (!r.ok) throw new Error(data.error||'エラーが発生しました');
+  return data;
+}
+
+/* ===== ログイン ===== */
+async function login(){
+  PW = $('pw').value.trim();
+  $('loginErr').textContent='';
+  if(!PW){ $('loginErr').textContent='パスワードを入力してください'; return; }
+  try{
+    await call('listBookings');
+    sessionStorage.setItem('herbs_admin_pw', PW);
+    showApp();
+  }catch(e){ $('loginErr').textContent = e.message; }
+}
+function logout(){
+  sessionStorage.removeItem('herbs_admin_pw'); PW='';
+  $('appView').classList.add('hide'); $('loginView').classList.remove('hide'); $('pw').value='';
+}
+function showApp(){
+  $('loginView').classList.add('hide'); $('appView').classList.remove('hide');
+  loadBookings(); loadCourses();
+}
+
+/* ===== タブ ===== */
+$('tabBookings').onclick=()=>{ $('tabBookings').classList.add('active'); $('tabCourses').classList.remove('active');
+  $('viewBookings').classList.remove('hide'); $('viewCourses').classList.add('hide'); };
+$('tabCourses').onclick=()=>{ $('tabCourses').classList.add('active'); $('tabBookings').classList.remove('active');
+  $('viewCourses').classList.remove('hide'); $('viewBookings').classList.add('hide'); };
+
+/* ===== 予約管理 ===== */
+function fmtDate(iso){ if(!iso) return '—';
+  return new Date(iso).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'long',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'}); }
+function badge(s){ const m={'入金済':'b-paid','未入金':'b-unpaid','キャンセル':'b-cancel','無料':'b-free'}; return `<span class="badge ${m[s]||''}">${esc(s)}</span>`; }
+
+async function loadBookings(){
+  $('bkList').innerHTML='<div class="empty">読み込み中…</div>';
+  try{ const d=await call('listBookings'); BOOKINGS=d.bookings||[]; renderBookings(); }
+  catch(e){ $('bkList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
+}
+function renderBookings(){
+  const list = BK_FILTER==='all' ? BOOKINGS : BOOKINGS.filter(b=>b.payment_status===BK_FILTER);
+  $('bkCount').textContent = `${list.length}件`;
+  if(!list.length){ $('bkList').innerHTML='<div class="empty">該当する予約はありません</div>'; return; }
+  $('bkList').innerHTML = list.map(b=>{
+    const line = b.line_linked ? '<span class="line-yes">● LINE連携済</span>' : '<span class="line-no">○ LINE未連携</span>';
+    return `<div class="card">
+      <div class="top">
+        <div><div class="name">${esc(b.name)} ${line}</div>
+          <div class="meta">${esc(b.id)}</div></div>
+        <div>${badge(b.payment_status)}</div>
+      </div>
+      <div class="grid">
+        <div><b>講座</b>${esc(b.course_title)}</div>
+        <div><b>日程</b>${fmtDate(b.course_date)}</div>
+        <div><b>連絡先</b>${esc(b.email)}<br>${esc(b.phone)}</div>
+        <div><b>種別 / 金額</b>${esc(b.member_type)} / ${Number(b.price)>0?('¥'+Number(b.price).toLocaleString()):'無料'}</div>
+      </div>
+      <div class="actions">${actions(b)}</div>
+    </div>`;
+  }).join('');
+}
+function actions(b){
+  const s=b.payment_status; const out=[];
+  if(s!=='入金済' && s!=='無料') out.push(`<button class="btn btn-sm btn-paid" onclick="setStatus('${b.id}','入金済')">入金済にする</button>`);
+  if(s==='入金済') out.push(`<button class="btn btn-sm btn-undo" onclick="setStatus('${b.id}','未入金')">未入金に戻す</button>`);
+  if(s!=='キャンセル') out.push(`<button class="btn btn-sm btn-cancel" onclick="setStatus('${b.id}','キャンセル')">キャンセル</button>`);
+  if(s==='キャンセル') out.push(`<button class="btn btn-sm btn-undo" onclick="setStatus('${b.id}','未入金')">取消を戻す</button>`);
+  if(b.payment_url) out.push(`<a class="btn btn-sm btn-ghost" href="${esc(b.payment_url)}" target="_blank" rel="noopener">決済リンク</a>`);
+  return out.join('');
+}
+async function setStatus(id,status){
+  if(status==='キャンセル' && !confirm('この予約をキャンセルにしますか？')) return;
+  try{ await call('updateBookingStatus',{id,status});
+    const b=BOOKINGS.find(x=>x.id===id); if(b) b.payment_status=status;
+    renderBookings(); toast('更新しました'); }
+  catch(e){ toast(e.message); }
+}
+$('bkReload').onclick=loadBookings;
+$('bkFilters').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  $('bkFilters').querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); BK_FILTER=c.dataset.f; renderBookings();
+});
+
+/* ===== 講座管理 ===== */
+async function loadCourses(){
+  $('csList').innerHTML='<div class="empty">読み込み中…</div>';
+  try{ const d=await call('listCourses'); COURSES=d.courses||[]; renderCourses(); fillSeriesList(); }
+  catch(e){ $('csList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
+}
+function fillSeriesList(){
+  const set=[...new Set(COURSES.map(c=>c.series_id).filter(Boolean))];
+  $('seriesList').innerHTML = set.map(s=>`<option value="${esc(s)}">`).join('');
+}
+function renderCourses(){
+  $('csCount').textContent = `${COURSES.length}件`;
+  if(!COURSES.length){ $('csList').innerHTML='<div class="empty">講座がありません。「＋ 新規講座を追加」から登録できます</div>'; return; }
+  $('csList').innerHTML = COURSES.map(c=>`
+    <div class="course-row">
+      <div class="ctop">
+        <div>
+          <div class="cseries">${esc(c.series_id)}</div>
+          <div class="ctitle">${esc(c.title)}</div>
+          <div class="cmeta">${fmtDate(c.course_date)} ／ ${esc(c.place||'—')} ／ 定員${c.capacity??'—'}　予約${c.booking_count}件</div>
+          <div class="cmeta">会員¥${Number(c.price_member||0).toLocaleString()} ／ 通常¥${Number(c.price_normal||0).toLocaleString()} ／ ${esc(c.status||'')}${c.zoom_url?' ／ Zoom設定あり':''}</div>
+          <div class="cmeta" style="color:#b9b1a3;">${esc(c.id)}</div>
+        </div>
+        <div>
+          <div class="cactions">
+            <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
+            <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function toLocalInput(iso){
+  if(!iso) return '';
+  const p=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date(iso));
+  const g=t=>p.find(x=>x.type===t).value;
+  return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}`;
+}
+function openForm(course){
+  EDIT_ID = course ? course.id : null;
+  $('formTitle').textContent = course ? '講座を編集' : '新規講座を追加';
+  $('f_id').value = course ? course.id : '';
+  $('f_id').disabled = !!course;
+  $('f_series').value = course?.series_id || '';
+  $('f_title').value = course?.title || '';
+  $('f_date').value = course?.course_date ? toLocalInput(course.course_date) : '';
+  $('f_place').value = course?.place || '';
+  $('f_capacity').value = course?.capacity ?? '';
+  $('f_tag').value = course?.tag || '';
+  $('f_pm').value = course?.price_member ?? '';
+  $('f_pn').value = course?.price_normal ?? '';
+  $('f_zoom').value = course?.zoom_url || '';
+  $('f_status').value = course?.status || '募集中';
+  $('f_notes').value = course?.notes || '';
+  $('formErr').textContent='';
+  $('courseForm').classList.remove('hide');
+  $('courseForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('newCourseBtn').onclick=()=>openForm(null);
+$('cancelCourseBtn').onclick=()=>$('courseForm').classList.add('hide');
+window.editCourse=(id)=>{ const c=COURSES.find(x=>x.id===id); if(c) openForm(c); };
+
+$('saveCourseBtn').onclick=async()=>{
+  const dt = $('f_date').value;
+  const course = {
+    id: $('f_id').value.trim(),
+    series_id: $('f_series').value.trim(),
+    title: $('f_title').value.trim(),
+    course_date: dt ? dt+':00+09:00' : null,
+    place: $('f_place').value.trim(),
+    capacity: $('f_capacity').value,
+    tag: $('f_tag').value.trim(),
+    price_member: $('f_pm').value,
+    price_normal: $('f_pn').value,
+    zoom_url: $('f_zoom').value.trim(),
+    status: $('f_status').value,
+    notes: $('f_notes').value.trim(),
+  };
+  if(!course.id || !course.series_id || !course.title){ $('formErr').textContent='ID・シリーズ名・タイトルは必須です'; return; }
+  $('saveCourseBtn').disabled=true;
+  try{
+    if(EDIT_ID) await call('updateCourse',{id:EDIT_ID, course});
+    else await call('createCourse',{course});
+    $('courseForm').classList.add('hide');
+    toast('保存しました');
+    await loadCourses();
+  }catch(e){ $('formErr').textContent=e.message; }
+  finally{ $('saveCourseBtn').disabled=false; }
+};
+window.delCourse=async(id)=>{
+  if(!confirm('この講座を削除しますか？（予約がある場合は削除できません）')) return;
+  try{ await call('deleteCourse',{id}); toast('削除しました'); await loadCourses(); }
+  catch(e){ alert(e.message); }
+};
+$('csReload').onclick=loadCourses;
+
+/* ===== 起動 ===== */
+$('loginBtn').onclick=login;
+$('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+$('logoutBtn').onclick=logout;
+window.setStatus=setStatus;
+if(PW){ showApp(); }
+</script>
+</body>
+</html>
