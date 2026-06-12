@@ -715,12 +715,26 @@ async function submitForm() {
     const bn = document.getElementById('bookingNo');
     if (bn) bn.textContent = bookingId;
     const lineBtn = document.getElementById('lineFollowBtn');
-    if (lineBtn && bookingId) {
-      const msg = `【予約完了】予約番号 ${bookingId}\nこのまま送信してください（お支払い案内が届きます）`;
-      lineBtn.href = `https://line.me/R/oaMessage/%40723lsjqi/?${encodeURIComponent(msg)}`;
-    }
+        if (lineBtn && bookingId) {
+          const msg = `【予約完了】予約番号 ${bookingId}\nこのまま送信してください（お支払い案内が届きます）`;
+          lineBtn.href = `https://line.me/R/oaMessage/%40723lsjqi/?${encodeURIComponent(msg)}`;
+        }
 
-    goStep(5);
+        // 完了画面に決済情報を直接表示
+        const payBox = document.getElementById('paymentBox');
+        const freeBox = document.getElementById('freeBox');
+        if (data.paymentUrl && Number(data.price) > 0) {
+          document.getElementById('payAmount').textContent = '¥' + Number(data.price).toLocaleString();
+          document.getElementById('payDeadline').textContent = data.paymentDeadline || '';
+          document.getElementById('payCardBtn').href = data.paymentUrl;
+          if (payBox) payBox.style.display = 'block';
+          if (freeBox) freeBox.style.display = 'none';
+        } else {
+          if (payBox) payBox.style.display = 'none';
+          if (freeBox) freeBox.style.display = 'block';
+        }
+
+        goStep(5);
   } catch {
     showError('送信に失敗しました。しばらく経ってから再度お試しください。');
     document.getElementById('btnSubmit').disabled = false;
