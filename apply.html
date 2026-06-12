@@ -364,24 +364,44 @@ body:has(#step1:not(.active)) .hero-card { display: none !important; }
     </div>
   </div>
 
-  <!-- STEP 5: 完了 -->
-  <div class="form-step" id="step5">
-  <div class="success-wrap">
-    <div class="success-icon">✓</div>
-    <h2 class="success-title">お申し込みを受け付けました</h2>
-    <p class="success-msg">続けて、LINEでお支払い案内（無料講座の場合はご確認）をお送りします。下のボタンを押し、開いたメッセージ（予約番号）を<strong>そのまま送信</strong>してください。</p>
-    <p style="font-size:13px;color:#544739;margin:6px 0 14px;">予約番号：<strong id="bookingNo">—</strong></p>
-    <div style="background:#FFFCF7;border:1.5px solid #859A93;border-radius:10px;padding:20px;margin:8px auto 16px;max-width:340px;text-align:center;">
-      <p style="font-size:13px;font-weight:700;color:#544739;margin-bottom:10px;">LINEでお支払い案内を受け取る</p>
-      <a id="lineFollowBtn" href="https://line.me/ti/p/%40723lsjqi" target="_blank"
-         style="display:inline-block;background:#06C755;color:white;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;">
-        LINEで予約番号を送る
-      </a>
-      <p style="font-size:11px;color:#7a8c79;margin-top:10px;line-height:1.7;">※ 友だち追加がまだの方は、追加後にこのボタンから予約番号メッセージを送信してください。</p>
-    </div>
-    <a href="https://www.the-herbs.co.jp/school" class="btn-primary" style="display:inline-block;max-width:280px;text-decoration:none;text-align:center;margin-top:8px;">講習会一覧に戻る</a>
-  </div>
-</div>
+ <!-- STEP 5: 完了 -->
+        <div class="form-step" id="step5">
+          <div class="success-wrap">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">お申し込みを受け付けました</h2>
+            <p class="success-msg">下記の内容でお申し込みを受け付けました。お支払い方法をご確認ください。</p>
+            <p style="font-size:13px;color:#544739;margin:6px 0 14px;">予約番号：<strong id="bookingNo">—</strong></p>
+
+            <!-- お支払いのご案内（有料のとき表示） -->
+            <div id="paymentBox" style="display:none;background:#FFFCF7;border:1.5px solid #C9A86A;border-radius:10px;padding:20px;margin:8px auto 16px;max-width:380px;text-align:left;">
+              <p style="font-size:14px;font-weight:700;color:#544739;margin-bottom:12px;text-align:center;">お支払いのご案内</p>
+              <p style="font-size:14px;color:#544739;margin:4px 0;">受講料：<strong id="payAmount">—</strong></p>
+              <p style="font-size:13px;color:#A8743A;margin:4px 0 14px;">お支払い期限：<strong id="payDeadline">—</strong>（開催日の3日前）</p>
+              <a id="payCardBtn" href="#" target="_blank" rel="noopener" style="display:block;text-align:center;background:#635BFF;color:#fff;text-decoration:none;padding:13px;border-radius:8px;font-weight:700;margin-bottom:14px;">カードで支払う</a>
+              <div style="background:#fff;border:1px solid #E5DFD3;border-radius:8px;padding:12px;font-size:12.5px;color:#544739;line-height:1.8;">
+                <div style="font-weight:700;margin-bottom:4px;">▼ 銀行振込でのお支払い</div>
+                三井住友銀行　芦屋駅前支店<br>
+                普通　916089<br>
+                カ)ザ　ハーブス
+              </div>
+              <p style="font-size:11px;color:#7a8c79;margin-top:10px;line-height:1.7;">※ ご入金をもって席を確保いたします。お支払い期限を過ぎるとキャンセル扱いとなる場合があります。</p>
+            </div>
+
+            <!-- 無料講座のとき表示 -->
+            <div id="freeBox" style="display:none;background:#F3F6F3;border:1.5px solid #859A93;border-radius:10px;padding:16px;margin:8px auto 16px;max-width:380px;">
+              <p style="font-size:14px;font-weight:700;color:#544739;margin:0;">無料講座です。お支払いは不要です。</p>
+            </div>
+
+            <!-- LINE（任意） -->
+            <div style="background:#F3FBF5;border:1px solid #06C755;border-radius:10px;padding:16px;margin:8px auto 16px;max-width:380px;">
+              <p style="font-size:13px;font-weight:700;color:#544739;margin-bottom:10px;">LINEでも受け取れます（任意）</p>
+              <a id="lineFollowBtn" href="https://line.me/ti/p/%40723lsjqi" target="_blank" rel="noopener" style="display:inline-block;background:#06C755;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;">LINEで予約番号を送る</a>
+              <p style="font-size:11px;color:#7a8c79;margin-top:10px;line-height:1.7;">※ 友だち追加後にこのボタンから送ると、リマインダーやご連絡がLINEで届きます。</p>
+            </div>
+
+            <a href="https://www.the-herbs.co.jp/school" class="btn-primary" style="display:inline-block;max-width:280px;text-decoration:none;">学校サイトへ戻る</a>
+          </div>
+        </div>
 <div class="loading-overlay" id="loading"><div class="loading-spinner"></div></div>
 
 <script>
