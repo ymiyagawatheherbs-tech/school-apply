@@ -716,7 +716,7 @@ async function submitForm() {
     if (bn) bn.textContent = bookingId;
     const lineBtn = document.getElementById('lineFollowBtn');
         if (lineBtn && bookingId) {
-          const msg = `【予約完了】予約番号 ${bookingId}\nこのまま送信してください（お支払い案内が届きます）`;
+          const msg = `【予約完了】予約番号 ${bookingId}\nこのまま送信してください`;
           lineBtn.href = `https://line.me/R/oaMessage/%40723lsjqi/?${encodeURIComponent(msg)}`;
         }
 
