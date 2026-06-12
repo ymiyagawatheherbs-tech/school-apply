@@ -179,9 +179,12 @@
             <input id="f_id" placeholder="HS-v-260801" />
           </div>
           <div class="fg">
-            <label>シリーズ名 <span class="hint">URLと一致させる</span></label>
-            <input id="f_series" list="seriesList" placeholder="ヘアサロン向けハーブケア" />
-            <datalist id="seriesList"></datalist>
+            <label>シリーズ名 <span class="hint">既存から選ぶ／新規は下で作成</span></label>
+            <select id="f_series_sel">
+              <option value="">— 選択してください —</option>
+              <option value="__new__">＋ 新しいシリーズを作成…</option>
+            </select>
+            <input id="f_series_new" class="hide" placeholder="新しいシリーズ名（URLと一致させる）" style="margin-top:8px;" />
           </div>
         </div>
         <div class="fg">
@@ -238,7 +241,7 @@
 <script>
 const API = 'https://herbs-booking-api.vercel.app/api/admin';
 let PW = sessionStorage.getItem('herbs_admin_pw') || '';
-let BOOKINGS = [], COURSES = [], BK_FILTER = 'all', EDIT_ID = null;
+let BOOKINGS = [], COURSES = [], SERIES_LIST = [], BK_FILTER = 'all', EDIT_ID = null;
 
 const $ = id => document.getElementById(id);
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
@@ -338,12 +341,15 @@ $('bkFilters').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
 /* ===== 講座管理 ===== */
 async function loadCourses(){
   $('csList').innerHTML='<div class="empty">読み込み中…</div>';
-  try{ const d=await call('listCourses'); COURSES=d.courses||[]; renderCourses(); fillSeriesList(); }
+  try{ const d=await call('listCourses'); COURSES=d.courses||[]; SERIES_LIST=d.series||[]; renderCourses(); fillSeriesSelect(); }
   catch(e){ $('csList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
 }
-function fillSeriesList(){
-  const set=[...new Set(COURSES.map(c=>c.series_id).filter(Boolean))];
-  $('seriesList').innerHTML = set.map(s=>`<option value="${esc(s)}">`).join('');
+function fillSeriesSelect(){
+  const set=[...new Set([...SERIES_LIST, ...COURSES.map(c=>c.series_id)].filter(Boolean))];
+  const opts = ['<option value="">— 選択してください —</option>']
+    .concat(set.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`))
+    .concat(['<option value="__new__">＋ 新しいシリーズを作成…</option>']);
+  $('f_series_sel').innerHTML = opts.join('');
 }
 function renderCourses(){
   $('csCount').textContent = `${COURSES.length}件`;
@@ -378,7 +384,10 @@ function openForm(course){
   $('formTitle').textContent = course ? '講座を編集' : '新規講座を追加';
   $('f_id').value = course ? course.id : '';
   $('f_id').disabled = !!course;
-  $('f_series').value = course?.series_id || '';
+  fillSeriesSelect();
+  $('f_series_sel').value = course?.series_id || '';
+  $('f_series_new').value = '';
+  $('f_series_new').classList.add('hide');
   $('f_title').value = course?.title || '';
   $('f_date').value = course?.course_date ? toLocalInput(course.course_date) : '';
   $('f_end').value = course?.course_end ? toLocalInput(course.course_end) : '';
@@ -401,9 +410,11 @@ window.editCourse=(id)=>{ const c=COURSES.find(x=>x.id===id); if(c) openForm(c);
 $('saveCourseBtn').onclick=async()=>{
   const dt = $('f_date').value;
   const dtEnd = $('f_end').value;
+  const seriesSel = $('f_series_sel').value;
+  const seriesId = seriesSel === '__new__' ? $('f_series_new').value.trim() : seriesSel;
   const course = {
     id: $('f_id').value.trim(),
-    series_id: $('f_series').value.trim(),
+    series_id: seriesId,
     title: $('f_title').value.trim(),
     course_date: dt ? dt+':00+09:00' : null,
     course_end: dtEnd ? dtEnd+':00+09:00' : null,
@@ -436,6 +447,11 @@ window.delCourse=async(id)=>{
 $('csReload').onclick=loadCourses;
 
 /* ===== 起動 ===== */
+$('f_series_sel').addEventListener('change',()=>{
+  const isNew = $('f_series_sel').value === '__new__';
+  $('f_series_new').classList.toggle('hide', !isNew);
+  if(!isNew) $('f_series_new').value='';
+});
 $('loginBtn').onclick=login;
 $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
 $('logoutBtn').onclick=logout;
