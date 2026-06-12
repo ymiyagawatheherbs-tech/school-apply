@@ -190,13 +190,17 @@
         </div>
         <div class="frow">
           <div class="fg">
-            <label>開催日時</label>
+            <label>開催日時（開始）</label>
             <input type="datetime-local" id="f_date" />
           </div>
           <div class="fg">
-            <label>場所 <span class="hint">オンラインは「オンライン（Zoom）」</span></label>
-            <input id="f_place" placeholder="植物美容学校 / オンライン（Zoom）" />
+            <label>終了日時 <span class="hint">カレンダー用。2日間は最終日を指定</span></label>
+            <input type="datetime-local" id="f_end" />
           </div>
+        </div>
+        <div class="fg">
+          <label>場所 <span class="hint">オンラインは「オンライン（Zoom）」</span></label>
+          <input id="f_place" placeholder="植物美容学校 / オンライン（Zoom）" />
         </div>
         <div class="frow">
           <div class="fg"><label>定員</label><input type="number" id="f_capacity" placeholder="10" /></div>
@@ -377,6 +381,7 @@ function openForm(course){
   $('f_series').value = course?.series_id || '';
   $('f_title').value = course?.title || '';
   $('f_date').value = course?.course_date ? toLocalInput(course.course_date) : '';
+  $('f_end').value = course?.course_end ? toLocalInput(course.course_end) : '';
   $('f_place').value = course?.place || '';
   $('f_capacity').value = course?.capacity ?? '';
   $('f_tag').value = course?.tag || '';
@@ -395,11 +400,13 @@ window.editCourse=(id)=>{ const c=COURSES.find(x=>x.id===id); if(c) openForm(c);
 
 $('saveCourseBtn').onclick=async()=>{
   const dt = $('f_date').value;
+  const dtEnd = $('f_end').value;
   const course = {
     id: $('f_id').value.trim(),
     series_id: $('f_series').value.trim(),
     title: $('f_title').value.trim(),
     course_date: dt ? dt+':00+09:00' : null,
+    course_end: dtEnd ? dtEnd+':00+09:00' : null,
     place: $('f_place').value.trim(),
     capacity: $('f_capacity').value,
     tag: $('f_tag').value.trim(),
@@ -412,10 +419,11 @@ $('saveCourseBtn').onclick=async()=>{
   if(!course.id || !course.series_id || !course.title){ $('formErr').textContent='ID・シリーズ名・タイトルは必須です'; return; }
   $('saveCourseBtn').disabled=true;
   try{
-    if(EDIT_ID) await call('updateCourse',{id:EDIT_ID, course});
-    else await call('createCourse',{course});
+    let resp;
+    if(EDIT_ID) resp = await call('updateCourse',{id:EDIT_ID, course});
+    else resp = await call('createCourse',{course});
     $('courseForm').classList.add('hide');
-    toast('保存しました');
+    toast(resp && resp.calendarWarning ? '保存しました（カレンダー連携は失敗）' : '保存しました');
     await loadCourses();
   }catch(e){ $('formErr').textContent=e.message; }
   finally{ $('saveCourseBtn').disabled=false; }
