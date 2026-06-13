@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>THE HERBS 講習会システム 運用マニュアル</title>
+<style>
+  :root{
+    --ink:#544739; --sage:#859A93; --cream:#FFFCF7; --bg:#F5F2EC;
+    --muted:#8a8275; --line:#E5DFD3; --gold:#C9A86A;
+    --paid:#5C7F6B; --unpaid:#B07A2E; --cancel:#A85B52; --free:#6E7E96;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    line-height:1.85;font-size:15.5px;}
+  .wrap{max-width:820px;margin:0 auto;padding:0 18px 80px;}
+  a{color:#7a6a4a;}
+  header{background:var(--ink);color:var(--cream);padding:26px 0;margin-bottom:28px;}
+  header .wrap{padding-bottom:0;}
+  header h1{font-size:21px;margin:0 0 4px;font-weight:700;letter-spacing:.03em;}
+  header .sub{font-size:12px;color:#cdd6cf;letter-spacing:.08em;}
+
+  h2{font-size:18px;margin:38px 0 12px;padding:10px 14px;background:var(--ink);color:var(--cream);border-radius:8px;}
+  h3{font-size:16px;margin:24px 0 8px;color:var(--ink);border-left:4px solid var(--gold);padding-left:10px;}
+  p{margin:8px 0;}
+  ul,ol{margin:8px 0 8px 2px;padding-left:22px;}
+  li{margin:5px 0;}
+  code{background:#efe9dd;padding:2px 6px;border-radius:5px;font-size:13.5px;}
+
+  .toc{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:18px 22px;}
+  .toc h2{background:none;color:var(--ink);font-size:16px;margin:0 0 8px;padding:0;}
+  .toc ol{margin:0;padding-left:20px;}
+  .toc a{text-decoration:none;}
+  .toc a:hover{text-decoration:underline;}
+
+  .card{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:14px 0;}
+  .links a{display:block;margin:6px 0;font-weight:700;word-break:break-all;}
+
+  .note{border-radius:10px;padding:13px 16px;margin:14px 0;font-size:14.5px;}
+  .note-info{background:#F3F6F3;border:1px solid var(--sage);}
+  .note-warn{background:#FBF1E8;border:1px solid var(--unpaid);}
+  .note b{color:var(--ink);}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:var(--cream);border-radius:8px;overflow:hidden;}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:#efe9dd;font-weight:700;}
+
+  .badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;}
+  .b-paid{background:var(--paid);} .b-unpaid{background:var(--unpaid);}
+  .b-cancel{background:var(--cancel);} .b-free{background:var(--free);}
+
+  .step{counter-reset:step;list-style:none;padding-left:0;}
+  .step li{position:relative;padding:6px 0 6px 38px;margin:0;}
+  .step li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:6px;
+    width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--cream);
+    text-align:center;line-height:26px;font-size:13px;font-weight:700;}
+
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);}
+  @media print{ body{background:#fff;} header{background:#fff;color:#000;} h2{background:#eee;color:#000;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>THE HERBS 講習会システム 運用マニュアル</h1>
+    <div class="sub">植物美容学校 ／ スタッフ向け</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <p>このマニュアルは、講習会の予約・入金・講座登録を担当するスタッフ向けの操作手引きです。<br>
+  分からないことがあれば、システム担当（宮川）までご連絡ください。</p>
+
+  <!-- リンク集 -->
+  <div class="card links">
+    <h3 style="margin-top:0;">よく使うリンク</h3>
+    <a href="https://ymiyagawatheherbs-tech.github.io/school-apply/admin.html" target="_blank">▶ 管理ページ（予約・講座の管理）</a>
+    <a href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html" target="_blank">▶ 申込ページ（お客様が予約する画面）</a>
+    <span style="font-size:13px;color:var(--muted);">※ 管理ページはパスワードが必要です（担当者から共有されます）。</span>
+  </div>
+
+  <!-- 目次 -->
+  <div class="toc">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#overview">このシステムでできること</a></li>
+      <li><a href="#login">管理ページへのログイン</a></li>
+      <li><a href="#bookings">予約管理（入金確認・キャンセル対応）</a></li>
+      <li><a href="#payment">お支払いの種類と入金確認のしかた</a></li>
+      <li><a href="#courses">講座管理（講座の追加・編集・削除）</a></li>
+      <li><a href="#calendar">Googleカレンダー連携</a></li>
+      <li><a href="#auto">自動でおこなわれること</a></li>
+      <li><a href="#cancel">キャンセルポリシー</a></li>
+      <li><a href="#faq">困ったとき・注意点</a></li>
+    </ol>
+  </div>
+
+  <!-- 1 -->
+  <h2 id="overview">1. このシステムでできること</h2>
+  <p>お客様が <b>申込ページ</b> から講習会に申し込むと、予約データが自動で記録されます。スタッフは <b>管理ページ</b> で、その予約の確認・入金管理や、講座（開催日・料金など）の登録ができます。</p>
+  <ul>
+    <li>お客様：申込ページから予約 → お支払い（カード or 銀行振込） → LINEで案内を受け取る</li>
+    <li>スタッフ：管理ページで予約状況の確認、入金の確認、講座の追加・編集</li>
+  </ul>
+  <div class="note note-info"><b>データの保存先：</b>すべてのデータはシステム（Supabase）に保存されます。<b>以前のスプレッドシートとは連動していません。</b>講座の登録・修正は、必ず管理ページから行ってください。</div>
+
+  <!-- 2 -->
+  <h2 id="login">2. 管理ページへのログイン</h2>
+  <ol class="step">
+    <li><a href="https://ymiyagawatheherbs-tech.github.io/school-apply/admin.html" target="_blank">管理ページ</a> を開く</li>
+    <li>担当者から共有された<b>パスワード</b>を入力して「ログイン」</li>
+    <li>上部の「<b>予約管理</b>」「<b>講座管理</b>」タブで画面を切り替えます</li>
+  </ol>
+  <div class="note note-warn"><b>パスワードの取り扱い：</b>パスワードは関係者以外に教えないでください。このマニュアルには記載していません。必要な場合は担当者に確認してください。</div>
+
+  <!-- 3 -->
+  <h2 id="bookings">3. 予約管理（入金確認・キャンセル対応）</h2>
+  <p>「予約管理」タブでは、予約が<b>シリーズごと → 講座ごと</b>にまとめて表示されます。各見出しに件数が出るので、「どの講習に何件入っているか」がひと目で分かります。</p>
+
+  <h3>絞り込み</h3>
+  <p>上のボタンで、状況ごとに絞り込めます：<b>すべて／未入金／入金済／無料／キャンセル</b>。</p>
+
+  <h3>入金状況の意味</h3>
+  <table>
+    <tr><th>表示</th><th>意味</th></tr>
+    <tr><td><span class="badge b-unpaid">未入金</span></td><td>申込み済みだが、まだお支払いが確認できていない</td></tr>
+    <tr><td><span class="badge b-paid">入金済</span></td><td>お支払いが確認できた</td></tr>
+    <tr><td><span class="badge b-free">無料</span></td><td>無料の講座・説明会など（支払い不要）</td></tr>
+    <tr><td><span class="badge b-cancel">キャンセル</span></td><td>キャンセルされた予約</td></tr>
+  </table>
+
+  <h3>各ボタンの操作</h3>
+  <table>
+    <tr><th>ボタン</th><th>使う場面</th></tr>
+    <tr><td>入金済にする</td><td><b>銀行振込</b>の入金を確認したとき（手動で押す）</td></tr>
+    <tr><td>未入金に戻す</td><td>間違えて入金済にした等、状態を戻したいとき</td></tr>
+    <tr><td>キャンセル</td><td>予約をキャンセル扱いにするとき</td></tr>
+    <tr><td>取消を戻す</td><td>キャンセルを取り消して未入金に戻すとき</td></tr>
+    <tr><td>決済リンク</td><td>そのお客様のカード決済用URLを開く（お客様に再案内したいとき等）</td></tr>
+  </table>
+  <p>各予約には、お名前・予約番号・連絡先（メール／電話）・種別（お取引会員／非会員）・金額・LINE連携の有無が表示されます。</p>
+
+  <!-- 4 -->
+  <h2 id="payment">4. お支払いの種類と入金確認のしかた</h2>
+  <h3>① カード決済（Stripe）</h3>
+  <p>お客様がカードで支払うと、<b>自動で「入金済」に切り替わります</b>。スタッフの操作は不要です。</p>
+  <h3>② 銀行振込</h3>
+  <p>振込は自動判定できないため、<b>入金を確認したらスタッフが手動で「入金済にする」を押してください</b>。</p>
+  <div class="card">
+    <b>▼ 振込先</b><br>
+    三井住友銀行　芦屋駅前支店<br>
+    普通　916089<br>
+    カ)ザ ハーブス
+  </div>
+
+  <!-- 5 -->
+  <h2 id="courses">5. 講座管理（講座の追加・編集・削除）</h2>
+  <p>「講座管理」タブでは、講座が<b>シリーズごと</b>にまとまって表示され、見出しに「講座◯件／予約合計◯件」が出ます。</p>
+
+  <h3>新しい講座を追加する</h3>
+  <ol class="step">
+    <li>「<b>＋ 新規講座を追加</b>」を押す</li>
+    <li>各項目を入力する（下の表を参照）</li>
+    <li>「<b>保存</b>」を押す → 一覧に追加され、Googleカレンダーにも自動登録されます</li>
+  </ol>
+
+  <table>
+    <tr><th>項目</th><th>入力内容</th></tr>
+    <tr><td>講座ID</td><td>決められた形式（例 <code>HS-v-260801</code> ＝ 先頭＋開催日）。<b>編集時は変更できません。</b></td></tr>
+    <tr><td>シリーズ名</td><td>一覧から選ぶ。新しいシリーズは「＋新しいシリーズを作成」から追加。<b>URLと一致</b>させる</td></tr>
+    <tr><td>タイトル</td><td>講座名（例：ヴェルデケア）</td></tr>
+    <tr><td>開催日時（開始）</td><td>開始の日付・時刻。<b>必ず入れてください</b>（空だとカレンダーに登録されません）</td></tr>
+    <tr><td>終了日時</td><td>終了の日付・時刻（カレンダーの予定の長さになります）</td></tr>
+    <tr><td>場所</td><td>会場名。オンラインは「オンライン（Zoom）」</td></tr>
+    <tr><td>定員 / タグ</td><td>定員人数 ／ 体験会・講習会などの分類</td></tr>
+    <tr><td>会員価格 / 通常価格</td><td>料金（円）。無料は 0</td></tr>
+    <tr><td>Zoom URL</td><td>オンライン講座のURL。<b>入金済・無料の方にだけ</b>自動で案内されます</td></tr>
+    <tr><td>ステータス</td><td>募集中／終了／非公開</td></tr>
+    <tr><td>備考</td><td>2日間講習会の日程など、自由に記入</td></tr>
+  </table>
+
+  <h3>編集・削除</h3>
+  <ul>
+    <li><b>編集</b>：講座の「編集」を押して内容を直し「保存」。カレンダーの予定も自動で更新されます。</li>
+    <li><b>削除</b>：講座の「削除」を押す。カレンダーの予定も一緒に消えます。<br>
+    <span style="font-size:13.5px;color:var(--muted);">※ キャンセル以外の予約が残っている講座は、間違い防止のため削除できません。先に予約管理で確認してください。</span></li>
+  </ul>
+
+  <h3>2日間の講習会の入れ方</h3>
+  <p>2日間の講座は「<b>1つの講座</b>」として登録します（申込み・支払いも1回で2日分）。</p>
+  <ul>
+    <li>タイトルに「（2日間）」を付ける</li>
+    <li>開催日時は<b>1日目</b>を入れる</li>
+    <li>料金は<b>2日分まとめた金額</b></li>
+    <li>2日目の日程は<b>備考</b>に書く（例：1日目 8/27(水) 10:00〜17:00 ／ 2日目 8/28(木) 10:00〜17:00）</li>
+  </ul>
+
+  <!-- 6 -->
+  <h2 id="calendar">6. Googleカレンダー連携</h2>
+  <p>講座を登録・編集・削除すると、<b>共有のGoogleカレンダー（本店カレンダー）に自動で反映</b>されます。講座名の先頭には「<code>【講座】</code>」が付きます。</p>
+  <div class="note note-info">サロンの予約も同じカレンダーに集約していく予定です。<b>本店の予定が重なっていないか</b>は、このカレンダーを見れば確認できます。新しく講座を入れる前に、カレンダーで空きを確認すると安心です。</div>
+
+  <!-- 7 -->
+  <h2 id="auto">7. 自動でおこなわれること</h2>
+  <ul>
+    <li><b>申込み完了</b>：お客様の画面に、受講料・お支払い期限（開催日の3日前）・カード決済ボタン・振込先が表示されます。</li>
+    <li><b>カード入金</b>：自動で「入金済」に。お客様（LINE連携済の方）にお礼とZoom URL（オンラインの場合）が届きます。</li>
+    <li><b>前日リマインダー</b>：開催<b>前日の朝</b>に、LINE連携済の方へ自動でリマインドが届きます。
+      <ul>
+        <li>入金済・無料の方 → ご予約内容＋（オンラインなら）Zoom URL</li>
+        <li>未入金の方 → お支払いのお願い＋決済リンク＋振込先</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="note note-warn"><b>注意：</b>自動のお礼・リマインダーは「LINEを友だち追加し、予約番号を送ってくれた方」にのみ届きます。<b>LINE未連携の方（特にPC申込）には届きません。</b>オンライン講座でZoom URLが必要な方には、必要に応じてスタッフから個別にご案内ください。</div>
+
+  <!-- 8 -->
+  <h2 id="cancel">8. キャンセルポリシー</h2>
+  <table>
+    <tr><th>キャンセルのタイミング</th><th>キャンセル料</th></tr>
+    <tr><td>開催日の<b>7日前まで</b></td><td>無料</td></tr>
+    <tr><td>開催日の<b>3〜6日前</b></td><td>受講料の50%</td></tr>
+    <tr><td>開催日の<b>2日前以降</b></td><td>受講料の100%</td></tr>
+  </table>
+
+  <!-- 9 -->
+  <h2 id="faq">9. 困ったとき・注意点</h2>
+  <ul>
+    <li><b>画面が古いまま／反映されない</b>：ページを再読み込みしてください（パソコンは <code>⌘+Shift+R</code> / <code>Ctrl+Shift+R</code>）。</li>
+    <li><b>講座がカレンダーに出ない</b>：開催日時（開始）が入っているか確認。空欄だと登録されません。</li>
+    <li><b>以前のスプレッドシートを編集しても反映されない</b>：仕様です。講座は管理ページから登録してください。</li>
+    <li><b>パスワードが分からない／うまく動かない</b>：システム担当（宮川）に連絡してください。</li>
+  </ul>
+
+  <footer>
+    THE HERBS 植物美容学校 ／ 株式会社THE HERBS<br>
+    内容に変更があれば、このページも更新します。
+  </footer>
+
+</div>
+</body>
+</html>
