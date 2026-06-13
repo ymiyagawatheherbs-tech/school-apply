@@ -88,6 +88,18 @@
   .course-row .cmeta{font-size:13px;color:var(--muted);margin-top:4px;}
   .course-row .cactions{display:flex;gap:8px;margin-top:10px;}
 
+  /* シリーズグループ */
+  .series-group{margin-bottom:22px;}
+  .series-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+    padding:9px 13px;margin-bottom:10px;border-left:4px solid var(--gold);
+    background:#FBF7EF;border-radius:8px;}
+  .series-head .sname{font-size:15px;font-weight:700;color:var(--ink);}
+  .series-head .scount{font-size:12.5px;color:var(--muted);}
+  .course-sub{font-size:13.5px;font-weight:700;color:var(--ink);margin:10px 2px 8px;
+    padding-left:4px;border-left:3px solid var(--line);}
+  .course-sub .csub-date{color:var(--muted);font-weight:400;}
+  .course-sub .csub-count{color:var(--gold);font-weight:700;}
+
   /* フォーム */
   .form-panel{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;}
   .form-panel h3{margin:0 0 12px;font-size:16px;}
@@ -298,23 +310,41 @@ function renderBookings(){
   const list = BK_FILTER==='all' ? BOOKINGS : BOOKINGS.filter(b=>b.payment_status===BK_FILTER);
   $('bkCount').textContent = `${list.length}件`;
   if(!list.length){ $('bkList').innerHTML='<div class="empty">該当する予約はありません</div>'; return; }
-  $('bkList').innerHTML = list.map(b=>{
-    const line = b.line_linked ? '<span class="line-yes">● LINE連携済</span>' : '<span class="line-no">○ LINE未連携</span>';
-    return `<div class="card">
+  // シリーズ → 講座 でグループ化
+  const groups = new Map();
+  for(const b of list){
+    const sk = b.series || '（シリーズ未設定）';
+    if(!groups.has(sk)) groups.set(sk, { count:0, courses:new Map() });
+    const g = groups.get(sk); g.count++;
+    const ck = b.course_id || '（講座不明）';
+    if(!g.courses.has(ck)) g.courses.set(ck, { title:b.course_title, date:b.course_date, items:[] });
+    g.courses.get(ck).items.push(b);
+  }
+  let html = '';
+  for(const [sname, g] of groups){
+    html += `<div class="series-group"><div class="series-head"><span class="sname">${esc(sname)}</span><span class="scount">予約 ${g.count}件</span></div>`;
+    for(const [, cg] of g.courses){
+      html += `<div class="course-sub">${esc(cg.title)} <span class="csub-date">${fmtDate(cg.date)}</span>　<span class="csub-count">${cg.items.length}件</span></div>`;
+      html += cg.items.map(b=>bookingCard(b)).join('');
+    }
+    html += `</div>`;
+  }
+  $('bkList').innerHTML = html;
+}
+function bookingCard(b){
+  const line = b.line_linked ? '<span class="line-yes">● LINE連携済</span>' : '<span class="line-no">○ LINE未連携</span>';
+  return `<div class="card">
       <div class="top">
         <div><div class="name">${esc(b.name)} ${line}</div>
           <div class="meta">${esc(b.id)}</div></div>
         <div>${badge(b.payment_status)}</div>
       </div>
       <div class="grid">
-        <div><b>講座</b>${esc(b.course_title)}</div>
-        <div><b>日程</b>${fmtDate(b.course_date)}</div>
         <div><b>連絡先</b>${esc(b.email)}<br>${esc(b.phone)}</div>
         <div><b>種別 / 金額</b>${esc(b.member_type)} / ${Number(b.price)>0?('¥'+Number(b.price).toLocaleString()):'無料'}</div>
       </div>
       <div class="actions">${actions(b)}</div>
     </div>`;
-  }).join('');
 }
 function actions(b){
   const s=b.payment_status; const out=[];
@@ -354,24 +384,36 @@ function fillSeriesSelect(){
 function renderCourses(){
   $('csCount').textContent = `${COURSES.length}件`;
   if(!COURSES.length){ $('csList').innerHTML='<div class="empty">講座がありません。「＋ 新規講座を追加」から登録できます</div>'; return; }
-  $('csList').innerHTML = COURSES.map(c=>`
-    <div class="course-row">
-      <div class="ctop">
-        <div>
-          <div class="cseries">${esc(c.series_id)}</div>
-          <div class="ctitle">${esc(c.title)}</div>
-          <div class="cmeta">${fmtDate(c.course_date)} ／ ${esc(c.place||'—')} ／ 定員${c.capacity??'—'}　予約${c.booking_count}件</div>
-          <div class="cmeta">会員¥${Number(c.price_member||0).toLocaleString()} ／ 通常¥${Number(c.price_normal||0).toLocaleString()} ／ ${esc(c.status||'')}${c.zoom_url?' ／ Zoom設定あり':''}</div>
-          <div class="cmeta" style="color:#b9b1a3;">${esc(c.id)}</div>
-        </div>
-        <div>
-          <div class="cactions">
-            <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
-            <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
+  // シリーズでグループ化
+  const groups = new Map();
+  for(const c of COURSES){
+    const sk = c.series_id || '（シリーズ未設定）';
+    if(!groups.has(sk)) groups.set(sk, { count:0, bookings:0, items:[] });
+    const g = groups.get(sk); g.count++; g.bookings += (c.booking_count||0); g.items.push(c);
+  }
+  let html = '';
+  for(const [sname, g] of groups){
+    html += `<div class="series-group"><div class="series-head"><span class="sname">${esc(sname)}</span><span class="scount">講座 ${g.count}件 ／ 予約合計 ${g.bookings}件</span></div>`;
+    html += g.items.map(c=>`
+      <div class="course-row">
+        <div class="ctop">
+          <div>
+            <div class="ctitle">${esc(c.title)}</div>
+            <div class="cmeta">${fmtDate(c.course_date)} ／ ${esc(c.place||'—')} ／ 定員${c.capacity??'—'}　予約${c.booking_count}件</div>
+            <div class="cmeta">会員¥${Number(c.price_member||0).toLocaleString()} ／ 通常¥${Number(c.price_normal||0).toLocaleString()} ／ ${esc(c.status||'')}${c.zoom_url?' ／ Zoom設定あり':''}</div>
+            <div class="cmeta" style="color:#b9b1a3;">${esc(c.id)}</div>
+          </div>
+          <div>
+            <div class="cactions">
+              <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
+              <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>`).join('');
+      </div>`).join('');
+    html += `</div>`;
+  }
+  $('csList').innerHTML = html;
 }
 function toLocalInput(iso){
   if(!iso) return '';
