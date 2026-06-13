@@ -100,6 +100,35 @@
   .course-sub .csub-date{color:var(--muted);font-weight:400;}
   .course-sub .csub-count{color:var(--gold);font-weight:700;}
 
+  /* シリーズ絞り込みボタン */
+  .series-filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;}
+  .schip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+    border:1px solid var(--line);background:var(--cream);cursor:pointer;font-size:13px;color:var(--ink);}
+  .schip .dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none;}
+  .schip.active{color:#fff;border-color:transparent;font-weight:700;}
+  .schip.active .dot{background:#fff !important;}
+
+  /* 参加者名簿（同じ枠に複数名） */
+  .course-box{background:var(--cream);border:1px solid var(--line);border-left-width:5px;
+    border-radius:12px;padding:12px 15px;margin-bottom:12px;}
+  .cbox-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px;
+    padding-bottom:8px;border-bottom:1px dashed var(--line);}
+  .cbox-title{font-size:15px;font-weight:700;color:var(--ink);}
+  .cbox-date{font-size:12.5px;color:var(--muted);}
+  .cbox-count{font-size:12.5px;color:var(--gold);font-weight:700;margin-left:auto;}
+  .proster{display:flex;flex-direction:column;}
+  .prow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+    padding:9px 0;border-bottom:1px solid #f0ebe0;}
+  .prow:last-child{border-bottom:none;}
+  .pinfo{min-width:0;}
+  .pname{font-size:15px;font-weight:700;}
+  .psub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .pacts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;}
+  @media(max-width:560px){
+    .prow{flex-direction:column;}
+    .pacts{justify-content:flex-start;}
+  }
+
   /* フォーム */
   .form-panel{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;}
   .form-panel h3{margin:0 0 12px;font-size:16px;}
@@ -170,6 +199,7 @@
         <span class="count" id="bkCount"></span>
         <button class="btn btn-ghost btn-sm" id="bkReload">更新</button>
       </div>
+      <div class="series-filters" id="bkSeriesFilters"></div>
       <div id="bkList"></div>
     </div>
 
@@ -181,6 +211,7 @@
         <span class="count" id="csCount"></span>
         <button class="btn btn-ghost btn-sm" id="csReload">更新</button>
       </div>
+      <div class="series-filters" id="csSeriesFilters"></div>
 
       <!-- 講座フォーム -->
       <div class="form-panel hide" id="courseForm">
@@ -253,11 +284,30 @@
 <script>
 const API = 'https://herbs-booking-api.vercel.app/api/admin';
 let PW = sessionStorage.getItem('herbs_admin_pw') || '';
-let BOOKINGS = [], COURSES = [], SERIES_LIST = [], BK_FILTER = 'all', EDIT_ID = null;
+let BOOKINGS = [], COURSES = [], SERIES_LIST = [], BK_FILTER = 'all', BK_SERIES = 'all', CS_SERIES = 'all', EDIT_ID = null;
 
 const $ = id => document.getElementById(id);
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
 function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* シリーズごとの色（名前から固定で決まる） */
+const SERIES_COLORS = ['#859A93','#C9A86A','#9C7A8A','#7E9AAE','#6E8E7B','#B0855A','#A8788F','#5C7F6B'];
+function colorForSeries(name){
+  let h=0; const s=String(name||'');
+  for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0;
+  return SERIES_COLORS[h % SERIES_COLORS.length];
+}
+/* シリーズ絞り込みボタンのHTML */
+function seriesChipsHTML(names, current){
+  let html = `<span class="schip ${current==='all'?'active':''}" data-s="all" ${current==='all'?'style="background:var(--ink)"':''}>すべて</span>`;
+  for(const n of names){
+    const col = colorForSeries(n);
+    const active = current===n;
+    html += `<span class="schip ${active?'active':''}" data-s="${esc(n)}"${active?` style="background:${col}"`:''}>`
+      + `<span class="dot" style="background:${col}"></span>${esc(n)}</span>`;
+  }
+  return html;
+}
 
 async function call(action, extra={}){
   const r = await fetch(API, {
@@ -307,9 +357,17 @@ async function loadBookings(){
   catch(e){ $('bkList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
 }
 function renderBookings(){
-  const list = BK_FILTER==='all' ? BOOKINGS : BOOKINGS.filter(b=>b.payment_status===BK_FILTER);
+  // シリーズ絞り込みボタン（全予約から作成）
+  const allSeries = [...new Set(BOOKINGS.map(b=>b.series||'（シリーズ未設定）'))];
+  $('bkSeriesFilters').innerHTML = seriesChipsHTML(allSeries, BK_SERIES);
+  $('bkSeriesFilters').querySelectorAll('.schip').forEach(c=>c.onclick=()=>{ BK_SERIES=c.dataset.s; renderBookings(); });
+
+  // 状態 → シリーズ の順で絞り込み
+  let list = BK_FILTER==='all' ? BOOKINGS : BOOKINGS.filter(b=>b.payment_status===BK_FILTER);
+  if(BK_SERIES!=='all') list = list.filter(b=>(b.series||'（シリーズ未設定）')===BK_SERIES);
   $('bkCount').textContent = `${list.length}件`;
   if(!list.length){ $('bkList').innerHTML='<div class="empty">該当する予約はありません</div>'; return; }
+
   // シリーズ → 講座 でグループ化
   const groups = new Map();
   for(const b of list){
@@ -322,28 +380,28 @@ function renderBookings(){
   }
   let html = '';
   for(const [sname, g] of groups){
-    html += `<div class="series-group"><div class="series-head"><span class="sname">${esc(sname)}</span><span class="scount">予約 ${g.count}件</span></div>`;
+    const col = colorForSeries(sname);
+    html += `<div class="series-group"><div class="series-head" style="border-left-color:${col};background:${col}1f"><span class="sname">${esc(sname)}</span><span class="scount">予約 ${g.count}件</span></div>`;
     for(const [, cg] of g.courses){
-      html += `<div class="course-sub">${esc(cg.title)} <span class="csub-date">${fmtDate(cg.date)}</span>　<span class="csub-count">${cg.items.length}件</span></div>`;
-      html += cg.items.map(b=>bookingCard(b)).join('');
+      html += `<div class="course-box" style="border-left-color:${col}">`
+        + `<div class="cbox-head"><span class="cbox-title">${esc(cg.title)}</span><span class="cbox-date">${fmtDate(cg.date)}</span><span class="cbox-count">参加 ${cg.items.length}名</span></div>`
+        + `<div class="proster">${cg.items.map(b=>participantRow(b)).join('')}</div>`
+        + `</div>`;
     }
     html += `</div>`;
   }
   $('bkList').innerHTML = html;
 }
-function bookingCard(b){
-  const line = b.line_linked ? '<span class="line-yes">● LINE連携済</span>' : '<span class="line-no">○ LINE未連携</span>';
-  return `<div class="card">
-      <div class="top">
-        <div><div class="name">${esc(b.name)} ${line}</div>
-          <div class="meta">${esc(b.id)}</div></div>
-        <div>${badge(b.payment_status)}</div>
+function participantRow(b){
+  const line = b.line_linked ? '<span class="line-yes">● LINE</span>' : '<span class="line-no">○ 未連携</span>';
+  const price = Number(b.price)>0 ? ('¥'+Number(b.price).toLocaleString()) : '無料';
+  return `<div class="prow">
+      <div class="pinfo">
+        <div><span class="pname">${esc(b.name)}</span>　${badge(b.payment_status)}　${line}</div>
+        <div class="psub">${esc(b.member_type)} ／ ${price}</div>
+        <div class="psub">${esc(b.email)}　${esc(b.phone)}　<span style="color:#b9b1a3">${esc(b.id)}</span></div>
       </div>
-      <div class="grid">
-        <div><b>連絡先</b>${esc(b.email)}<br>${esc(b.phone)}</div>
-        <div><b>種別 / 金額</b>${esc(b.member_type)} / ${Number(b.price)>0?('¥'+Number(b.price).toLocaleString()):'無料'}</div>
-      </div>
-      <div class="actions">${actions(b)}</div>
+      <div class="pacts">${actions(b)}</div>
     </div>`;
 }
 function actions(b){
@@ -382,20 +440,27 @@ function fillSeriesSelect(){
   $('f_series_sel').innerHTML = opts.join('');
 }
 function renderCourses(){
-  $('csCount').textContent = `${COURSES.length}件`;
-  if(!COURSES.length){ $('csList').innerHTML='<div class="empty">講座がありません。「＋ 新規講座を追加」から登録できます</div>'; return; }
+  // シリーズ絞り込みボタン
+  const allSeries = [...new Set(COURSES.map(c=>c.series_id||'（シリーズ未設定）'))];
+  $('csSeriesFilters').innerHTML = seriesChipsHTML(allSeries, CS_SERIES);
+  $('csSeriesFilters').querySelectorAll('.schip').forEach(c=>c.onclick=()=>{ CS_SERIES=c.dataset.s; renderCourses(); });
+
+  const courses = CS_SERIES==='all' ? COURSES : COURSES.filter(c=>(c.series_id||'（シリーズ未設定）')===CS_SERIES);
+  $('csCount').textContent = `${courses.length}件`;
+  if(!courses.length){ $('csList').innerHTML='<div class="empty">講座がありません。「＋ 新規講座を追加」から登録できます</div>'; return; }
   // シリーズでグループ化
   const groups = new Map();
-  for(const c of COURSES){
+  for(const c of courses){
     const sk = c.series_id || '（シリーズ未設定）';
     if(!groups.has(sk)) groups.set(sk, { count:0, bookings:0, items:[] });
     const g = groups.get(sk); g.count++; g.bookings += (c.booking_count||0); g.items.push(c);
   }
   let html = '';
   for(const [sname, g] of groups){
-    html += `<div class="series-group"><div class="series-head"><span class="sname">${esc(sname)}</span><span class="scount">講座 ${g.count}件 ／ 予約合計 ${g.bookings}件</span></div>`;
+    const col = colorForSeries(sname);
+    html += `<div class="series-group"><div class="series-head" style="border-left-color:${col};background:${col}1f"><span class="sname">${esc(sname)}</span><span class="scount">講座 ${g.count}件 ／ 予約合計 ${g.bookings}件</span></div>`;
     html += g.items.map(c=>`
-      <div class="course-row">
+      <div class="course-row" style="border-left:5px solid ${col}">
         <div class="ctop">
           <div>
             <div class="ctitle">${esc(c.title)}</div>
