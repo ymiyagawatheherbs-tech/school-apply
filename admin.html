@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>THE HERBS 管理ページ</title>
+<title>植物美容学校 講習予約システム｜管理ページ</title>
 <style>
   :root{
     --ink:#544739; --sage:#859A93; --cream:#FFFCF7; --bg:#F5F2EC;
@@ -120,11 +120,13 @@
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
   .cal-dow{margin-bottom:6px;}
   .cal-dow div{text-align:center;font-size:11px;color:var(--muted);}
-  .acell{aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:14px;border:1px solid transparent;background:#FBF8F2;color:var(--ink);cursor:pointer;}
+  .acell{min-height:62px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:3px;padding:4px;border-radius:10px;font-size:12px;border:1px solid var(--line);background:#FBF8F2;color:var(--ink);cursor:pointer;text-align:left;overflow:hidden;}
   .acell.empty{visibility:hidden;cursor:default;}
   .acell:hover{border-color:var(--gold);}
-  .acell.has{background:#fff;border-color:var(--line);font-weight:700;}
-  .acell .an{margin-top:3px;min-width:18px;height:18px;line-height:18px;border-radius:9px;color:#fff;font-size:11px;padding:0 5px;}
+  .acell .ad{font-size:12px;font-weight:700;padding-left:2px;}
+  .acell.has{background:#fff;}
+  .aevs{display:flex;flex-direction:column;gap:2px;}
+  .aev{font-size:10.5px;line-height:1.35;padding:1px 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .cal-day{margin-top:16px;}
   .cal-daylabel{font-size:15px;font-weight:700;color:var(--ink);margin:6px 0 10px;}
 
@@ -192,8 +194,8 @@
   <header>
     <div class="wrap">
       <div>
-        <h1>THE HERBS 管理ページ</h1>
-        <div class="sub">植物美容学校</div>
+        <h1>植物美容学校 講習予約システム</h1>
+        <div class="sub">管理ページ</div>
       </div>
       <div class="head-actions">
         <a class="logout-btn" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener">📅 カレンダー</a>
@@ -578,8 +580,10 @@ function renderAdminCalendar(){
     <div class="cal-grid">`;
   for(let i=0;i<startDow;i++) h+='<div class="acell empty"></div>';
   for(let d=1;d<=dim;d++){ const items=byDay[d]||[];
-    const col=items.length?colorForSeries(items[0].series_id||''):'';
-    h+=`<button type="button" class="acell${items.length?' has':''}" onclick="adminCalDay(${y},${mo},${d})"><span class="ad">${d}</span>${items.length?`<span class="an" style="background:${col}">${items.length}</span>`:''}</button>`; }
+    let evs='';
+    if(items.length){ evs='<div class="aevs">'+items.map(c=>{ const col=colorForSeries(c.series_id||'');
+      return `<span class="aev" style="background:${col}22;border-left:3px solid ${col}">${esc(c.title)}</span>`; }).join('')+'</div>'; }
+    h+=`<button type="button" class="acell${items.length?' has':''}" onclick="adminCalDay(${y},${mo},${d})"><span class="ad">${d}</span>${evs}</button>`; }
   h+='</div><div id="csCalDay" class="cal-day"></div>';
   wrap.innerHTML=h;
   const cnt=cs.filter(c=>{const o=ymdJST(c.course_date);return o.y===y&&o.m===mo;}).length;
