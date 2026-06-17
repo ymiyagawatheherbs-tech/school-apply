@@ -130,6 +130,14 @@
   .cal-day{margin-top:16px;}
   .cal-daylabel{font-size:15px;font-weight:700;color:var(--ink);margin:6px 0 10px;}
 
+  /* 一括登録プレビュー */
+  .bulk-prev{margin-top:16px;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .bulk-prev .bp-head{background:#FBF7EF;padding:10px 14px;font-weight:700;font-size:14px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .bp-row{display:flex;justify-content:space-between;gap:10px;padding:8px 14px;border-top:1px solid #f0ebe0;font-size:13px;}
+  .bp-row .bp-id{color:#b9b1a3;font-size:12px;}
+  .bp-row.shift{background:#FBF1E8;}
+  .bp-tag{font-size:11px;color:#B07A2E;font-weight:700;}
+
   /* 参加者名簿（同じ枠に複数名） */
   .course-box{background:var(--cream);border:1px solid var(--line);border-left-width:5px;
     border-radius:12px;padding:12px 15px;margin-bottom:12px;}
@@ -181,7 +189,7 @@
 <!-- ログイン画面 -->
 <div id="loginView">
   <div class="login-card">
-    <h2>THE HERBS 管理ページ</h2>
+    <h2>植物美容学校 講習予約システム</h2>
     <p>スタッフ用のパスワードを入力してください</p>
     <div class="err" id="loginErr"></div>
     <input type="password" id="pw" placeholder="パスワード" autocomplete="current-password" />
@@ -235,6 +243,7 @@
     <div id="viewCourses" class="hide">
       <div class="toolbar">
         <button class="btn btn-primary btn-sm" id="newCourseBtn">＋ 新規講座を追加</button>
+        <button class="btn btn-ghost btn-sm" id="bulkBtn">🔁 繰り返しで一括登録</button>
         <span class="spacer"></span>
         <span class="count" id="csCount"></span>
         <button class="btn btn-ghost btn-sm" id="csViewToggle">📅 カレンダー表示</button>
@@ -304,6 +313,77 @@
           <button class="btn btn-primary" id="saveCourseBtn">保存</button>
           <button class="btn btn-ghost" id="cancelCourseBtn">キャンセル</button>
         </div>
+      </div>
+
+      <!-- 一括登録フォーム -->
+      <div class="form-panel hide" id="bulkForm">
+        <h3>🔁 繰り返しで一括登録</h3>
+        <p class="hint" style="margin:0 0 14px;">同じ講座を、曜日・間隔・回数（または終了日）でまとめて登録します。祝日に当たる回は自動で翌週へずらせます。<b>プレビューで確認してから登録</b>してください。</p>
+        <div class="frow">
+          <div class="fg">
+            <label>シリーズ名</label>
+            <select id="b_series"><option value="">— 選択 —</option></select>
+          </div>
+          <div class="fg">
+            <label>講座IDの接頭辞 <span class="hint">例：HS-v →  HS-v-260805 のように自動採番</span></label>
+            <input id="b_prefix" placeholder="HS-v" />
+          </div>
+        </div>
+        <div class="fg"><label>タイトル</label><input id="b_title" placeholder="ヴェルデケア" /></div>
+        <div class="frow">
+          <div class="fg"><label>開始日（1回目）</label><input type="date" id="b_startdate" /></div>
+          <div class="fg">
+            <label>1回の長さ</label>
+            <select id="b_span"><option value="1">単日</option><option value="2">2日間（翌日まで）</option></select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>開始時刻</label><input type="time" id="b_starttime" value="10:00" /></div>
+          <div class="fg"><label>終了時刻</label><input type="time" id="b_endtime" value="16:00" /></div>
+        </div>
+        <div class="fg">
+          <label>間隔</label>
+          <select id="b_interval">
+            <option value="weekly">毎週（同じ曜日）</option>
+            <option value="biweekly">隔週（2週ごと）</option>
+            <option value="every3w">3週ごと</option>
+            <option value="every4w">4週ごと</option>
+            <option value="monthly_nth">毎月・第◯◯曜日（開始日と同じ位置）</option>
+            <option value="monthly_day">毎月・同じ日</option>
+          </select>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>回数 <span class="hint">回数だけ・終了日だけ・両方どれでも可</span></label><input type="number" id="b_count" placeholder="12" min="1" /></div>
+          <div class="fg"><label>終了日</label><input type="date" id="b_until" /></div>
+        </div>
+        <div class="fg">
+          <label><input type="checkbox" id="b_skipholidays" checked style="width:auto;margin-right:6px;" />日本の祝日に当たったら翌週へずらす</label>
+        </div>
+        <div class="fg">
+          <label>その他の休業日（任意） <span class="hint">YYYY-MM-DD を改行で。例：2026-08-13</span></label>
+          <textarea id="b_skipdates" placeholder="2026-08-13&#10;2026-12-29"></textarea>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--line);margin:14px 0;" />
+        <div class="frow">
+          <div class="fg"><label>場所</label><input id="b_place" placeholder="植物美容学校 / オンライン（Zoom）" /></div>
+          <div class="fg"><label>定員</label><input type="number" id="b_cap" placeholder="10" /></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>会員価格（円）</label><input type="number" id="b_pm" placeholder="0" /></div>
+          <div class="fg"><label>通常価格（円）</label><input type="number" id="b_pn" placeholder="0" /></div>
+        </div>
+        <div class="fg"><label>Zoom URL（任意）</label><input id="b_zoom" placeholder="https://us02web.zoom.us/j/..." /></div>
+        <div class="frow">
+          <div class="fg"><label>タグ</label><input id="b_tag" placeholder="講習会" /></div>
+          <div class="fg"><label>ステータス</label><select id="b_status"><option>募集中</option><option>終了</option><option>非公開</option></select></div>
+        </div>
+        <div class="fg"><label>備考（任意）</label><textarea id="b_notes"></textarea></div>
+        <div class="err" id="bulkErr"></div>
+        <div class="form-actions">
+          <button class="btn btn-ghost" id="bulkPreviewBtn">プレビュー（日付を確認）</button>
+          <button class="btn btn-ghost" id="bulkCancelBtn">キャンセル</button>
+        </div>
+        <div id="bulkPreview"></div>
       </div>
 
       <div id="csList"></div>
@@ -625,6 +705,108 @@ window.duplicateCourse=(id)=>{
   $('f_id').value=''; $('f_date').value=''; $('f_end').value='';
   $('courseForm').scrollIntoView({behavior:'smooth',block:'start'}); $('f_id').focus();
 };
+
+/* ===== 繰り返しで一括登録 ===== */
+const JP_HOLIDAYS = new Set([
+  '2026-01-01','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29',
+  '2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-07-20','2026-08-11',
+  '2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23',
+  '2027-01-01','2027-01-11','2027-02-11','2027-02-23','2027-03-21','2027-03-22',
+  '2027-04-29','2027-05-03','2027-05-04','2027-05-05','2027-07-19','2027-08-11',
+  '2027-09-20','2027-09-23','2027-10-11','2027-11-03','2027-11-23',
+]);
+let BULK_PLAN = [];
+const WD2=['日','月','火','水','木','金','土'];
+function pad2(n){ return String(n).padStart(2,'0'); }
+function dkey(dt){ return `${dt.getFullYear()}-${pad2(dt.getMonth()+1)}-${pad2(dt.getDate())}`; }
+function nthWeekdayOfMonth(year, month0, weekday, nth){
+  const first=new Date(year,month0,1);
+  const offset=(weekday-first.getDay()+7)%7;
+  const dt=new Date(year,month0,1+offset+(nth-1)*7);
+  return dt.getMonth()===month0 ? dt : null;
+}
+function openBulk(){
+  const sel=$('b_series');
+  sel.innerHTML='<option value="">— 選択 —</option>'+(SERIES_LIST||[]).map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  $('bulkPreview').innerHTML=''; $('bulkErr').textContent='';
+  $('courseForm').classList.add('hide');
+  $('bulkForm').classList.remove('hide');
+  $('bulkForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeBulk(){ $('bulkForm').classList.add('hide'); }
+function buildBulkDates(){
+  const startStr=$('b_startdate').value;
+  if(!startStr) throw new Error('開始日を入れてください');
+  const interval=$('b_interval').value;
+  const count=parseInt($('b_count').value,10);
+  const until=$('b_until').value ? new Date($('b_until').value+'T23:59:59') : null;
+  if(!count && !until) throw new Error('回数または終了日のどちらかを入れてください');
+  const skipHol=$('b_skipholidays').checked;
+  const skipSet=new Set(($('b_skipdates').value||'').split(/[\s,]+/).map(s=>s.trim()).filter(Boolean));
+  const isSkip=dt=>(skipHol && JP_HOLIDAYS.has(dkey(dt))) || skipSet.has(dkey(dt));
+  const start=new Date(startStr+'T00:00:00');
+  const weekday=start.getDay();
+  const nth=Math.floor((start.getDate()-1)/7)+1;
+  const maxN=count?(count*3+24):300;
+  const out=[];
+  for(let i=0;i<maxN;i++){
+    let dt;
+    if(interval==='weekly') dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+7*i);
+    else if(interval==='biweekly') dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+14*i);
+    else if(interval==='every3w') dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+21*i);
+    else if(interval==='every4w') dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+28*i);
+    else if(interval==='monthly_nth'){ const d=nthWeekdayOfMonth(start.getFullYear(),start.getMonth()+i,weekday,nth); if(!d) continue; dt=d; }
+    else if(interval==='monthly_day'){ const d=new Date(start.getFullYear(),start.getMonth()+i,start.getDate()); if(d.getDate()!==start.getDate()) continue; dt=d; }
+    else dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+7*i);
+    let shifted=false,guard=0;
+    while(isSkip(dt)&&guard<8){ dt=new Date(dt.getFullYear(),dt.getMonth(),dt.getDate()+7); shifted=true; guard++; }
+    if(until && dt>until) break;
+    out.push({date:dt,shifted});
+    if(count && out.length>=count) break;
+  }
+  return out;
+}
+function previewBulk(){
+  $('bulkErr').textContent='';
+  let dates;
+  try{ dates=buildBulkDates(); }catch(e){ $('bulkErr').textContent=e.message; $('bulkPreview').innerHTML=''; return; }
+  const prefix=$('b_prefix').value.trim(), series=$('b_series').value, title=$('b_title').value.trim();
+  if(!series||!title||!prefix){ $('bulkErr').textContent='シリーズ・タイトル・ID接頭辞は必須です'; $('bulkPreview').innerHTML=''; return; }
+  if(!dates.length){ $('bulkErr').textContent='生成された日付がありません。条件を見直してください'; $('bulkPreview').innerHTML=''; return; }
+  const span=parseInt($('b_span').value,10);
+  BULK_PLAN=dates.map(d=>{ const yy=String(d.date.getFullYear()).slice(2);
+    return { id:`${prefix}-${yy}${pad2(d.date.getMonth()+1)}${pad2(d.date.getDate())}`, date:d.date, shifted:d.shifted, span }; });
+  const rows=BULK_PLAN.map(p=>{ const d=p.date;
+    return `<div class="bp-row${p.shifted?' shift':''}"><div>${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${WD2[d.getDay()]}）${p.span>1?'〜翌日':''}${p.shifted?' <span class="bp-tag">← 祝日のため翌週へ</span>':''}</div><div class="bp-id">${esc(p.id)}</div></div>`; }).join('');
+  $('bulkPreview').innerHTML=`<div class="bulk-prev"><div class="bp-head"><span>登録される講座：${BULK_PLAN.length}件</span></div>${rows}</div>`
+    +`<button class="btn btn-primary" id="bulkRunBtn" style="margin-top:14px;">この${BULK_PLAN.length}件を一括登録する</button>`;
+  $('bulkRunBtn').onclick=runBulk;
+}
+async function runBulk(){
+  const btn=$('bulkRunBtn'); if(!btn||!BULK_PLAN.length) return;
+  const tmpl={ series_id:$('b_series').value, title:$('b_title').value.trim(),
+    place:$('b_place').value.trim(), capacity:$('b_cap').value,
+    price_member:$('b_pm').value, price_normal:$('b_pn').value,
+    zoom_url:$('b_zoom').value.trim(), tag:$('b_tag').value.trim(),
+    status:$('b_status').value, notes:$('b_notes').value.trim() };
+  const st=$('b_starttime').value||'10:00', et=$('b_endtime').value||'16:00';
+  btn.disabled=true;
+  let ok=0,fail=0; const errs=[];
+  for(let i=0;i<BULK_PLAN.length;i++){
+    const p=BULK_PLAN[i], d=p.date;
+    const ds=`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    const ed=new Date(d.getFullYear(),d.getMonth(),d.getDate()+(p.span>1?p.span-1:0));
+    const de=`${ed.getFullYear()}-${pad2(ed.getMonth()+1)}-${pad2(ed.getDate())}`;
+    const course={ ...tmpl, id:p.id, course_date:`${ds}T${st}:00+09:00`, course_end:`${de}T${et}:00+09:00` };
+    btn.textContent=`登録中… ${i+1}/${BULK_PLAN.length}`;
+    try{ const r=await call('createCourse',{course}); if(r&&r.status==='ok') ok++; else { fail++; errs.push(p.id); } }
+    catch(e){ fail++; errs.push(`${p.id}：${e.message}`); }
+  }
+  await loadCourses();
+  closeBulk();
+  toast(`一括登録：成功 ${ok}件${fail?` ／ 失敗 ${fail}件`:''}`);
+  if(fail) alert('登録できなかった講座があります（ID重複などの可能性）：\n'+errs.join('\n'));
+}
 function toLocalInput(iso){
   if(!iso) return '';
   const p=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date(iso));
@@ -632,6 +814,7 @@ function toLocalInput(iso){
   return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}`;
 }
 function openForm(course){
+  const bf=document.getElementById('bulkForm'); if(bf) bf.classList.add('hide');
   EDIT_ID = course ? course.id : null;
   $('formTitle').textContent = course ? '講座を編集' : '新規講座を追加';
   $('f_id').value = course ? course.id : '';
@@ -699,6 +882,9 @@ window.delCourse=async(id)=>{
 $('csReload').onclick=loadCourses;
 $('csPastToggle').onclick=()=>{ SHOW_PAST=!SHOW_PAST; renderCourses(); };
 $('csViewToggle').onclick=()=>{ CS_VIEW = (CS_VIEW==='calendar' ? 'list' : 'calendar'); renderCourses(); };
+$('bulkBtn').onclick=openBulk;
+$('bulkCancelBtn').onclick=closeBulk;
+$('bulkPreviewBtn').onclick=previewBulk;
 
 /* ===== 起動 ===== */
 $('f_series_sel').addEventListener('change',()=>{
