@@ -113,6 +113,21 @@
   .schip.active{color:#fff;border-color:transparent;font-weight:700;}
   .schip.active .dot{background:#fff !important;}
 
+  /* 管理カレンダー */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px;}
+  .cal-title{font-weight:700;font-size:16px;color:var(--ink);}
+  .cal-nav{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:18px;line-height:1;color:var(--ink);}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+  .cal-dow{margin-bottom:6px;}
+  .cal-dow div{text-align:center;font-size:11px;color:var(--muted);}
+  .acell{aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:14px;border:1px solid transparent;background:#FBF8F2;color:var(--ink);cursor:pointer;}
+  .acell.empty{visibility:hidden;cursor:default;}
+  .acell:hover{border-color:var(--gold);}
+  .acell.has{background:#fff;border-color:var(--line);font-weight:700;}
+  .acell .an{margin-top:3px;min-width:18px;height:18px;line-height:18px;border-radius:9px;color:#fff;font-size:11px;padding:0 5px;}
+  .cal-day{margin-top:16px;}
+  .cal-daylabel{font-size:15px;font-weight:700;color:var(--ink);margin:6px 0 10px;}
+
   /* 参加者名簿（同じ枠に複数名） */
   .course-box{background:var(--cream);border:1px solid var(--line);border-left-width:5px;
     border-radius:12px;padding:12px 15px;margin-bottom:12px;}
@@ -220,10 +235,13 @@
         <button class="btn btn-primary btn-sm" id="newCourseBtn">＋ 新規講座を追加</button>
         <span class="spacer"></span>
         <span class="count" id="csCount"></span>
+        <button class="btn btn-ghost btn-sm" id="csViewToggle">📅 カレンダー表示</button>
         <button class="btn btn-ghost btn-sm" id="csPastToggle">過去も表示</button>
         <button class="btn btn-ghost btn-sm" id="csReload">更新</button>
       </div>
       <div class="series-filters" id="csSeriesFilters"></div>
+      <div class="series-filters" id="csMonthFilters"></div>
+      <div id="csCalWrap" class="hide"></div>
 
       <!-- 講座フォーム -->
       <div class="form-panel hide" id="courseForm">
@@ -296,7 +314,7 @@
 <script>
 const API = 'https://herbs-booking-api.vercel.app/api/admin';
 let PW = sessionStorage.getItem('herbs_admin_pw') || '';
-let BOOKINGS = [], COURSES = [], SERIES_LIST = [], BK_FILTER = 'all', BK_SERIES = 'all', CS_SERIES = 'all', SHOW_PAST = false, EDIT_ID = null;
+let BOOKINGS = [], COURSES = [], SERIES_LIST = [], BK_FILTER = 'all', BK_SERIES = 'all', CS_SERIES = 'all', CS_VIEW = 'list', CS_MONTH = 'all', CS_CAL_Y = 0, CS_CAL_M = 0, SHOW_PAST = false, EDIT_ID = null;
 
 const $ = id => document.getElementById(id);
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
@@ -457,44 +475,68 @@ function isPastCourse(c){
   const dayJST = d => new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
   return dayJST(new Date(ds)) < dayJST(new Date()); // 開催日（最終日）が今日より前なら過去
 }
+function ymdJST(iso){
+  const dt = iso instanceof Date ? iso : new Date(iso);
+  const p = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(dt);
+  const [y,m,d]=p.split('-').map(Number); return {y,m,d};
+}
+function ymJST(iso){ const o=ymdJST(iso); return `${o.y}-${String(o.m).padStart(2,'0')}`; }
+function monthChipsHTML(months,current){
+  let html=`<span class="schip ${current==='all'?'active':''}" data-m="all" ${current==='all'?'style="background:var(--ink)"':''}>全月</span>`;
+  for(const mk of months){ const [y,m]=mk.split('-'); const active=current===mk;
+    html+=`<span class="schip ${active?'active':''}" data-m="${mk}" ${active?'style="background:var(--sage)"':''}>${y}年${Number(m)}月</span>`; }
+  return html;
+}
 function renderCourses(){
   // シリーズ絞り込みボタン
-  const allSeries = [...new Set(COURSES.map(c=>c.series_id||'（シリーズ未設定）'))];
-  $('csSeriesFilters').innerHTML = seriesChipsHTML(allSeries, CS_SERIES);
+  const allSeries=[...new Set(COURSES.map(c=>c.series_id||'（シリーズ未設定）'))];
+  $('csSeriesFilters').innerHTML=seriesChipsHTML(allSeries,CS_SERIES);
   $('csSeriesFilters').querySelectorAll('.schip').forEach(c=>c.onclick=()=>{ CS_SERIES=c.dataset.s; renderCourses(); });
+  $('csViewToggle').textContent = CS_VIEW==='calendar' ? '☰ リスト表示' : '📅 カレンダー表示';
 
-  // シリーズで絞り込み
-  let courses = CS_SERIES==='all' ? COURSES : COURSES.filter(c=>(c.series_id||'（シリーズ未設定）')===CS_SERIES);
-  // 過去の講座を隠す（ボタンで切替）
-  const pastCount = courses.filter(isPastCourse).length;
-  if(!SHOW_PAST) courses = courses.filter(c=>!isPastCourse(c));
-  // トグルボタンの表示
-  const tBtn = $('csPastToggle');
-  if(tBtn){
-    tBtn.textContent = SHOW_PAST ? '過去を隠す' : `過去も表示${pastCount?`（${pastCount}件）`:''}`;
-    tBtn.style.display = (pastCount>0 || SHOW_PAST) ? '' : 'none';
-  }
-
-  $('csCount').textContent = `${courses.length}件`;
-  if(!courses.length){
-    $('csList').innerHTML = pastCount>0
-      ? '<div class="empty">表示できる講座がありません（過去の講座のみ）。「過去も表示」で確認できます。</div>'
-      : '<div class="empty">講座がありません。「＋ 新規講座を追加」から登録できます</div>';
+  if(CS_VIEW==='calendar'){
+    $('csMonthFilters').classList.add('hide');
+    $('csList').classList.add('hide');
+    $('csCalWrap').classList.remove('hide');
+    $('csPastToggle').style.display='none';
+    renderAdminCalendar();
     return;
   }
-  // シリーズでグループ化
-  const groups = new Map();
-  for(const c of courses){
-    const sk = c.series_id || '（シリーズ未設定）';
-    if(!groups.has(sk)) groups.set(sk, { count:0, bookings:0, items:[] });
-    const g = groups.get(sk); g.count++; g.bookings += (c.booking_count||0); g.items.push(c);
+  // ---- リスト表示 ----
+  $('csCalWrap').classList.add('hide');
+  $('csList').classList.remove('hide');
+  $('csMonthFilters').classList.remove('hide');
+
+  // 月の絞り込みボタン
+  const monthsAvail=[...new Set(COURSES.filter(c=>c.course_date).map(c=>ymJST(c.course_date)))].sort();
+  $('csMonthFilters').innerHTML=monthChipsHTML(monthsAvail,CS_MONTH);
+  $('csMonthFilters').querySelectorAll('.schip').forEach(c=>c.onclick=()=>{ CS_MONTH=c.dataset.m; renderCourses(); });
+
+  // 絞り込み（シリーズ → 月 → 過去）
+  let courses = CS_SERIES==='all' ? COURSES : COURSES.filter(c=>(c.series_id||'（シリーズ未設定）')===CS_SERIES);
+  if(CS_MONTH!=='all') courses = courses.filter(c=>c.course_date && ymJST(c.course_date)===CS_MONTH);
+  const pastCount = courses.filter(isPastCourse).length;
+  if(!SHOW_PAST) courses = courses.filter(c=>!isPastCourse(c));
+  const tBtn=$('csPastToggle');
+  if(tBtn){ tBtn.textContent = SHOW_PAST ? '過去を隠す' : `過去も表示${pastCount?`（${pastCount}件）`:''}`;
+    tBtn.style.display = (pastCount>0||SHOW_PAST) ? '' : 'none'; }
+
+  $('csCount').textContent=`${courses.length}件`;
+  if(!courses.length){
+    $('csList').innerHTML = pastCount>0
+      ? '<div class="empty">表示できる講座がありません（過去のみ）。「過去も表示」で確認できます。</div>'
+      : '<div class="empty">この条件の講座はありません。</div>';
+    return;
   }
-  let html = '';
-  for(const [sname, g] of groups){
-    const col = colorForSeries(sname);
-    html += `<div class="series-group"><div class="series-head" style="border-left-color:${col};background:${col}1f"><span class="sname">${esc(sname)}</span><span class="scount">講座 ${g.count}件 ／ 予約合計 ${g.bookings}件</span></div>`;
-    html += g.items.map(c=>{
-      const past = isPastCourse(c);
+  const groups=new Map();
+  for(const c of courses){ const sk=c.series_id||'（シリーズ未設定）';
+    if(!groups.has(sk)) groups.set(sk,{count:0,bookings:0,items:[]});
+    const g=groups.get(sk); g.count++; g.bookings+=(c.booking_count||0); g.items.push(c); }
+  let html='';
+  for(const [sname,g] of groups){
+    const col=colorForSeries(sname);
+    html+=`<div class="series-group"><div class="series-head" style="border-left-color:${col};background:${col}1f"><span class="sname">${esc(sname)}</span><span class="scount">講座 ${g.count}件 ／ 予約合計 ${g.bookings}件</span></div>`;
+    html+=g.items.map(c=>{ const past=isPastCourse(c);
       return `
       <div class="course-row${past?' is-past':''}" style="border-left:5px solid ${col}">
         <div class="ctop">
@@ -504,19 +546,81 @@ function renderCourses(){
             <div class="cmeta">会員¥${Number(c.price_member||0).toLocaleString()} ／ 通常¥${Number(c.price_normal||0).toLocaleString()} ／ ${esc(c.status||'')}${c.zoom_url?' ／ Zoom設定あり':''}</div>
             <div class="cmeta" style="color:#b9b1a3;">${esc(c.id)}</div>
           </div>
-          <div>
-            <div class="cactions">
-              <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
-              <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
-            </div>
-          </div>
+          <div><div class="cactions">
+            <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
+            <button class="btn btn-sm btn-ghost" onclick="duplicateCourse('${esc(c.id)}')">複製</button>
+            <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
+          </div></div>
         </div>
-      </div>`;
-    }).join('');
-    html += `</div>`;
+      </div>`; }).join('');
+    html+=`</div>`;
   }
-  $('csList').innerHTML = html;
+  $('csList').innerHTML=html;
 }
+
+/* ===== 管理カレンダー ===== */
+function renderAdminCalendar(){
+  const wrap=$('csCalWrap');
+  if(!CS_CAL_Y){ const o=ymdJST(new Date()); CS_CAL_Y=o.y; CS_CAL_M=o.m; }
+  const y=CS_CAL_Y, mo=CS_CAL_M;
+  let cs = CS_SERIES==='all' ? COURSES : COURSES.filter(c=>(c.series_id||'（シリーズ未設定）')===CS_SERIES);
+  cs = cs.filter(c=>c.course_date);
+  const byDay={};
+  cs.forEach(c=>{ const o=ymdJST(c.course_date); if(o.y===y&&o.m===mo)(byDay[o.d]=byDay[o.d]||[]).push(c); });
+  const startDow=new Date(y,mo-1,1).getDay();
+  const dim=new Date(y,mo,0).getDate();
+  let h=`<div class="cal-head">
+      <button type="button" class="cal-nav" onclick="adminCalMove(-1)">‹</button>
+      <div class="cal-title">${y}年${mo}月</div>
+      <button type="button" class="cal-nav" onclick="adminCalMove(1)">›</button>
+    </div>
+    <div class="cal-grid cal-dow"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="cal-grid">`;
+  for(let i=0;i<startDow;i++) h+='<div class="acell empty"></div>';
+  for(let d=1;d<=dim;d++){ const items=byDay[d]||[];
+    const col=items.length?colorForSeries(items[0].series_id||''):'';
+    h+=`<button type="button" class="acell${items.length?' has':''}" onclick="adminCalDay(${y},${mo},${d})"><span class="ad">${d}</span>${items.length?`<span class="an" style="background:${col}">${items.length}</span>`:''}</button>`; }
+  h+='</div><div id="csCalDay" class="cal-day"></div>';
+  wrap.innerHTML=h;
+  const cnt=cs.filter(c=>{const o=ymdJST(c.course_date);return o.y===y&&o.m===mo;}).length;
+  $('csCount').textContent=`${cnt}件（${mo}月）`;
+}
+function adminCalMove(step){ let m=CS_CAL_M+step,y=CS_CAL_Y; if(m<1){m=12;y--;} if(m>12){m=1;y++;} CS_CAL_M=m; CS_CAL_Y=y; renderAdminCalendar(); }
+window.adminCalMove=adminCalMove;
+window.adminCalDay=(y,mo,d)=>{
+  const panel=$('csCalDay'); if(!panel) return;
+  let cs = CS_SERIES==='all' ? COURSES : COURSES.filter(c=>(c.series_id||'（シリーズ未設定）')===CS_SERIES);
+  const items=cs.filter(c=>{ if(!c.course_date) return false; const o=ymdJST(c.course_date); return o.y===y&&o.m===mo&&o.d===d; });
+  let h=`<div class="cal-daylabel">${y}年${mo}月${d}日</div>`;
+  if(!items.length) h+=`<div class="cmeta" style="margin-bottom:12px;color:var(--muted)">この日に講座はありません。</div>`;
+  else h+=items.map(c=>{ const col=colorForSeries(c.series_id||'');
+    return `<div class="course-row" style="border-left:5px solid ${col};margin-bottom:8px;">
+      <div class="ctop"><div>
+        <div class="ctitle">${esc(c.title)}</div>
+        <div class="cmeta">${fmtDate(c.course_date)} ／ ${esc(c.series_id||'')} ／ 予約${c.booking_count}件</div>
+      </div><div><div class="cactions">
+        <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
+        <button class="btn btn-sm btn-ghost" onclick="duplicateCourse('${esc(c.id)}')">複製</button>
+        <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
+      </div></div></div></div>`; }).join('');
+  h+=`<button class="btn btn-primary btn-sm" onclick="openFormOnDate(${y},${mo},${d})">＋ この日に講座を追加</button>`;
+  panel.innerHTML=h;
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.openFormOnDate=(y,mo,d)=>{ openForm(null); const pad=n=>String(n).padStart(2,'0');
+  $('f_date').value=`${y}-${pad(mo)}-${pad(d)}T10:00`;
+  $('courseForm').scrollIntoView({behavior:'smooth',block:'start'}); $('f_id').focus(); };
+window.duplicateCourse=(id)=>{
+  const c=COURSES.find(x=>x.id===id); if(!c) return;
+  openForm(null);
+  $('formTitle').textContent='講座を複製（新規として保存）';
+  $('f_series_sel').value=c.series_id||''; $('f_title').value=c.title||'';
+  $('f_place').value=c.place||''; $('f_capacity').value=c.capacity??'';
+  $('f_tag').value=c.tag||''; $('f_pm').value=c.price_member??''; $('f_pn').value=c.price_normal??'';
+  $('f_zoom').value=c.zoom_url||''; $('f_status').value=c.status||'募集中'; $('f_notes').value=c.notes||'';
+  $('f_id').value=''; $('f_date').value=''; $('f_end').value='';
+  $('courseForm').scrollIntoView({behavior:'smooth',block:'start'}); $('f_id').focus();
+};
 function toLocalInput(iso){
   if(!iso) return '';
   const p=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date(iso));
@@ -590,6 +694,7 @@ window.delCourse=async(id)=>{
 };
 $('csReload').onclick=loadCourses;
 $('csPastToggle').onclick=()=>{ SHOW_PAST=!SHOW_PAST; renderCourses(); };
+$('csViewToggle').onclick=()=>{ CS_VIEW = (CS_VIEW==='calendar' ? 'list' : 'calendar'); renderCourses(); };
 
 /* ===== 起動 ===== */
 $('f_series_sel').addEventListener('change',()=>{

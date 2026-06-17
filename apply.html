@@ -88,6 +88,28 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--cream);color:var(--b
 .schedule-title{font-size:13px;font-weight:500;color:var(--brown);line-height:1.5;margin-bottom:2px}
 .schedule-meta{font-size:12px;color:var(--muted)}
 
+/* CALENDAR (STEP2 日程) */
+.cal-wrap{margin-bottom:14px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-title{font-weight:700;font-size:16px;color:var(--brown)}
+.cal-nav{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:18px;line-height:1;color:var(--brown)}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{margin-bottom:6px}
+.cal-dow div{text-align:center;font-size:11px;color:var(--muted)}
+.cal-cell{aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:14px;padding:0;border:none;background:transparent}
+.cal-cell.empty{visibility:hidden}
+.cal-cell .cd{color:var(--brown)}
+.cal-cell .cd.off{color:#cfc8bb}
+.cal-cell.has{border:1.5px solid var(--gold);background:#fff;cursor:pointer;font-weight:700}
+.cal-cell.has:hover{background:var(--cream)}
+.cal-cell.has .dot2{width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:3px}
+.cal-cell.has.picked{background:var(--gold)}
+.cal-cell.has.picked .cd{color:#fff}
+.cal-cell.has.picked .dot2{background:#fff}
+.cal-hint{font-size:13px;color:var(--muted);margin:10px 0;text-align:center}
+.cal-daylabel{font-size:14px;font-weight:700;color:var(--brown);margin:14px 0 10px}
+
 /* BACK LINK */
 .back-link{font-size:12px;color:var(--gold);cursor:pointer;background:none;border:none;padding:0;margin-bottom:16px;display:flex;align-items:center;gap:4px}
 .back-link:hover{color:var(--brown-md)}
@@ -273,6 +295,7 @@ body:has(#step1:not(.active)) .hero-card { display: none !important; }
     </div>
     <button class="back-link" onclick="goStep(1)">← シリーズ選択に戻る</button>
     <p class="step-heading" id="step2-heading">日程を選んでください</p>
+    <div id="calWrap" class="cal-wrap"></div>
     <div class="schedule-list" id="scheduleList"></div>
     <div class="btn-wrap">
       <button class="btn-primary" id="btn2" disabled onclick="goStep(3)">次へ — 情報を入力する</button>
@@ -524,59 +547,135 @@ function selectSeries(name, filter) {
     courses = courses.filter(c => (c.id + ' ' + c.title).toLowerCase().includes(f));
   }
 
-  document.getElementById('step2-heading').textContent = `「${name}」の日程を選んでください`;
+  document.getElementById('step2-heading').textContent = `「${name}」の日程をカレンダーから選んでください`;
+  document.getElementById('btn2').disabled = true;
 
+  const calWrap = document.getElementById('calWrap');
   const list = document.getElementById('scheduleList');
+  calWrap.innerHTML = '';
   list.innerHTML = '';
 
   if (courses.length === 0) {
     list.innerHTML = '<div class="no-courses">現在募集中の講座はありません。<br>近日公開予定です。</div>';
-    document.getElementById('btn2').disabled = true;
   } else {
-    courses.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-    let currentTitle = null;
+    const dated = [];
     courses.forEach(c => {
-      if (c.title !== currentTitle) {
-        currentTitle = c.title;
-        const head = document.createElement('div');
-        head.className = 'schedule-group-head';
-        head.style.cssText = 'margin:24px 0 10px;padding:9px 14px;background:var(--cream);border-left:4px solid var(--gold);border-radius:8px;font-weight:700;font-size:15px;color:var(--brown);';
-        head.textContent = c.title;
-        list.appendChild(head);
-      }
-      const el = document.createElement('label');
-      el.className = 'schedule-item';
-      el.dataset.id    = c.id;
-      el.dataset.title = c.title;
-      el.dataset.date  = c.date;
-      el.innerHTML = `
-        <input type="radio" name="schedule" value="${c.id}" />
-        <span class="schedule-check"></span>
-        <div class="schedule-body">
-          <div class="schedule-meta" style="font-size:13px;color:var(--brown);font-weight:500;">${c.date}</div>
-          <div class="schedule-tag">${c.tag} — ${c.id}</div>
-        </div>`;
-      el.addEventListener('click', () => {
-        document.querySelectorAll('.schedule-item').forEach(i => i.classList.remove('selected'));
-        el.classList.add('selected');
-        el.querySelector('input').checked = true;
-        state.courseId    = c.id;
-        state.courseTitle = c.title;
-        state.courseDate  = c.date;
-        state.coursePriceMember = c.price_member;
-        state.coursePriceNormal = c.price_normal;
-        const _b = document.getElementById('btn2');
-        _b.disabled = false;
-        _b.click();   // 日程を押したら自動で次の画面へ
-        _b.click();   // 日程を押したら自動で次の画面へ
-      });
-      list.appendChild(el);
+      const d = parseCourseDate(c.date);
+      if (d) dated.push({ ...c, _y:d.y, _m:d.mo, _d:d.d });
     });
-    document.getElementById('btn2').disabled = true;
+    if (!dated.length) {
+      renderScheduleListFallback(courses, list);   // 日付が読めない場合は従来リスト
+    } else {
+      CAL_COURSES = dated;
+      CAL_MONTHS = [...new Set(dated.map(c => `${c._y}-${String(c._m).padStart(2,'0')}`))].sort();
+      const t = new Date();
+      const todayKey = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+      const i = CAL_MONTHS.findIndex(m => m >= todayKey);
+      CAL_IDX = i >= 0 ? i : 0;
+      renderCalendar();
+    }
   }
 
   state.courseId = ''; state.courseTitle = ''; state.courseDate = '';
   goStep(2);
+}
+
+/* ===== STEP2 カレンダー ===== */
+let CAL_MONTHS = [], CAL_COURSES = [], CAL_IDX = 0;
+function parseCourseDate(s){
+  const m = String(s||'').match(/(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/);
+  if(!m) return null;
+  return { y:+m[1], mo:+m[2], d:+m[3] };
+}
+function renderCalendar(){
+  const calWrap = document.getElementById('calWrap');
+  const list = document.getElementById('scheduleList');
+  list.innerHTML = '<div class="cal-hint">印のついた日付を選ぶと、その日の講座が表示されます</div>';
+  const [y, mo] = CAL_MONTHS[CAL_IDX].split('-').map(Number);
+  const startDow = new Date(y, mo-1, 1).getDay();
+  const daysInMonth = new Date(y, mo, 0).getDate();
+  const dayCount = {};
+  CAL_COURSES.forEach(c => { if(c._y===y && c._m===mo) dayCount[c._d] = (dayCount[c._d]||0)+1; });
+  const prevOff = CAL_IDX <= 0, nextOff = CAL_IDX >= CAL_MONTHS.length-1;
+  let h = `<div class="cal-head">
+      <button type="button" class="cal-nav" ${prevOff?'disabled':''} onclick="calMove(-1)">‹</button>
+      <div class="cal-title">${y}年${mo}月</div>
+      <button type="button" class="cal-nav" ${nextOff?'disabled':''} onclick="calMove(1)">›</button>
+    </div>
+    <div class="cal-grid cal-dow"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="cal-grid">`;
+  for(let i=0;i<startDow;i++) h += '<div class="cal-cell empty"></div>';
+  for(let d=1; d<=daysInMonth; d++){
+    if(dayCount[d]) h += `<button type="button" class="cal-cell has" onclick="calPick(this,${y},${mo},${d})"><span class="cd">${d}</span><span class="dot2"></span></button>`;
+    else h += `<div class="cal-cell"><span class="cd off">${d}</span></div>`;
+  }
+  h += '</div>';
+  calWrap.innerHTML = h;
+}
+function calMove(step){
+  CAL_IDX = Math.min(Math.max(CAL_IDX+step, 0), CAL_MONTHS.length-1);
+  renderCalendar();
+}
+function calPick(el, y, mo, d){
+  document.querySelectorAll('.cal-cell.has').forEach(e=>e.classList.remove('picked'));
+  el.classList.add('picked');
+  const items = CAL_COURSES.filter(c => c._y===y && c._m===mo && c._d===d);
+  renderDayCourses(items, `${y}年${mo}月${d}日`);
+}
+function renderDayCourses(items, label){
+  const list = document.getElementById('scheduleList');
+  list.innerHTML = `<div class="cal-daylabel">${label} の講座</div>`;
+  items.forEach(c => {
+    const el = document.createElement('label');
+    el.className = 'schedule-item';
+    el.innerHTML = `
+      <input type="radio" name="schedule" value="${c.id}" />
+      <span class="schedule-check"></span>
+      <div class="schedule-body">
+        <div class="schedule-meta" style="font-size:14px;color:var(--brown);font-weight:600;">${c.title}</div>
+        <div class="schedule-meta" style="margin-top:2px;">${c.date}</div>
+        <div class="schedule-tag">${c.tag} — ${c.id}</div>
+      </div>`;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.schedule-item').forEach(i => i.classList.remove('selected'));
+      el.classList.add('selected');
+      el.querySelector('input').checked = true;
+      state.courseId = c.id; state.courseTitle = c.title; state.courseDate = c.date;
+      state.coursePriceMember = c.price_member; state.coursePriceNormal = c.price_normal;
+      const b = document.getElementById('btn2'); b.disabled = false; b.click();
+    });
+    list.appendChild(el);
+  });
+}
+function renderScheduleListFallback(courses, list){
+  courses.sort((a,b)=>(a.id<b.id?-1:a.id>b.id?1:0));
+  let currentTitle = null;
+  courses.forEach(c => {
+    if(c.title !== currentTitle){
+      currentTitle = c.title;
+      const head = document.createElement('div');
+      head.className = 'schedule-group-head';
+      head.style.cssText = 'margin:24px 0 10px;padding:9px 14px;background:var(--cream);border-left:4px solid var(--gold);border-radius:8px;font-weight:700;font-size:15px;color:var(--brown);';
+      head.textContent = c.title; list.appendChild(head);
+    }
+    const el = document.createElement('label');
+    el.className = 'schedule-item';
+    el.innerHTML = `
+      <input type="radio" name="schedule" value="${c.id}" />
+      <span class="schedule-check"></span>
+      <div class="schedule-body">
+        <div class="schedule-meta" style="font-size:13px;color:var(--brown);font-weight:500;">${c.date}</div>
+        <div class="schedule-tag">${c.tag} — ${c.id}</div>
+      </div>`;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.schedule-item').forEach(i => i.classList.remove('selected'));
+      el.classList.add('selected'); el.querySelector('input').checked = true;
+      state.courseId = c.id; state.courseTitle = c.title; state.courseDate = c.date;
+      state.coursePriceMember = c.price_member; state.coursePriceNormal = c.price_normal;
+      const b = document.getElementById('btn2'); b.disabled = false; b.click();
+    });
+    list.appendChild(el);
+  });
 }
 // ============================================================
 // STEP 3: 会員照合
