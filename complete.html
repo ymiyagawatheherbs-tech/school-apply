@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お申し込みありがとうございます | THE HERBS 植物美容学校</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #FFFCF7;
+      --text:      #544739;
+      --muted:     #8a7968;
+      --accent:    #859A93;
+      --accent-dk: #5e7a72;
+      --border:    #d8cfc4;
+      --line-grn:  #06C755;
+      --stripe:    #635BFF;
+      --warn-bg:   #fdf6ec;
+      --warn-bd:   #e8c97a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* ── ヘッダー ── */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header img { height: 36px; mix-blend-mode: multiply; }
+    .header-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 14px;
+      color: var(--muted);
+      margin-left: 12px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── メインコンテンツ ── */
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 32px 20px 0;
+    }
+
+    /* ── 完了バナー ── */
+    .complete-banner {
+      background: var(--accent);
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .complete-banner .check {
+      font-size: 40px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .complete-banner h1 {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 20px;
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+    .complete-banner p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.7;
+    }
+
+    /* ── 予約情報カード ── */
+    .info-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .info-card .label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 7px 0;
+      border-bottom: 1px solid #f0ebe4;
+      font-size: 13px;
+      gap: 12px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .key { color: var(--muted); flex-shrink: 0; }
+    .info-row .val { font-weight: 500; text-align: right; word-break: break-all; }
+    .booking-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-dk);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── 保存注意 ── */
+    .save-notice {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-bd);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #7a6030;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .save-notice .icon { flex-shrink: 0; font-size: 16px; }
+
+    /* ── セクションタイトル ── */
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* ── ボタン ── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Noto Sans JP', sans-serif;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: opacity .15s, transform .1s;
+      letter-spacing: 0.03em;
+    }
+    .btn:active { opacity: 0.85; transform: scale(0.98); }
+
+    .btn-stripe {
+      background: var(--stripe);
+      color: #fff;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 12px rgba(99,91,255,.25);
+    }
+    .btn-line {
+      background: var(--line-grn);
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      font-size: 13px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+
+    .btn-sub {
+      font-size: 11px;
+      opacity: 0.8;
+      display: block;
+      margin-top: 3px;
+    }
+
+    /* ── 無料案内 ── */
+    .free-badge {
+      background: #eef6f0;
+      border: 1px solid #a8d5b5;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #2e6b42;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    /* ── LINE誘導ブロック ── */
+    .line-block {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .line-block .desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .line-block .qr-wrap {
+      margin-bottom: 14px;
+    }
+    .line-block .qr-wrap img {
+      width: 140px;
+      height: 140px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .line-block .qr-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .line-divider {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .line-divider::before,
+    .line-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── フッター ── */
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .footer a { color: var(--accent-dk); text-decoration: none; }
+
+    /* ── hidden ── */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="https://ymiyagawatheherbs-tech.github.io/school-apply/herbs_logo.png"
+         alt="THE HERBS"
+         onerror="this.style.display='none'">
+    <span class="header-title">植物美容学校</span>
+  </div>
+
+  <div class="container">
+
+    <!-- 完了バナー -->
+    <div class="complete-banner">
+      <span class="check">✅</span>
+      <h1>お申し込みありがとうございます</h1>
+      <p>受付が完了しました。<br>以下の内容をご確認ください。</p>
+    </div>
+
+    <!-- 保存注意 -->
+    <div class="save-notice">
+      <span class="icon">📸</span>
+      <span>この画面をスクリーンショットまたはブックマークして保存してください。<br>決済リンクはこのページにのみ表示されます。</span>
+    </div>
+
+    <!-- 予約情報 -->
+    <div class="info-card">
+      <div class="label">予約内容</div>
+      <div class="info-row">
+        <span class="key">予約番号</span>
+        <span class="val booking-id" id="dispBookingId">—</span>
+      </div>
+      <div class="info-row" id="rowCourse">
+        <span class="key">講座名</span>
+        <span class="val" id="dispCourse">—</span>
+      </div>
+      <div class="info-row" id="rowDate">
+        <span class="key">開催日時</span>
+        <span class="val" id="dispDate">—</span>
+      </div>
+      <div class="info-row" id="rowPrice">
+        <span class="key">受講料</span>
+        <span class="val" id="dispPrice">—</span>
+      </div>
+    </div>
+
+    <!-- 決済セクション -->
+    <div id="sectionPaid" class="hidden">
+      <div class="section-title">お支払い</div>
+      <a id="btnStripe" href="#" target="_blank" class="btn btn-stripe">
+        カードでお支払い
+        <span class="btn-sub">Stripeの安全な決済ページに移動します</span>
+      </a>
+    </div>
+
+    <!-- 無料講座 -->
+    <div id="sectionFree" class="hidden">
+      <div class="free-badge">✅ この講座は無料です。お支払いは不要です。</div>
+    </div>
+
+    <!-- LINE誘導 -->
+    <div class="line-block">
+      <div class="section-title" style="justify-content:center; margin-bottom:8px;">
+        リマインダーをLINEで受け取る
+      </div>
+      <p class="desc">
+        開催前日のリマインダーや<br>
+        キャンセル・変更のご連絡はLINEでお送りします。<br>
+        友だち追加されていない方は下記からご登録ください。
+      </p>
+
+      <!-- スマホ向け QRコード表示 -->
+      <div class="qr-wrap" id="qrWrap">
+        <img src="https://qr-official.line.me/gs/M_723lsjqi_BW.png"
+             alt="THE HERBS LINE QR"
+             onerror="document.getElementById('qrWrap').style.display='none'">
+        <div class="qr-label">スマートフォンのカメラでスキャン</div>
+      </div>
+
+      <div class="line-divider">または</div>
+
+      <a href="https://line.me/ti/p/%40723lsjqi" target="_blank" class="btn btn-line">
+        LINEで友だち追加
+        <span class="btn-sub">LINEアプリが開きます</span>
+      </a>
+    </div>
+
+    <!-- 講習会一覧に戻る -->
+    <a href="https://www.the-herbs.co.jp/school" class="btn btn-outline">
+      講習会一覧に戻る
+    </a>
+
+    <div class="footer">
+      <p>株式会社THE HERBS 植物美容学校</p>
+      <p>ご不明な点は <a href="https://line.me/ti/p/%40723lsjqi">LINE公式アカウント</a> へお問い合わせください。</p>
+    </div>
+
+  </div><!-- /container -->
+
+  <script>
+    // URLパラメータから予約情報を取得
+    const params = new URLSearchParams(location.search);
+    const bookingId  = params.get('id')         || '';
+    const paymentUrl = params.get('paymentUrl') || '';
+    const course     = params.get('course')     || '';
+    const courseDate = params.get('date')        || '';
+    const price      = parseInt(params.get('price') || '0', 10);
+
+    // 予約番号
+    document.getElementById('dispBookingId').textContent = bookingId || '—';
+
+    // 講座名
+    if (course) {
+      document.getElementById('dispCourse').textContent = decodeURIComponent(course);
+    } else {
+      document.getElementById('rowCourse').classList.add('hidden');
+    }
+
+    // 開催日時
+    if (courseDate) {
+      document.getElementById('dispDate').textContent = decodeURIComponent(courseDate);
+    } else {
+      document.getElementById('rowDate').classList.add('hidden');
+    }
+
+    // 受講料
+    if (price > 0) {
+      document.getElementById('dispPrice').textContent =
+        '¥' + price.toLocaleString();
+      // 有料：Stripeボタン表示
+      document.getElementById('sectionPaid').classList.remove('hidden');
+      if (paymentUrl) {
+        document.getElementById('btnStripe').href = paymentUrl;
+      } else {
+        document.getElementById('btnStripe').textContent = '決済リンクを準備中です';
+        document.getElementById('btnStripe').style.opacity = '0.5';
+        document.getElementById('btnStripe').style.pointerEvents = 'none';
+      }
+    } else {
+      document.getElementById('dispPrice').textContent = '無料';
+      // 無料：バッジ表示
+      document.getElementById('sectionFree').classList.remove('hidden');
+    }
+
+    // パラメータが全くない場合（直接アクセス）
+    if (!bookingId && !course) {
+      document.querySelector('.complete-banner p').textContent =
+        'お申し込みの完了ページです。フォームよりお申し込みください。';
+    }
+  </script>
+
+</body>
+</html>
