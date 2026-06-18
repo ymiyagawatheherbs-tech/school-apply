@@ -833,7 +833,17 @@ async function submitForm() {
           if (freeBox) freeBox.style.display = 'block';
         }
 
-        goStep(5);
+        // complete.html にリダイレクト
+        const q = new URLSearchParams({
+          id:         bookingId,
+          paymentUrl: data.paymentUrl || '',
+          course:     encodeURIComponent(state.courseTitle),
+          date:       encodeURIComponent(state.courseDate),
+          price:      String(data.price || 0),
+        });
+        window.location.href =
+          'https://ymiyagawatheherbs-tech.github.io/school-apply/complete.html?' + q.toString();
+
   } catch {
     showError('送信に失敗しました。しばらく経ってから再度お試しください。');
     document.getElementById('btnSubmit').disabled = false;
