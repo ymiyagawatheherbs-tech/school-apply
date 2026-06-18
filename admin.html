@@ -678,11 +678,24 @@ window.adminCalDay=(y,mo,d)=>{
   let h=`<div class="cal-daylabel">${y}年${mo}月${d}日</div>`;
   if(!items.length) h+=`<div class="cmeta" style="margin-bottom:12px;color:var(--muted)">この日に講座はありません。</div>`;
   else h+=items.map(c=>{ const col=colorForSeries(c.series_id||'');
-    return `<div class="course-row" style="border-left:5px solid ${col};margin-bottom:8px;">
-      <div class="ctop"><div>
+    // 開始〜終了時間を組み立て
+    const timeStart = c.course_date ? new Date(c.course_date).toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'}) : '—';
+    const timeEnd   = c.course_end  ? new Date(c.course_end ).toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'}) : '終了時間未設定';
+    const timeRange = `${timeStart} 〜 ${timeEnd}`;
+    const pm = c.price_member  != null ? `¥${Number(c.price_member ).toLocaleString()}` : '—';
+    const pn = c.price_normal  != null ? `¥${Number(c.price_normal ).toLocaleString()}` : '—';
+    return `<div class="course-row" style="border-left:5px solid ${col};margin-bottom:10px;">
+      <div class="ctop"><div style="flex:1;">
         <div class="ctitle">${esc(c.title)}</div>
-        <div class="cmeta">${fmtDate(c.course_date)} ／ ${esc(c.series_id||'')} ／ 予約${c.booking_count}件</div>
-      </div><div><div class="cactions">
+        <table style="margin-top:6px;font-size:12px;color:var(--muted);border-collapse:collapse;line-height:1.9;">
+          <tr><td style="padding-right:12px;white-space:nowrap;">🆔 講座ID</td><td style="font-family:monospace;color:var(--ink);font-weight:600;">${esc(c.id)}</td></tr>
+          <tr><td style="padding-right:12px;white-space:nowrap;">🕐 時間</td><td style="color:var(--ink);">${timeRange}</td></tr>
+          <tr><td style="padding-right:12px;white-space:nowrap;">📍 場所</td><td>${esc(c.place||'—')}</td></tr>
+          <tr><td style="padding-right:12px;white-space:nowrap;">👥 定員 ／ 予約</td><td>${c.capacity??'—'} 名 ／ <strong>${c.booking_count}</strong> 件</td></tr>
+          <tr><td style="padding-right:12px;white-space:nowrap;">💴 会員 ／ 非会員</td><td>${pm} ／ ${pn}</td></tr>
+          <tr><td style="padding-right:12px;white-space:nowrap;">📂 シリーズ</td><td>${esc(c.series_id||'—')}</td></tr>
+        </table>
+      </div><div><div class="cactions" style="margin-top:4px;">
         <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
         <button class="btn btn-sm btn-ghost" onclick="duplicateCourse('${esc(c.id)}')">複製</button>
         <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
