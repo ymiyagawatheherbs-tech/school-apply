@@ -325,11 +325,19 @@ function renderDone(){
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h2>ご予約を受け付けました</h2>
-      <p>
-        ${esc(form.name)} 様<br><br>
-        <strong>${esc(si.label)}</strong><br>
-        ${esc(menuName)}<br>
-        ${esc(dateLabel)} ${esc(form.time)}<br><br>
+      <p style="margin-bottom:1.3rem;">${esc(form.name)} 様</p>
+
+      <div style="background:var(--bgCard);border:2px solid var(--sage);border-radius:12px;padding:1.3rem 1.2rem;margin-bottom:1.3rem;">
+        <div style="font-size:.78rem;color:var(--textMuted);margin-bottom:.3rem;">${esc(si.label)}</div>
+        <div style="font-size:.92rem;color:var(--text);font-weight:600;margin-bottom:.8rem;line-height:1.5;">${esc(menuName)}</div>
+        <div style="border-top:1px dashed var(--border);padding-top:.8rem;">
+          <div style="font-size:.74rem;color:var(--textMuted);margin-bottom:.2rem;">ご予約日時</div>
+          <div style="font-family:'Shippori Mincho B1',serif;font-size:1.35rem;font-weight:700;color:var(--greenDark);line-height:1.4;">${esc(dateLabel)}</div>
+          <div style="font-family:'Shippori Mincho B1',serif;font-size:1.6rem;font-weight:700;color:var(--green);">${esc(form.time)}</div>
+        </div>
+      </div>
+
+      <p style="font-size:.84rem;color:var(--textSub);">
         ご予約内容を確認の上、担当者よりご連絡いたします。
       </p>
 
@@ -343,13 +351,13 @@ function renderDone(){
           予約を確認・変更する
         </a>
         <div style="border-top:1px dashed var(--border);margin:1rem 0 .9rem;"></div>
-        <div style="font-family:'Shippori Mincho B1',serif;font-size:.95rem;font-weight:700;color:var(--green);margin-bottom:.5rem;text-align:center;">
-          📱 LINEでのご連絡も承ります
+        <div style="font-size:.85rem;font-weight:600;color:var(--green);margin-bottom:.7rem;text-align:center;">
+          LINEからの変更も承ります
         </div>
         <a href="${si.lineUrl}" target="_blank" rel="noopener"
-           style="display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.85rem;background:#06C755;color:#fff;border-radius:8px;font-size:.9rem;font-weight:700;text-decoration:none;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.64 2 10.12c0 4.02 3.55 7.39 8.35 8.03.32.07.77.21.88.49.1.25.07.64.03.89l-.14.85c-.04.25-.2.98.86.53 1.06-.45 5.7-3.36 7.78-5.75C21.05 13.5 22 11.92 22 10.12 22 5.64 17.52 2 12 2z"/></svg>
-          ${esc(si.lineName)}と友だちになる
+           style="display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.85rem;background:#06C755;color:#fff;border-radius:8px;font-size:.9rem;font-weight:700;text-decoration:none;white-space:nowrap;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M12 2C6.48 2 2 5.64 2 10.12c0 4.02 3.55 7.39 8.35 8.03.32.07.77.21.88.49.1.25.07.64.03.89l-.14.85c-.04.25-.2.98.86.53 1.06-.45 5.7-3.36 7.78-5.75C21.05 13.5 22 11.92 22 10.12 22 5.64 17.52 2 12 2z"/></svg>
+          LINEで友だち追加
         </a>
         <p style="font-size:.72rem;color:var(--textMuted);line-height:1.6;margin-top:.9rem;">
           ※ キャンセルは3日前まで無料、2日前以降は施術料金の100%を申し受けます。<br>
