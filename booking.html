@@ -128,8 +128,31 @@ const TIME_SALON = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:
 const CAT_ORDER = ['スカルプラボ','ベーシックケア','プレミアムパーソナルケア','セルフケア','フェイシャルケア','その他'];
 
 let step='store', store='', menus=[], menuId='', menuName='', expanded='', lastBookingId='';
-let form={ name:'',phone:'',email:'',date:'',time:'',message:'',agree:false };
+let form={ name:'',phone:'',email:'',birth:'',date:'',time:'',message:'',agree:false };
 let errors={}, submitting=false;
+let busyTimes=[]; // 選択日の埋まっている時間帯 [{start,end}]（分）
+let busyLoading=false;
+
+// 'HH:MM' → 分
+function tMin(t){ const m=String(t||'').match(/(\d{1,2}):(\d{2})/); return m?parseInt(m[1])*60+parseInt(m[2]):null; }
+// 選択中メニューの所要時間（分）。未選択や不明は60分
+function selMenuDur(){ const m=menus.find(x=>x.id===menuId); return (m&&m.duration_min?m.duration_min:60); }
+// ある開始時刻にメニューを入れたら既存予約と重なるか
+function isSlotBusy(slotStr){
+  const s=tMin(slotStr); if(s==null) return false;
+  const e=s+selMenuDur()+30; // 所要時間＋30分
+  return busyTimes.some(b=>s<b.end&&e>b.start); // 区間の重なり判定
+}
+// 指定日の埋まり時間を取得
+async function loadBusyTimes(){
+  if(!form.date||!store){ busyTimes=[]; return; }
+  busyLoading=true;
+  try{
+    const d=await post('getBusyTimes',{store,date:form.date});
+    busyTimes=d.busy||[];
+  }catch(e){ busyTimes=[]; }
+  busyLoading=false;
+}
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 async function post(action,extra={}){
@@ -255,6 +278,10 @@ function renderForm(){
       <label class="field">メールアドレス</label>
       <input type="email" id="i_email" value="${esc(form.email)}" placeholder="example@email.com" />
     </div>
+    <div class="field-group">
+      <label class="field">生年月日<span style="font-size:.7rem;color:var(--textMuted);margin-left:6px;">（任意）</span></label>
+      <input type="date" id="i_birth" value="${esc(form.birth||'')}" max="${minDate()}" />
+    </div>
     <div class="row2">
       <div class="field-group">
         <label class="field">ご希望日<span class="req">*</span></label>
@@ -264,9 +291,10 @@ function renderForm(){
       <div class="field-group">
         <label class="field">ご希望時間<span class="req">*</span></label>
         <select id="i_time">
-          <option value="">選択してください</option>
-          ${slots.map(t=>`<option value="${t}"${form.time===t?' selected':''}>${t}</option>`).join('')}
+          <option value="">${busyLoading?'空き状況を確認中…':'選択してください'}</option>
+          ${slots.map(t=>{ const busy=isSlotBusy(t); return `<option value="${t}"${form.time===t?' selected':''}${busy?' disabled':''}>${t}${busy?'（予約済）':''}</option>`;}).join('')}
         </select>
+        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">講習会・他のご予約と重なる時間は選べません</div>`:''}
         ${errors.time?`<div class="err-msg">${errors.time}</div>`:''}
       </div>
     </div>
@@ -295,7 +323,8 @@ function bindFormEvents(){
   const n=document.getElementById('i_name'); if(n) n.oninput=e=>{form.name=e.target.value;};
   const p=document.getElementById('i_phone'); if(p) p.oninput=e=>{form.phone=e.target.value;};
   const em=document.getElementById('i_email'); if(em) em.oninput=e=>{form.email=e.target.value;};
-  const d=document.getElementById('i_date'); if(d) d.oninput=e=>{form.date=e.target.value;};
+  const bd=document.getElementById('i_birth'); if(bd) bd.oninput=e=>{form.birth=e.target.value;};
+  const d=document.getElementById('i_date'); if(d) d.oninput=async e=>{ form.date=e.target.value; form.time=''; await loadBusyTimes(); render(); };
   const t=document.getElementById('i_time'); if(t) t.onchange=e=>{form.time=e.target.value;};
   const msg=document.getElementById('i_msg'); if(msg) msg.oninput=e=>{form.message=e.target.value;};
   const ag=document.getElementById('i_agree'); if(ag) ag.onchange=e=>{form.agree=e.target.checked;};
@@ -322,6 +351,7 @@ async function submitBooking(){
       store, menu_id:menuId, menu_name:menuName,
       name:form.name.trim(), phone:form.phone.trim(),
       email:form.email.trim()||null,
+      birth_date:form.birth||null,
       desired_date:form.date, desired_time:form.time,
       gender:'女性', notes:form.message.trim()||null,
     });
