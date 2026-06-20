@@ -219,6 +219,7 @@
     <div class="tabs">
       <div class="tab active" id="tabBookings">予約管理</div>
       <div class="tab" id="tabCourses">講座管理</div>
+      <div class="tab" id="tabMembers">会員管理</div>
     </div>
 
     <!-- 予約管理 -->
@@ -388,6 +389,35 @@
 
       <div id="csList"></div>
     </div>
+
+    <!-- 会員管理 -->
+    <div id="viewMembers" class="hide">
+      <div class="toolbar" style="margin-bottom:14px;">
+        <div></div>
+        <button class="btn btn-primary btn-sm" onclick="$('memberForm').classList.toggle('hide')">＋ 会員を追加</button>
+      </div>
+
+      <!-- 追加フォーム -->
+      <div class="form-panel hide" id="memberForm" style="margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;font-size:15px;">会員を追加</h3>
+        <div class="frow">
+          <div class="fg">
+            <label>サロン名・会社名</label>
+            <input id="mf_salon" placeholder="○○サロン" />
+          </div>
+          <div class="fg">
+            <label>メールアドレス <span style="color:#a04a3a;font-size:11px;">必須</span></label>
+            <input id="mf_email" type="email" placeholder="info@salon.com" />
+          </div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="addMember()">追加する</button>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="$('memberForm').classList.add('hide')">キャンセル</button>
+        </div>
+      </div>
+
+      <div id="mbrList"><div class="empty">読み込み中…</div></div>
+    </div>
   </div>
 </div>
 
@@ -460,10 +490,83 @@ function showApp(){
 }
 
 /* ===== タブ ===== */
-$('tabBookings').onclick=()=>{ $('tabBookings').classList.add('active'); $('tabCourses').classList.remove('active');
-  $('viewBookings').classList.remove('hide'); $('viewCourses').classList.add('hide'); };
-$('tabCourses').onclick=()=>{ $('tabCourses').classList.add('active'); $('tabBookings').classList.remove('active');
-  $('viewCourses').classList.remove('hide'); $('viewBookings').classList.add('hide'); };
+$('tabBookings').onclick=()=>{
+  ['tabBookings','tabCourses','tabMembers'].forEach(id=>$(id).classList.remove('active'));
+  $('tabBookings').classList.add('active');
+  $('viewBookings').classList.remove('hide');
+  $('viewCourses').classList.add('hide');
+  $('viewMembers').classList.add('hide');
+};
+$('tabCourses').onclick=()=>{
+  ['tabBookings','tabCourses','tabMembers'].forEach(id=>$(id).classList.remove('active'));
+  $('tabCourses').classList.add('active');
+  $('viewCourses').classList.remove('hide');
+  $('viewBookings').classList.add('hide');
+  $('viewMembers').classList.add('hide');
+};
+$('tabMembers').onclick=()=>{
+  ['tabBookings','tabCourses','tabMembers'].forEach(id=>$(id).classList.remove('active'));
+  $('tabMembers').classList.add('active');
+  $('viewMembers').classList.remove('hide');
+  $('viewBookings').classList.add('hide');
+  $('viewCourses').classList.add('hide');
+  loadMembers();
+};
+
+/* ===== 会員管理 ===== */
+let MEMBERS=[];
+async function loadMembers(){
+  $('mbrList').innerHTML='<div class="empty">読み込み中…</div>';
+  try{
+    const d=await call('listMembers');
+    MEMBERS=d.members||[];
+    renderMembers();
+  }catch(e){ $('mbrList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
+}
+function renderMembers(){
+  if(!MEMBERS.length){ $('mbrList').innerHTML='<div class="empty">会員が登録されていません</div>'; return; }
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:14px;">
+    <thead><tr style="border-bottom:2px solid var(--line);text-align:left;">
+      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">サロン名・会社名</th>
+      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">メールアドレス</th>
+      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">登録日</th>
+      <th style="padding:10px 12px;"></th>
+    </tr></thead><tbody>`;
+  MEMBERS.forEach(m=>{
+    const dt=m.created_at ? new Date(m.created_at).toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo'}) : '—';
+    h+=`<tr style="border-bottom:1px solid var(--line);">
+      <td style="padding:10px 12px;font-weight:500;">${esc(m.salon_name||m.name||'—')}</td>
+      <td style="padding:10px 12px;font-family:monospace;font-size:13px;">${esc(m.email)}</td>
+      <td style="padding:10px 12px;color:var(--muted);font-size:13px;">${dt}</td>
+      <td style="padding:10px 12px;text-align:right;">
+        <button class="btn btn-sm btn-del" onclick="deleteMember('${esc(m.id||m.email)}','${esc(m.email)}')">削除</button>
+      </td>
+    </tr>`;
+  });
+  h+=`</tbody></table>`;
+  h+=`<div style="margin-top:10px;font-size:13px;color:var(--muted);">合計 ${MEMBERS.length} 名</div>`;
+  $('mbrList').innerHTML=h;
+}
+async function addMember(){
+  const salon=$('mf_salon').value.trim();
+  const email=$('mf_email').value.trim();
+  if(!email){ toast('メールアドレスを入力してください'); return; }
+  try{
+    await call('addMember',{salon,email});
+    toast('会員を追加しました');
+    $('mf_salon').value=''; $('mf_email').value='';
+    $('memberForm').classList.add('hide');
+    await loadMembers();
+  }catch(e){ toast(e.message); }
+}
+async function deleteMember(id,email){
+  if(!confirm(`「${email}」を会員から削除しますか？`)) return;
+  try{
+    await call('deleteMember',{id,email});
+    toast('削除しました');
+    await loadMembers();
+  }catch(e){ toast(e.message); }
+}
 
 /* ===== 予約管理 ===== */
 function fmtDate(iso){ if(!iso) return '—';
