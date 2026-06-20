@@ -221,6 +221,7 @@
       <div class="tab" id="tabCourses">講座管理</div>
       <div class="tab" id="tabMembers">会員管理</div>
       <div class="tab" id="tabSalon">サロン予約</div>
+      <div class="tab" id="tabMenus">メニュー管理</div>
     </div>
 
     <!-- 予約管理 -->
@@ -424,9 +425,71 @@
       <div id="mbrList"><div class="empty">読み込み中…</div></div>
     </div>
 
+    <!-- メニュー管理 -->
+    <div id="viewMenus" class="hide">
+      <div class="toolbar" style="margin-bottom:14px;">
+        <div></div>
+        <button class="btn btn-primary btn-sm" onclick="openMenuForm(null)">＋ メニューを追加</button>
+      </div>
+      <div id="menusList"><div class="empty">読み込み中…</div></div>
+
+      <!-- メニュー追加・編集フォーム -->
+      <div class="form-panel hide" id="menuForm" style="margin-top:20px;">
+        <h3 id="menuFormTitle" style="margin:0 0 14px;font-size:15px;">メニューを追加</h3>
+        <input type="hidden" id="mf_id" />
+        <div class="frow">
+          <div class="fg"><label>カテゴリ</label>
+            <select id="mf_category">
+              <option>スカルプラボ</option>
+              <option>ベーシックケア</option>
+              <option>プレミアムパーソナルケア</option>
+              <option>セルフケア</option>
+              <option>フェイシャルケア</option>
+              <option>その他</option>
+            </select>
+          </div>
+          <div class="fg"><label>対象店舗</label>
+            <select id="mf_target_store">
+              <option value="両店舗">両店舗</option>
+              <option value="植物美容サロン専用">植物美容サロン専用</option>
+              <option value="神戸阪急専用">神戸阪急専用</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:10px;"><label>メニュー名 <span style="color:#a04a3a;font-size:11px;">必須</span></label>
+          <input id="mf_name" placeholder="定期スカルプケア（ボタニカルミスト）" />
+        </div>
+        <div class="frow">
+          <div class="fg"><label>料金（円・税込）</label><input id="mf_price" type="number" placeholder="5500" min="0" /></div>
+          <div class="fg"><label>所要時間（分）</label><input id="mf_duration" type="number" placeholder="45" min="0" /></div>
+        </div>
+        <div class="fg" style="margin-bottom:10px;"><label>説明文</label>
+          <textarea id="mf_description" rows="3" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;" placeholder="メニューの説明を入力"></textarea>
+        </div>
+        <div style="display:flex;gap:16px;margin-bottom:14px;font-size:14px;align-items:center;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="mf_public" checked style="width:16px;height:16px;" /> 公開する
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="mf_show" checked style="width:16px;height:16px;" /> 一覧に表示
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="saveMenu()">保存する</button>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="$('menuForm').classList.add('hide')">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
     <!-- サロン予約 -->
     <div id="viewSalon" class="hide">
-      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+        <!-- ビュー切替 -->
+        <div style="display:flex;gap:5px;">
+          <span id="salonViewList" class="chip active" onclick="setSalonView('list')" style="cursor:pointer;">一覧</span>
+          <span id="salonViewCal" class="chip" onclick="setSalonView('cal')" style="cursor:pointer;">カレンダー</span>
+        </div>
+        <!-- 店舗フィルター -->
         <div class="filters" id="salonStoreFilter">
           <span class="chip active" data-store="all">全店舗</span>
           <span class="chip" data-store="本店">本店</span>
@@ -435,13 +498,29 @@
         <div style="flex:1;"></div>
         <button class="btn btn-primary btn-sm" onclick="$('salonForm').classList.toggle('hide')">＋ 手動予約を追加</button>
       </div>
-      <div class="filters" id="salonStatusFilter" style="margin-bottom:14px;">
+      <!-- ステータスフィルター -->
+      <div class="filters" id="salonStatusFilter" style="margin-bottom:12px;">
         <span class="chip active" data-sf="all">すべて</span>
         <span class="chip" data-sf="受付中">受付中</span>
         <span class="chip" data-sf="確定">確定</span>
         <span class="chip" data-sf="キャンセル">キャンセル</span>
       </div>
 
+      <!-- カレンダー（初期非表示） -->
+      <div id="salonCalContainer" class="hide" style="background:white;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="SALON_CAL_M--;if(SALON_CAL_M<1){SALON_CAL_M=12;SALON_CAL_Y--;}SALON_CAL_PICK='';renderSalonCal();renderSalon();">‹</button>
+          <span id="salonCalTitle" style="font-size:15px;font-weight:700;"></span>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="SALON_CAL_M++;if(SALON_CAL_M>12){SALON_CAL_M=1;SALON_CAL_Y++;}SALON_CAL_PICK='';renderSalonCal();renderSalon();">›</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;margin-bottom:6px;">
+          ${['日','月','火','水','木','金','土'].map(d=>`<div style="font-size:11px;color:var(--muted);font-weight:600;">${d}</div>`).join('')}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;" id="salonCalWrap"></div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted);">● 印のある日付をクリックすると絞り込みます</div>
+      </div>
+
+      <!-- 手動予約フォーム -->
       <div class="form-panel hide" id="salonForm" style="margin-bottom:16px;">
         <h3 style="margin:0 0 12px;font-size:15px;">手動予約を追加（電話・来店受付）</h3>
         <div class="frow">
@@ -484,6 +563,13 @@
 <script>
 const API = 'https://herbs-booking-api.vercel.app/api/admin';
 let PW = sessionStorage.getItem('herbs_admin_pw') || '';
+let ROLE = sessionStorage.getItem('herbs_admin_role') || '';
+
+async function call(action, extra={}){
+  const r=await fetch(API,{ method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ password:PW, action, ...extra }) });
+  const d=await r.json(); if(!r.ok) throw new Error(d.error||'エラー'); return d;
+}
 let BOOKINGS = [], COURSES = [], SERIES_LIST = [], BK_FILTER = 'all', BK_SERIES = 'all', CS_SERIES = 'all', CS_VIEW = 'list', CS_MONTH = 'all', CS_CAL_Y = 0, CS_CAL_M = 0, SHOW_PAST = false, EDIT_ID = null;
 
 const $ = id => document.getElementById(id);
@@ -516,72 +602,78 @@ function seriesChipsHTML(names, current){
   return html;
 }
 
-async function call(action, extra={}){
-  const r = await fetch(API, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ password: PW, action, ...extra }),
-  });
-  let data={}; try{ data=await r.json(); }catch(e){}
-  if (r.status===401){ logout(); throw new Error(data.error||'パスワードが違います'); }
-  if (!r.ok) throw new Error(data.error||'エラーが発生しました');
-  return data;
-}
-
 /* ===== ログイン ===== */
 async function login(){
   PW = $('pw').value.trim();
   $('loginErr').textContent='';
   if(!PW){ $('loginErr').textContent='パスワードを入力してください'; return; }
   try{
-    await call('listBookings');
+    const d = await call('login');
+    ROLE = d.role;
     sessionStorage.setItem('herbs_admin_pw', PW);
+    sessionStorage.setItem('herbs_admin_role', ROLE);
     showApp();
   }catch(e){ $('loginErr').textContent = e.message; }
 }
 function logout(){
-  sessionStorage.removeItem('herbs_admin_pw'); PW='';
+  sessionStorage.removeItem('herbs_admin_pw');
+  sessionStorage.removeItem('herbs_admin_role');
+  PW=''; ROLE='';
   $('appView').classList.add('hide'); $('loginView').classList.remove('hide'); $('pw').value='';
 }
 function showApp(){
   $('loginView').classList.add('hide'); $('appView').classList.remove('hide');
-  loadBookings(); loadCourses();
-}
 
-/* ===== タブ ===== */
-$('tabBookings').onclick=()=>{
-  ['tabBookings','tabCourses','tabMembers','tabSalon'].forEach(id=>$(id).classList.remove('active'));
-  $('tabBookings').classList.add('active');
-  $('viewBookings').classList.remove('hide');
-  $('viewCourses').classList.add('hide');
-  $('viewMembers').classList.add('hide');
-  $('viewSalon').classList.add('hide');
-};
-$('tabCourses').onclick=()=>{
-  ['tabBookings','tabCourses','tabMembers','tabSalon'].forEach(id=>$(id).classList.remove('active'));
-  $('tabCourses').classList.add('active');
-  $('viewCourses').classList.remove('hide');
-  $('viewBookings').classList.add('hide');
-  $('viewMembers').classList.add('hide');
-  $('viewSalon').classList.add('hide');
-};
-$('tabMembers').onclick=()=>{
-  ['tabBookings','tabCourses','tabMembers','tabSalon'].forEach(id=>$(id).classList.remove('active'));
-  $('tabMembers').classList.add('active');
-  $('viewMembers').classList.remove('hide');
-  $('viewBookings').classList.add('hide');
-  $('viewCourses').classList.add('hide');
-  $('viewSalon').classList.add('hide');
-  loadMembers();
-};
-$('tabSalon').onclick=()=>{
-  ['tabBookings','tabCourses','tabMembers','tabSalon'].forEach(id=>$(id).classList.remove('active'));
-  $('tabSalon').classList.add('active');
-  $('viewSalon').classList.remove('hide');
-  $('viewBookings').classList.add('hide');
-  $('viewCourses').classList.add('hide');
-  $('viewMembers').classList.add('hide');
-  loadSalon();
-};
+  const ALL_TABS=['tabBookings','tabCourses','tabMembers','tabSalon','tabMenus'];
+  const ALL_VIEWS=['viewBookings','viewCourses','viewMembers','viewSalon','viewMenus'];
+  function switchTab(tabId,viewId,loader){
+    ALL_TABS.forEach(id=>$(id).classList.remove('active'));
+    ALL_VIEWS.forEach(id=>$(id) && $(id).classList.add('hide'));
+    $(tabId).classList.add('active');
+    $(viewId).classList.remove('hide');
+    if(loader) loader();
+  }
+
+  // ロールに応じてタブを表示・非表示
+  const isAdmin  = ROLE==='admin';
+  const isHonten = ROLE==='honten';
+  const isHankyu = ROLE==='hankyu';
+
+  // ヘッダーにロール名を表示
+  const roleLabel = {admin:'管理者',honten:'本店',hankyu:'神戸阪急'}[ROLE]||ROLE;
+  const existing = document.getElementById('roleLabel');
+  if (!existing) {
+    const span = document.createElement('span');
+    span.id = 'roleLabel';
+    span.style.cssText = 'font-size:12px;color:#cdd6cf;margin-right:8px;';
+    span.textContent = `[${roleLabel}]`;
+    document.querySelector('.head-actions').prepend(span);
+  }
+
+  // タブ表示制御
+  $('tabBookings').style.display = (isAdmin||isHonten) ? '' : 'none';
+  $('tabCourses').style.display  = (isAdmin||isHonten) ? '' : 'none';
+  $('tabMembers').style.display  = isAdmin ? '' : 'none';
+  $('tabSalon').style.display    = '';
+  $('tabMenus').style.display    = (isAdmin||isHonten) ? '' : 'none';
+
+  if (isHankyu) {
+    switchTab('tabSalon','viewSalon',loadSalon);
+    document.querySelectorAll('#salonStoreFilter .chip').forEach(c=>{
+      if(c.dataset.store==='神戸阪急'){ c.classList.add('active'); SALON_STORE='神戸阪急'; }
+      else c.classList.remove('active');
+      if(c.dataset.store==='本店'||c.dataset.store==='all') c.style.display='none';
+    });
+  } else {
+    switchTab('tabBookings','viewBookings',()=>{ loadBookings(); loadCourses(); });
+  }
+
+  $('tabBookings').onclick=()=>switchTab('tabBookings','viewBookings',()=>{ loadBookings(); loadCourses(); });
+  $('tabCourses').onclick =()=>switchTab('tabCourses','viewCourses',loadCourses);
+  $('tabMembers').onclick =()=>switchTab('tabMembers','viewMembers',loadMembers);
+  $('tabSalon').onclick   =()=>switchTab('tabSalon','viewSalon',loadSalon);
+  $('tabMenus').onclick   =()=>switchTab('tabMenus','viewMenus',loadMenus);
+}
 
 /* ===== 会員管理 ===== */
 let MEMBERS=[];
@@ -641,61 +733,202 @@ async function deleteMember(id,email){
   }catch(e){ toast(e.message); }
 }
 
+/* ===== メニュー管理 ===== */
+let MENUS_DATA=[];
+async function loadMenus(){
+  $('menusList').innerHTML='<div class="empty">読み込み中…</div>';
+  try{
+    const d=await call('listMenus');
+    MENUS_DATA=d.menus||[];
+    renderMenus();
+  }catch(e){ $('menusList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
+}
+function renderMenus(){
+  if(!MENUS_DATA.length){ $('menusList').innerHTML='<div class="empty">メニューが登録されていません</div>'; return; }
+  // カテゴリ別にグループ化
+  const groups={};
+  MENUS_DATA.forEach(m=>{ const c=m.category||'その他'; (groups[c]=groups[c]||[]).push(m); });
+  let h='';
+  Object.entries(groups).forEach(([cat,items])=>{
+    h+=`<div style="margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.05em;padding:6px 0;border-bottom:2px solid var(--line);margin-bottom:10px;">${esc(cat)}</div>`;
+    items.forEach(m=>{
+      const pub=m.is_public!==false;
+      h+=`<div class="course-row" style="margin-bottom:8px;${!pub?'opacity:.55;':''}">
+        <div class="ctop">
+          <div style="flex:1;">
+            <div class="ctitle">${esc(m.name)}${!pub?' <span class="past-tag">非公開</span>':''}</div>
+            <div class="cmeta">
+              ${m.price>0?`¥${Number(m.price).toLocaleString()} ／`:''} ${m.duration_min||'—'}分 ／ ${esc(m.target_store||'—')}
+            </div>
+            <div class="cmeta" style="color:#b9b1a3;">${esc(m.id)}</div>
+          </div>
+          <div><div class="cactions">
+            <button class="btn btn-sm btn-ghost" onclick="openMenuForm('${esc(m.id)}')">編集</button>
+            <button class="btn btn-sm btn-del" onclick="deleteMenu('${esc(m.id)}','${esc(m.name)}')">削除</button>
+          </div></div>
+        </div>
+      </div>`;
+    });
+    h+='</div>';
+  });
+  $('menusList').innerHTML=h;
+}
+function openMenuForm(id){
+  const form=$('menuForm');
+  $('menuForm').classList.remove('hide');
+  if(!id){
+    $('menuFormTitle').textContent='メニューを追加';
+    $('mf_id').value='';
+    ['mf_name','mf_price','mf_duration','mf_description'].forEach(i=>$(i).value='');
+    $('mf_category').value='スカルプラボ';
+    $('mf_target_store').value='両店舗';
+    $('mf_public').checked=true; $('mf_show').checked=true;
+  } else {
+    const m=MENUS_DATA.find(x=>x.id===id); if(!m) return;
+    $('menuFormTitle').textContent='メニューを編集';
+    $('mf_id').value=m.id;
+    $('mf_name').value=m.name||'';
+    $('mf_category').value=m.category||'スカルプラボ';
+    $('mf_target_store').value=m.target_store||'両店舗';
+    $('mf_price').value=m.price??'';
+    $('mf_duration').value=m.duration_min??'';
+    $('mf_description').value=m.description||'';
+    $('mf_public').checked=m.is_public!==false;
+    $('mf_show').checked=m.show_in_list!==false;
+  }
+  form.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+async function saveMenu(){
+  const name=$('mf_name').value.trim();
+  if(!name){ toast('メニュー名を入力してください'); return; }
+  const data={
+    id:$('mf_id').value||null,
+    name, category:$('mf_category').value,
+    target_store:$('mf_target_store').value,
+    price:Number($('mf_price').value)||0,
+    duration_min:Number($('mf_duration').value)||0,
+    description:$('mf_description').value.trim()||null,
+    is_public:$('mf_public').checked,
+    show_in_list:$('mf_show').checked,
+  };
+  try{
+    await call('saveMenu',data); toast('保存しました');
+    $('menuForm').classList.add('hide'); await loadMenus();
+  }catch(e){ toast(e.message); }
+}
+async function deleteMenu(id,name){
+  if(!confirm(`「${name}」を削除しますか？`)) return;
+  try{ await call('deleteMenu',{id}); toast('削除しました'); await loadMenus(); }
+  catch(e){ toast(e.message); }
+}
+
 /* ===== サロン予約 ===== */
 let SALON=[], SALON_STORE='all', SALON_STATUS='all', SALON_MENUS=[];
+let SALON_VIEW='list', SALON_CAL_Y=new Date().getFullYear(), SALON_CAL_M=new Date().getMonth()+1, SALON_CAL_PICK='';
 async function loadSalon(){
   $('salonList').innerHTML='<div class="empty">読み込み中…</div>';
   try{
     const d=await call('listReservations');
     SALON=d.reservations||[];
     SALON_MENUS=d.menus||[];
-    // メニューセレクトを更新
     const sel=$('sf_menu');
     sel.innerHTML='<option value="">選択してください</option>';
     SALON_MENUS.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
     renderSalon();
+    renderSalonCal();
   }catch(e){ $('salonList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
 }
-function renderSalon(){
+function salonFiltered(){
   let list=SALON.slice();
   if(SALON_STORE!=='all') list=list.filter(r=>r.store===SALON_STORE);
   if(SALON_STATUS!=='all') list=list.filter(r=>r.status===SALON_STATUS);
-  list.sort((a,b)=>{ const da=a.desired_date||''; const db=b.desired_date||''; return da>db?1:da<db?-1:0; });
+  if(SALON_CAL_PICK&&SALON_VIEW==='cal') list=list.filter(r=>r.desired_date===SALON_CAL_PICK);
+  list.sort((a,b)=>{const da=a.desired_date||'9999',db=b.desired_date||'9999';if(da!==db)return da>db?1:-1;return(a.desired_time||'')>(b.desired_time||'')?1:-1;});
+  return list;
+}
+function renderSalon(){
+  const list=salonFiltered();
   if(!list.length){ $('salonList').innerHTML='<div class="empty">該当する予約がありません</div>'; return; }
-  const stBadge=s=>{ const m={'受付中':'b-unpaid','確定':'b-paid','キャンセル':'b-cancel'}; return `<span class="badge ${m[s]||''}">${esc(s)}</span>`; };
+  const today=new Date().toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-');
   let h=`<table style="width:100%;border-collapse:collapse;font-size:13px;">
     <thead><tr style="border-bottom:2px solid var(--line);text-align:left;">
-      <th style="padding:8px 10px;color:var(--muted);font-weight:500;">希望日時</th>
-      <th style="padding:8px 10px;color:var(--muted);font-weight:500;">氏名</th>
-      <th style="padding:8px 10px;color:var(--muted);font-weight:500;">メニュー</th>
-      <th style="padding:8px 10px;color:var(--muted);font-weight:500;">電話</th>
-      <th style="padding:8px 10px;color:var(--muted);font-weight:500;">店舗</th>
-      <th style="padding:8px 10px;color:var(--muted);font-weight:500;">経路</th>
-      <th style="padding:8px 10px;color:var(--muted);font-weight:500;">ステータス</th>
-      <th style="padding:8px 10px;"></th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;white-space:nowrap;">希望日時</th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;">氏名</th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;">メニュー</th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;">電話</th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;">店舗</th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;">経路</th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;">ステータス</th>
+      <th style="padding:7px 10px;"></th>
     </tr></thead><tbody>`;
   list.forEach(r=>{
-    const dt=r.desired_date ? r.desired_date.replace(/-/g,'/') : '—';
-    const tm=r.desired_time||'';
-    h+=`<tr style="border-bottom:1px solid var(--line);">
-      <td style="padding:8px 10px;white-space:nowrap;">${dt}${tm?' '+tm:''}</td>
-      <td style="padding:8px 10px;font-weight:500;">${esc(r.name||'—')}</td>
-      <td style="padding:8px 10px;font-size:12px;">${esc(r.menu_name||'—')}</td>
-      <td style="padding:8px 10px;font-size:12px;">${esc(r.phone||'—')}</td>
-      <td style="padding:8px 10px;"><span style="font-size:11px;background:var(--cream-dk,#f2f6f1);padding:2px 7px;border-radius:5px;">${esc(r.store||'—')}</span></td>
-      <td style="padding:8px 10px;font-size:12px;color:var(--muted);">${esc(r.source||'—')}</td>
-      <td style="padding:8px 10px;">
+    const dt=r.desired_date||'';
+    const isToday=dt===today;
+    const dtLabel=dt?new Date(dt+'T00:00:00+09:00').toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'}):'日程未定';
+    const borderLeft=isToday?'border-left:3px solid var(--gold);':'';
+    h+=`<tr style="border-bottom:1px solid var(--line);${borderLeft}">
+      <td style="padding:7px 10px;font-weight:600;white-space:nowrap;${isToday?'color:var(--gold);':''}">${dtLabel}<br><span style="font-size:12px;">${esc(r.desired_time||'—')}</span></td>
+      <td style="padding:7px 10px;font-weight:600;">${esc(r.name||'—')}</td>
+      <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.menu_name||'—')}</td>
+      <td style="padding:7px 10px;font-size:12px;">${esc(r.phone||'—')}</td>
+      <td style="padding:7px 10px;"><span style="font-size:11px;background:var(--cream-dk,#f2f6f1);padding:2px 7px;border-radius:5px;">${esc(r.store||'—')}</span></td>
+      <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.source||'—')}</td>
+      <td style="padding:7px 10px;">
         <select style="font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:white;" onchange="updateSalonStatus('${esc(r.id)}',this.value)">
           ${['受付中','確定','キャンセル'].map(s=>`<option value="${s}"${r.status===s?' selected':''}>${s}</option>`).join('')}
         </select>
       </td>
-      <td style="padding:8px 10px;text-align:right;">
+      <td style="padding:7px 10px;text-align:right;">
         <button class="btn btn-sm btn-del" onclick="deleteSalonReservation('${esc(r.id)}')">削除</button>
       </td>
     </tr>`;
   });
-  h+=`</tbody></table><div style="margin-top:8px;font-size:13px;color:var(--muted);">合計 ${list.length} 件</div>`;
+  h+=`</tbody></table><div style="margin-top:8px;font-size:12px;color:var(--muted);">合計 ${list.length} 件</div>`;
   $('salonList').innerHTML=h;
+}
+function renderSalonCal(){
+  const calWrap=$('salonCalWrap'); if(!calWrap) return;
+  const daysInMonth=new Date(SALON_CAL_Y,SALON_CAL_M,0).getDate();
+  const startDow=new Date(SALON_CAL_Y,SALON_CAL_M-1,1).getDay();
+  const today=new Date().toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-');
+  const dayCount={};
+  SALON.filter(r=>SALON_STORE==='all'||r.store===SALON_STORE).filter(r=>SALON_STATUS==='all'||r.status===SALON_STATUS).forEach(r=>{
+    if(!r.desired_date)return;
+    const d=new Date(r.desired_date+'T00:00:00+09:00');
+    if(d.getFullYear()===SALON_CAL_Y&&d.getMonth()+1===SALON_CAL_M){
+      const dd=String(d.getDate()).padStart(2,'0');
+      dayCount[dd]=(dayCount[dd]||0)+1;
+    }
+  });
+  $('salonCalTitle').textContent=`${SALON_CAL_Y}年${SALON_CAL_M}月`;
+  let h='';
+  for(let i=0;i<startDow;i++) h+=`<div style="aspect-ratio:1"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dd=String(d).padStart(2,'0');
+    const dateStr=`${SALON_CAL_Y}-${String(SALON_CAL_M).padStart(2,'0')}-${dd}`;
+    const cnt=dayCount[dd]||0;
+    const isT=dateStr===today;
+    const isP=dateStr===SALON_CAL_PICK;
+    const bg=isP?'background:var(--gold);color:white;':'background:var(--cream-dk,#f2f6f1);';
+    const border=isT?'border:2px solid var(--muted);':'border:1px solid var(--line);';
+    h+=`<div onclick="${cnt?`salonPickDay('${dateStr}')`:'void 0'}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:13px;${cnt?`${bg}${border}cursor:pointer;font-weight:700;`:'color:#ccc;'}">
+      ${d}${cnt?`<div style="width:5px;height:5px;border-radius:50%;background:${isP?'white':'var(--gold)'};margin-top:2px;"></div>`:''}
+    </div>`;
+  }
+  calWrap.innerHTML=h;
+}
+function salonPickDay(dateStr){
+  SALON_CAL_PICK=SALON_CAL_PICK===dateStr?'':dateStr;
+  renderSalonCal();renderSalon();
+}
+function setSalonView(v){
+  SALON_VIEW=v;SALON_CAL_PICK='';
+  $('salonViewList').classList.toggle('active',v==='list');
+  $('salonViewCal').classList.toggle('active',v==='cal');
+  $('salonCalContainer').classList.toggle('hide',v!=='cal');
+  if(v==='cal') renderSalonCal();
+  renderSalon();
 }
 async function updateSalonStatus(id,status){
   try{ await call('updateReservationStatus',{id,status}); toast('ステータスを更新しました'); SALON=SALON.map(r=>r.id===id?{...r,status}:r); }
@@ -724,13 +957,13 @@ async function deleteSalonReservation(id){
 document.getElementById('salonStoreFilter').addEventListener('click',e=>{
   const c=e.target.closest('.chip'); if(!c) return;
   document.querySelectorAll('#salonStoreFilter .chip').forEach(x=>x.classList.remove('active'));
-  c.classList.add('active'); SALON_STORE=c.dataset.store; renderSalon();
+  c.classList.add('active'); SALON_STORE=c.dataset.store; SALON_CAL_PICK=''; renderSalonCal(); renderSalon();
 });
 // ステータスフィルター
 document.getElementById('salonStatusFilter').addEventListener('click',e=>{
   const c=e.target.closest('.chip'); if(!c) return;
   document.querySelectorAll('#salonStatusFilter .chip').forEach(x=>x.classList.remove('active'));
-  c.classList.add('active'); SALON_STATUS=c.dataset.sf; renderSalon();
+  c.classList.add('active'); SALON_STATUS=c.dataset.sf; SALON_CAL_PICK=''; renderSalonCal(); renderSalon();
 });
 
 /* ===== 予約管理 ===== */
@@ -1186,7 +1419,7 @@ $('loginBtn').onclick=login;
 $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
 $('logoutBtn').onclick=logout;
 window.setStatus=setStatus;
-if(PW){ showApp(); }
+if(PW && ROLE){ showApp(); }
 </script>
 </body>
 </html>
