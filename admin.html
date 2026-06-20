@@ -198,6 +198,22 @@
   </div>
 </div>
 
+<!-- 担当者パスコード画面 -->
+<div id="staffView" class="hide" style="position:fixed;inset:0;background:#544739;color:#EFEAE0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:200;">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;letter-spacing:3px;margin-bottom:6px;">THE HERBS</div>
+  <div style="font-size:13px;color:#A9BBB5;font-weight:700;margin-bottom:18px;">講習予約システム</div>
+  <div style="font-size:14px;color:#D8D0C4;margin-bottom:20px;">担当者のパスコードを入力してください</div>
+  <div style="display:flex;gap:16px;margin-bottom:26px;" id="pinDots">
+    <span style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.5);"></span>
+    <span style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.5);"></span>
+    <span style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.5);"></span>
+    <span style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.5);"></span>
+  </div>
+  <div id="pinPad" style="display:grid;grid-template-columns:repeat(3,76px);gap:14px;"></div>
+  <div style="color:#F2B8B0;font-size:13px;margin-top:16px;font-weight:700;min-height:18px;" id="pinErr"></div>
+  <button id="pinLogout" style="margin-top:20px;background:none;border:none;color:#A9BBB5;font-family:inherit;font-size:13px;cursor:pointer;text-decoration:underline;">パスワード入力に戻る</button>
+</div>
+
 <!-- 管理画面 -->
 <div id="appView" class="hide">
   <header>
@@ -678,6 +694,15 @@ function seriesChipsHTML(names, current){
 }
 
 /* ===== ログイン ===== */
+// 販売システムの担当者DB（パスコード照合用）
+const STAFF_SB_URL='https://bpogujxrwdpzkfisscox.supabase.co';
+const STAFF_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwb2d1anhyd2RwemtmaXNzY294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1OTQ0NjEsImV4cCI6MjA5NzE3MDQ2MX0.b39pjEYrTbS_U49Ud5GTEHh_luveh5wkZdtnWJN2x0M';
+let staffClient=null;
+try{ staffClient=supabase.createClient(STAFF_SB_URL,STAFF_SB_KEY); }catch(e){ console.error('担当者DB接続エラー:',e.message); }
+let STAFF_LIST=[], CURRENT_STAFF=null, PIN_INPUT='';
+const STAFF_LOCK_KEY='herbs_admin_staff';
+const STAFF_LOCK_MS=30*60*1000; // 30分の無操作でロック
+
 async function login(){
   PW = $('pw').value.trim();
   $('loginErr').textContent='';
@@ -687,17 +712,92 @@ async function login(){
     ROLE = d.role;
     sessionStorage.setItem('herbs_admin_pw', PW);
     sessionStorage.setItem('herbs_admin_role', ROLE);
-    showApp();
+    // パスワードOK → 担当者パスコード画面へ
+    await showStaffGate();
   }catch(e){ $('loginErr').textContent = e.message; }
 }
+
+// 担当者パスコード画面
+async function showStaffGate(){
+  $('loginView').classList.add('hide');
+  $('appView').classList.add('hide');
+  $('staffView').classList.remove('hide');
+  PIN_INPUT=''; renderPinDots(); $('pinErr').textContent='';
+  // 担当者一覧を取得（有効な人のみ）
+  if(staffClient){
+    try{
+      const { data } = await staffClient.from('staff_members').select('id,displayName,passcode,isActive');
+      STAFF_LIST=(data||[]).filter(s=>s.isActive!==false);
+    }catch(e){ STAFF_LIST=[]; console.error('担当者取得エラー:',e.message); }
+  }
+  buildPinPad();
+}
+function buildPinPad(){
+  const pad=$('pinPad');
+  let h='';
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{ h+=`<button onclick="pinPress('${n}')" style="height:76px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff;font-family:inherit;font-size:28px;font-weight:600;cursor:pointer;">${n}</button>`; });
+  h+=`<span></span>`;
+  h+=`<button onclick="pinPress('0')" style="height:76px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff;font-family:inherit;font-size:28px;font-weight:600;cursor:pointer;">0</button>`;
+  h+=`<button onclick="pinBack()" style="height:76px;border-radius:14px;background:none;border:none;color:#A9BBB5;font-size:22px;cursor:pointer;">⌫</button>`;
+  pad.innerHTML=h;
+}
+function renderPinDots(){
+  const dots=$('pinDots').children;
+  for(let i=0;i<4;i++){ dots[i].style.background=PIN_INPUT.length>i?'#EFEAE0':'transparent'; dots[i].style.borderColor=PIN_INPUT.length>i?'#EFEAE0':'rgba(255,255,255,.5)'; }
+}
+function pinPress(d){
+  if(PIN_INPUT.length>=4) return;
+  $('pinErr').textContent='';
+  PIN_INPUT+=d; renderPinDots();
+  if(PIN_INPUT.length===4) setTimeout(checkPin,100);
+}
+function pinBack(){ $('pinErr').textContent=''; PIN_INPUT=PIN_INPUT.slice(0,-1); renderPinDots(); }
+function checkPin(){
+  const s=STAFF_LIST.find(x=>x.passcode!=null&&String(x.passcode)===String(PIN_INPUT));
+  if(s){
+    CURRENT_STAFF=s;
+    localStorage.setItem(STAFF_LOCK_KEY, JSON.stringify({id:s.id,name:s.displayName,at:Date.now()}));
+    PIN_INPUT='';
+    startStaffLockWatch();
+    showApp();
+  }else{
+    $('pinErr').textContent='パスコードが違います';
+    PIN_INPUT=''; renderPinDots();
+  }
+}
+// 自動ロック監視（無操作30分／作業中は切れない）
+let staffLockTimer=null;
+function touchStaffLock(){
+  try{ const s=JSON.parse(localStorage.getItem(STAFF_LOCK_KEY)); if(s){ s.at=Date.now(); localStorage.setItem(STAFF_LOCK_KEY,JSON.stringify(s)); } }catch(e){}
+}
+function getStaffLock(){
+  try{ const s=JSON.parse(localStorage.getItem(STAFF_LOCK_KEY)); if(s&&Date.now()-s.at<STAFF_LOCK_MS) return s; }catch(e){}
+  return null;
+}
+function startStaffLockWatch(){
+  // 操作があるたびに時刻を更新（マウス・キー・タッチ・スクロール）
+  ['mousedown','keydown','touchstart','scroll','mousemove'].forEach(ev=>window.addEventListener(ev,touchStaffLock,{passive:true}));
+  if(staffLockTimer) clearInterval(staffLockTimer);
+  staffLockTimer=setInterval(()=>{ if(!getStaffLock()) lockStaff(); }, 20000);
+}
+function lockStaff(){
+  CURRENT_STAFF=null;
+  localStorage.removeItem(STAFF_LOCK_KEY);
+  if(staffLockTimer){ clearInterval(staffLockTimer); staffLockTimer=null; }
+  showStaffGate();
+}
+window.pinPress=pinPress; window.pinBack=pinBack;
+
 function logout(){
   sessionStorage.removeItem('herbs_admin_pw');
   sessionStorage.removeItem('herbs_admin_role');
-  PW=''; ROLE='';
-  $('appView').classList.add('hide'); $('loginView').classList.remove('hide'); $('pw').value='';
+  localStorage.removeItem(STAFF_LOCK_KEY);
+  PW=''; ROLE=''; CURRENT_STAFF=null;
+  if(staffLockTimer){ clearInterval(staffLockTimer); staffLockTimer=null; }
+  $('appView').classList.add('hide'); $('staffView').classList.add('hide'); $('loginView').classList.remove('hide'); $('pw').value='';
 }
 function showApp(){
-  $('loginView').classList.add('hide'); $('appView').classList.remove('hide');
+  $('loginView').classList.add('hide'); $('staffView').classList.add('hide'); $('appView').classList.remove('hide');
 
   const ALL_TABS=['tabCalendar','tabBookings','tabCourses','tabMembers','tabSalon','tabMenus'];
   const ALL_VIEWS=['viewCalendar','viewBookings','viewCourses','viewMembers','viewSalon','viewMenus'];
@@ -723,6 +823,17 @@ function showApp(){
     span.style.cssText = 'font-size:12px;color:#cdd6cf;margin-right:8px;';
     span.textContent = `[${roleLabel}]`;
     document.querySelector('.head-actions').prepend(span);
+  }
+  // 担当者名を表示
+  const staffSpan = document.getElementById('staffLabel');
+  if (!staffSpan && CURRENT_STAFF) {
+    const sp = document.createElement('span');
+    sp.id = 'staffLabel';
+    sp.style.cssText = 'font-size:12px;color:#fff;font-weight:700;margin-right:8px;';
+    sp.textContent = `担当：${CURRENT_STAFF.name||''}`;
+    document.querySelector('.head-actions').prepend(sp);
+  } else if (staffSpan && CURRENT_STAFF) {
+    staffSpan.textContent = `担当：${CURRENT_STAFF.name||''}`;
   }
 
   // タブ表示制御
@@ -1626,8 +1737,14 @@ $('f_series_sel').addEventListener('change',()=>{
 $('loginBtn').onclick=login;
 $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
 $('logoutBtn').onclick=logout;
+$('pinLogout').onclick=logout;
 window.setStatus=setStatus;
-if(PW && ROLE){ showApp(); }
+// パスワード記憶済みなら、担当者ロックが生きていればアプリへ、切れていれば担当者パスコード画面へ
+if(PW && ROLE){
+  const lk=getStaffLock();
+  if(lk){ CURRENT_STAFF=lk; startStaffLockWatch(); showApp(); }
+  else { showStaffGate(); }
+}
 </script>
 </body>
 </html>

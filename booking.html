@@ -286,6 +286,7 @@ function renderForm(){
       <div class="field-group">
         <label class="field">ご希望日<span class="req">*</span></label>
         <input type="date" id="i_date" min="${minDate()}" value="${esc(form.date)}" />
+        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">木曜・日曜はお休みです</div>`:''}
         ${errors.date?`<div class="err-msg">${errors.date}</div>`:''}
       </div>
       <div class="field-group">
@@ -324,7 +325,18 @@ function bindFormEvents(){
   const p=document.getElementById('i_phone'); if(p) p.oninput=e=>{form.phone=e.target.value;};
   const em=document.getElementById('i_email'); if(em) em.oninput=e=>{form.email=e.target.value;};
   const bd=document.getElementById('i_birth'); if(bd) bd.oninput=e=>{form.birth=e.target.value;};
-  const d=document.getElementById('i_date'); if(d) d.oninput=async e=>{ form.date=e.target.value; form.time=''; await loadBusyTimes(); render(); };
+  const d=document.getElementById('i_date'); if(d) d.oninput=async e=>{
+    const v=e.target.value;
+    // 本店は木曜・日曜が休み
+    if(v&&store==='本店'){
+      const wd=new Date(v+'T00:00:00+09:00').getDay(); // 0=日,4=木
+      if(wd===0||wd===4){
+        errors.date='本店は木曜・日曜はお休みです。別の日をお選びください。';
+        form.date=''; form.time=''; busyTimes=[]; render(); return;
+      }
+    }
+    form.date=v; form.time=''; errors.date=''; await loadBusyTimes(); render();
+  };
   const t=document.getElementById('i_time'); if(t) t.onchange=e=>{form.time=e.target.value;};
   const msg=document.getElementById('i_msg'); if(msg) msg.oninput=e=>{form.message=e.target.value;};
   const ag=document.getElementById('i_agree'); if(ag) ag.onchange=e=>{form.agree=e.target.checked;};
