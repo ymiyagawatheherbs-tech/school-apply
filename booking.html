@@ -145,6 +145,7 @@ function render(){
   else if(step==='menu') h+=renderMenu();
   else if(step==='form') h+=renderForm();
   document.getElementById('content').innerHTML=h;
+  if(step==='form') bindFormEvents();
 }
 
 function renderStore(){
@@ -226,27 +227,27 @@ function renderForm(){
     </div>
     <div class="field-group">
       <label class="field">お名前<span class="req">*</span></label>
-      <input type="text" id="i_name" value="${esc(form.name)}" placeholder="山田 花子" oninput="form.name=this.value" />
+      <input type="text" id="i_name" value="${esc(form.name)}" placeholder="山田 花子" />
       ${errors.name?`<div class="err-msg">${errors.name}</div>`:''}
     </div>
     <div class="field-group">
       <label class="field">電話番号<span class="req">*</span></label>
-      <input type="tel" id="i_phone" value="${esc(form.phone)}" placeholder="090-0000-0000" oninput="form.phone=this.value" />
+      <input type="tel" id="i_phone" value="${esc(form.phone)}" placeholder="090-0000-0000" />
       ${errors.phone?`<div class="err-msg">${errors.phone}</div>`:''}
     </div>
     <div class="field-group">
       <label class="field">メールアドレス</label>
-      <input type="email" id="i_email" value="${esc(form.email)}" placeholder="example@email.com" oninput="form.email=this.value" />
+      <input type="email" id="i_email" value="${esc(form.email)}" placeholder="example@email.com" />
     </div>
     <div class="row2">
       <div class="field-group">
         <label class="field">ご希望日<span class="req">*</span></label>
-        <input type="date" id="i_date" min="${minDate()}" value="${esc(form.date)}" oninput="form.date=this.value" />
+        <input type="date" id="i_date" min="${minDate()}" value="${esc(form.date)}" />
         ${errors.date?`<div class="err-msg">${errors.date}</div>`:''}
       </div>
       <div class="field-group">
         <label class="field">ご希望時間<span class="req">*</span></label>
-        <select id="i_time" onchange="form.time=this.value">
+        <select id="i_time">
           <option value="">選択してください</option>
           ${slots.map(t=>`<option value="${t}"${form.time===t?' selected':''}>${t}</option>`).join('')}
         </select>
@@ -255,22 +256,35 @@ function renderForm(){
     </div>
     <div class="field-group">
       <label class="field">ご相談・ご要望</label>
-      <textarea id="i_msg" rows="3" placeholder="お悩みやご質問があればご記入ください" oninput="form.message=this.value">${esc(form.message)}</textarea>
+      <textarea id="i_msg" rows="3" placeholder="お悩みやご質問があればご記入ください">${esc(form.message)}</textarea>
     </div>
     <div class="policy">
       <strong>キャンセルポリシー</strong><br>
       ご予約日の3日前まではキャンセル料はかかりません。2日前以降のキャンセルは施術料金の100%を申し受けます。
     </div>
     <label class="agree">
-      <input type="checkbox" id="i_agree" ${form.agree?'checked':''} onchange="form.agree=this.checked" />
+      <input type="checkbox" id="i_agree" ${form.agree?'checked':''} />
       <span>キャンセルポリシーに同意します<span class="req">*</span></span>
     </label>
     ${errors.agree?`<div class="err-msg" style="margin-top:-.8rem;margin-bottom:1rem;">${errors.agree}</div>`:''}
     ${errors.submit?`<div class="err-msg" style="margin-bottom:1rem;">${errors.submit}</div>`:''}
-    <button class="btn btn-primary" onclick="submitBooking()" ${submitting?'disabled':''}>${submitting?'送信中…':'この内容で予約する'}</button>
-    <button class="btn btn-ghost" onclick="backToMenu()">← メニュー選択に戻る</button>
+    <button class="btn btn-primary" id="b_submit" ${submitting?'disabled':''}>${submitting?'送信中…':'この内容で予約する'}</button>
+    <button class="btn btn-ghost" id="b_back">← メニュー選択に戻る</button>
   </div>`;
   return h;
+}
+
+// フォーム入力欄にイベントを接続（描画後に呼ぶ）
+function bindFormEvents(){
+  const n=document.getElementById('i_name'); if(n) n.oninput=e=>{form.name=e.target.value;};
+  const p=document.getElementById('i_phone'); if(p) p.oninput=e=>{form.phone=e.target.value;};
+  const em=document.getElementById('i_email'); if(em) em.oninput=e=>{form.email=e.target.value;};
+  const d=document.getElementById('i_date'); if(d) d.oninput=e=>{form.date=e.target.value;};
+  const t=document.getElementById('i_time'); if(t) t.onchange=e=>{form.time=e.target.value;};
+  const msg=document.getElementById('i_msg'); if(msg) msg.oninput=e=>{form.message=e.target.value;};
+  const ag=document.getElementById('i_agree'); if(ag) ag.onchange=e=>{form.agree=e.target.checked;};
+  const sb=document.getElementById('b_submit'); if(sb) sb.onclick=submitBooking;
+  const bk=document.getElementById('b_back'); if(bk) bk.onclick=backToMenu;
 }
 
 function validate(){
@@ -320,6 +334,14 @@ function renderDone(){
     </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// onclick属性から呼べるよう公開
+window.selectStore=selectStore;
+window.selectMenu=selectMenu;
+window.toggleMenu=toggleMenu;
+window.backToStore=backToStore;
+window.backToMenu=backToMenu;
+window.submitBooking=submitBooking;
 
 render();
 </script>
