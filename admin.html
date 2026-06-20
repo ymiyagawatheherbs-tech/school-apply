@@ -522,11 +522,9 @@
           <span id="salonViewList" class="chip active" onclick="setSalonView('list')" style="cursor:pointer;">一覧</span>
           <span id="salonViewCal" class="chip" onclick="setSalonView('cal')" style="cursor:pointer;">カレンダー</span>
         </div>
-        <!-- 店舗フィルター -->
-        <div class="filters" id="salonStoreFilter">
-          <span class="chip active" data-store="all">全店舗</span>
-          <span class="chip" data-store="本店">本店</span>
-          <span class="chip" data-store="神戸阪急">神戸阪急</span>
+        <!-- 店舗フィルター（本店専用運用のため阪急は非表示） -->
+        <div class="filters" id="salonStoreFilter" style="display:none;">
+          <span class="chip active" data-store="本店">本店</span>
         </div>
         <div style="flex:1;"></div>
         <button class="btn btn-primary btn-sm" onclick="$('salonForm').classList.toggle('hide')">＋ 手動予約を追加</button>
@@ -558,7 +556,7 @@
         <h3 style="margin:0 0 12px;font-size:15px;">手動予約を追加（電話・来店受付）</h3>
         <div class="frow">
           <div class="fg"><label>店舗</label>
-            <select id="sf_store"><option value="本店">本店</option><option value="神戸阪急">神戸阪急</option></select>
+            <select id="sf_store"><option value="本店">本店</option></select>
           </div>
           <div class="fg"><label>メニュー</label>
             <select id="sf_menu"><option value="">選択してください</option></select>
@@ -916,7 +914,7 @@ async function deleteMenu(id,name){
 }
 
 /* ===== サロン予約 ===== */
-let SALON=[], SALON_STORE='all', SALON_STATUS='all', SALON_MENUS=[];
+let SALON=[], SALON_STORE='本店', SALON_STATUS='all', SALON_MENUS=[];
 let SALON_VIEW='list', SALON_CAL_Y=new Date().getFullYear(), SALON_CAL_M=new Date().getMonth()+1, SALON_CAL_PICK='';
 async function loadSalon(){
   $('salonList').innerHTML='<div class="empty">読み込み中…</div>';
