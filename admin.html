@@ -456,6 +456,10 @@
             </select>
           </div>
         </div>
+        <div class="fg" style="margin-bottom:10px;"><label>サービス画像URL</label>
+          <input id="mf_image_url" placeholder="https://... （画像のURLを貼り付け）" oninput="previewMenuImg()" />
+          <div id="mf_image_preview" style="margin-top:8px;"></div>
+        </div>
         <div class="fg" style="margin-bottom:10px;"><label>メニュー名 <span style="color:#a04a3a;font-size:11px;">必須</span></label>
           <input id="mf_name" placeholder="定期スカルプケア（ボタニカルミスト）" />
         </div>
@@ -777,14 +781,18 @@ function renderMenus(){
       <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.05em;padding:6px 0;border-bottom:2px solid var(--line);margin-bottom:10px;">${esc(cat)}</div>`;
     items.forEach(m=>{
       const pub=m.is_public!==false;
+      const thumb=m.image_url?`<img src="${esc(m.image_url)}" style="width:48px;height:48px;border-radius:7px;object-fit:cover;border:1px solid var(--line);flex-shrink:0;" onerror="this.style.display='none';" />`:'';
       h+=`<div class="course-row" style="margin-bottom:8px;${!pub?'opacity:.55;':''}">
         <div class="ctop">
-          <div style="flex:1;">
+          <div style="display:flex;gap:10px;flex:1;align-items:flex-start;">
+            ${thumb}
+            <div style="flex:1;">
             <div class="ctitle">${esc(m.name)}${!pub?' <span class="past-tag">非公開</span>':''}</div>
             <div class="cmeta">
               ${m.price>0?`¥${Number(m.price).toLocaleString()} ／`:''} ${m.duration_min||'—'}分 ／ ${esc(m.target_store||'—')}
             </div>
             <div class="cmeta" style="color:#b9b1a3;">${esc(m.id)}</div>
+            </div>
           </div>
           <div><div class="cactions">
             <button class="btn btn-sm btn-ghost" onclick="openMenuForm('${esc(m.id)}')">編集</button>
@@ -797,17 +805,24 @@ function renderMenus(){
   });
   $('menusList').innerHTML=h;
 }
+function previewMenuImg(){
+  const url=($('mf_image_url').value||'').trim();
+  const box=$('mf_image_preview');
+  if(url){ box.innerHTML=`<img src="${esc(url)}" style="max-width:160px;max-height:110px;border-radius:8px;border:1px solid var(--line);object-fit:cover;" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=&quot;color:#a04a3a;font-size:12px;&quot;>画像が読み込めません</span>');" />`; }
+  else { box.innerHTML=''; }
+}
 function openMenuForm(id){
   const form=$('menuForm');
   $('menuForm').classList.remove('hide');
   if(!id){
     $('menuFormTitle').textContent='メニューを追加';
     $('mf_id').value='';
-    ['mf_name','mf_yomi','mf_price','mf_duration','mf_price_label','mf_description','mf_treatment','mf_recommendation','mf_sort_order'].forEach(i=>$(i).value='');
+    ['mf_name','mf_yomi','mf_price','mf_duration','mf_price_label','mf_description','mf_treatment','mf_recommendation','mf_sort_order','mf_image_url'].forEach(i=>$(i).value='');
     $('mf_category').value='スカルプラボ';
     $('mf_target_store').value='両店舗';
     $('mf_gender').value='共通';
     $('mf_public').checked=true; $('mf_show').checked=true;
+    previewMenuImg();
   } else {
     const m=MENUS_DATA.find(x=>x.id===id); if(!m) return;
     $('menuFormTitle').textContent='メニューを編集';
@@ -824,8 +839,10 @@ function openMenuForm(id){
     $('mf_treatment').value=m.treatment||'';
     $('mf_recommendation').value=m.recommendation||'';
     $('mf_sort_order').value=m.sort_order??'';
+    $('mf_image_url').value=m.image_url||'';
     $('mf_public').checked=m.is_public!==false;
     $('mf_show').checked=m.show_in_list!==false;
+    previewMenuImg();
   }
   form.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -845,6 +862,7 @@ async function saveMenu(){
     treatment:$('mf_treatment').value.trim()||null,
     recommendation:$('mf_recommendation').value.trim()||null,
     sort_order:Number($('mf_sort_order').value)||0,
+    image_url:$('mf_image_url').value.trim()||null,
     is_public:$('mf_public').checked,
     show_in_list:$('mf_show').checked,
   };

@@ -52,12 +52,20 @@
   .menu-card{border:1.5px solid var(--border);border-radius:9px;margin-bottom:.7rem;overflow:hidden;background:#FAFAF7;}
   .menu-card.sel{border-color:var(--borderSel);background:var(--bgSelected);}
   .menu-head{padding:.9rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;}
+  .menu-thumb{width:60px;height:60px;border-radius:7px;object-fit:cover;flex-shrink:0;border:1px solid var(--border);}
+  .menu-info{flex:1;min-width:0;}
   .menu-info h4{font-size:.92rem;font-weight:700;color:var(--greenDark);margin-bottom:.25rem;}
   .menu-info .price{font-size:.85rem;color:var(--green);font-weight:600;}
   .menu-info .dur{font-size:.74rem;color:var(--textMuted);margin-left:.5rem;}
   .menu-select-btn{flex-shrink:0;padding:.4rem .9rem;border-radius:6px;border:1.5px solid var(--green);background:#fff;color:var(--green);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
   .menu-card.sel .menu-select-btn{background:var(--green);color:#fff;}
   .menu-detail{padding:0 1rem 1rem;font-size:.8rem;color:var(--textSub);line-height:1.7;border-top:1px dashed var(--border);margin-top:0;padding-top:.8rem;}
+  .menu-detail-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:.7rem;display:block;}
+  .menu-detail p{margin-bottom:.7rem;}
+  .menu-detail-sec,.menu-detail-rec{margin-top:.7rem;}
+  .menu-detail-rec{background:rgba(143,169,140,.13);border:1px solid rgba(143,169,140,.35);border-radius:8px;padding:.6rem .8rem;}
+  .menu-detail-label{font-size:.7rem;font-weight:700;color:var(--green);margin-bottom:.3rem;letter-spacing:.03em;}
+  .menu-detail-txt{font-size:.78rem;line-height:1.7;white-space:pre-wrap;}
   .menu-toggle{font-size:.72rem;color:var(--sage);cursor:pointer;padding:.3rem 1rem .7rem;font-weight:600;}
 
   /* フォーム */
@@ -193,8 +201,11 @@ function renderMenu(){
     items.forEach(m=>{
       const sel=menuId===m.id;
       const exp=expanded===m.id;
+      const thumb=m.image_url?`<img class="menu-thumb" src="${esc(m.image_url)}" onerror="this.style.display='none';" alt="" />`:'';
+      const hasDetail=m.description||m.treatment||m.recommendation||m.image_url;
       h+=`<div class="menu-card ${sel?'sel':''}">
         <div class="menu-head">
+          ${thumb}
           <div class="menu-info">
             <h4>${esc(m.name)}</h4>
             <span class="price">${m.price>0?'¥'+Number(m.price).toLocaleString():'無料'}</span>
@@ -202,8 +213,13 @@ function renderMenu(){
           </div>
           <button class="menu-select-btn" onclick="selectMenu('${esc(m.id)}','${esc(m.name)}')">${sel?'選択中':'選択'}</button>
         </div>
-        ${m.description?`<div class="menu-toggle" onclick="toggleMenu('${esc(m.id)}')">${exp?'▲ 閉じる':'▼ 詳細を見る'}</div>`:''}
-        ${exp&&m.description?`<div class="menu-detail">${esc(m.description)}</div>`:''}
+        ${hasDetail?`<div class="menu-toggle" onclick="toggleMenu('${esc(m.id)}')">${exp?'▲ 閉じる':'▼ 詳細を見る'}</div>`:''}
+        ${exp&&hasDetail?`<div class="menu-detail">
+          ${m.image_url?`<img class="menu-detail-img" src="${esc(m.image_url)}" onerror="this.style.display='none';" alt="" />`:''}
+          ${m.description?`<p>${esc(m.description)}</p>`:''}
+          ${m.treatment?`<div class="menu-detail-sec"><div class="menu-detail-label">施術内容</div><div class="menu-detail-txt">${esc(m.treatment)}</div></div>`:''}
+          ${m.recommendation?`<div class="menu-detail-rec"><div class="menu-detail-label">こんな方におすすめ</div><div class="menu-detail-txt">${esc(m.recommendation)}</div></div>`:''}
+        </div>`:''}
       </div>`;
     });
   });
