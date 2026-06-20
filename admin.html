@@ -400,6 +400,13 @@ let BOOKINGS = [], COURSES = [], SERIES_LIST = [], BK_FILTER = 'all', BK_SERIES 
 
 const $ = id => document.getElementById(id);
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function copyApplyUrl(seriesId,courseId){
+  const base='https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html';
+  const url=seriesId
+    ?`${base}?series=${encodeURIComponent(seriesId)}&course=${encodeURIComponent(courseId)}`
+    :`${base}?course=${encodeURIComponent(courseId)}`;
+  navigator.clipboard.writeText(url).then(()=>toast('URLをコピーしました')).catch(()=>{prompt('URLをコピーしてください',url);});
+}
 function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 /* シリーズごとの色（名前から固定で決まる） */
@@ -629,6 +636,7 @@ function renderCourses(){
             <div class="cmeta" style="color:#b9b1a3;">${esc(c.id)}</div>
           </div>
           <div><div class="cactions">
+            <button class="btn btn-sm btn-ghost" onclick="copyApplyUrl('${esc(c.series_id||'')}','${esc(c.id)}')">🔗 URL</button>
             <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
             <button class="btn btn-sm btn-ghost" onclick="duplicateCourse('${esc(c.id)}')">複製</button>
             <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
@@ -696,6 +704,7 @@ window.adminCalDay=(y,mo,d)=>{
           <tr><td style="padding-right:12px;white-space:nowrap;">📂 シリーズ</td><td>${esc(c.series_id||'—')}</td></tr>
         </table>
       </div><div><div class="cactions" style="margin-top:4px;">
+        <button class="btn btn-sm btn-ghost" onclick="copyApplyUrl('${esc(c.series_id||'')}','${esc(c.id)}')">🔗 URL</button>
         <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
         <button class="btn btn-sm btn-ghost" onclick="duplicateCourse('${esc(c.id)}')">複製</button>
         <button class="btn btn-sm btn-del" onclick="delCourse('${esc(c.id)}')">削除</button>
