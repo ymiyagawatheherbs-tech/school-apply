@@ -697,11 +697,6 @@ function seriesChipsHTML(names, current){
 }
 
 /* ===== ログイン ===== */
-// 販売システムの担当者DB（パスコード照合用）
-const STAFF_SB_URL='https://bpogujxrwdpzkfisscox.supabase.co';
-const STAFF_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwb2d1anhyd2RwemtmaXNzY294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1OTQ0NjEsImV4cCI6MjA5NzE3MDQ2MX0.b39pjEYrTbS_U49Ud5GTEHh_luveh5wkZdtnWJN2x0M';
-let staffClient=null;
-try{ staffClient=supabase.createClient(STAFF_SB_URL,STAFF_SB_KEY); }catch(e){ console.error('担当者DB接続エラー:',e.message); }
 let STAFF_LIST=[], CURRENT_STAFF=null, PIN_INPUT='';
 const STAFF_LOCK_KEY='herbs_admin_staff';
 const STAFF_LOCK_MS=30*60*1000; // 30分の無操作でロック
@@ -726,13 +721,11 @@ async function showStaffGate(){
   $('appView').classList.add('hide');
   $('staffView').classList.remove('hide');
   PIN_INPUT=''; renderPinDots(); $('pinErr').textContent='';
-  // 担当者一覧を取得（有効な人のみ）
-  if(staffClient){
-    try{
-      const { data } = await staffClient.from('staff_members').select('id,displayName,passcode,isActive');
-      STAFF_LIST=(data||[]).filter(s=>s.isActive!==false);
-    }catch(e){ STAFF_LIST=[]; console.error('担当者取得エラー:',e.message); }
-  }
+  // 担当者一覧を取得（名前のみ・予約担当者選択用）
+  try{
+    const d=await call('listStaff');
+    STAFF_LIST=(d.staff||[]).map(s=>({id:s.id, displayName:s.name}));
+  }catch(e){ STAFF_LIST=[]; console.error('担当者取得エラー:',e.message); }
   buildPinPad();
 }
 function buildPinPad(){
@@ -755,15 +748,16 @@ function pinPress(d){
   if(PIN_INPUT.length===4) setTimeout(checkPin,100);
 }
 function pinBack(){ $('pinErr').textContent=''; PIN_INPUT=PIN_INPUT.slice(0,-1); renderPinDots(); }
-function checkPin(){
-  const s=STAFF_LIST.find(x=>x.passcode!=null&&String(x.passcode)===String(PIN_INPUT));
-  if(s){
-    CURRENT_STAFF=s;
-    localStorage.setItem(STAFF_LOCK_KEY, JSON.stringify({id:s.id,name:s.displayName,at:Date.now()}));
-    PIN_INPUT='';
+async function checkPin(){
+  $('pinErr').textContent='確認中…';
+  try{
+    const d=await call('verifyStaff',{passcode:PIN_INPUT});
+    CURRENT_STAFF={id:d.staff.id, name:d.staff.name};
+    localStorage.setItem(STAFF_LOCK_KEY, JSON.stringify({id:d.staff.id,name:d.staff.name,at:Date.now()}));
+    PIN_INPUT=''; $('pinErr').textContent='';
     startStaffLockWatch();
     showApp();
-  }else{
+  }catch(e){
     $('pinErr').textContent='パスコードが違います';
     PIN_INPUT=''; renderPinDots();
   }
