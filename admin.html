@@ -630,6 +630,9 @@
             <select id="sf_gender"><option value="">未回答</option><option value="女性">女性</option><option value="男性">男性</option></select>
           </div>
         </div>
+        <div class="fg" style="margin-top:10px;"><label>担当者（任意）</label>
+          <select id="sf_staff"><option value="">未設定</option></select>
+        </div>
         <div class="fg" style="margin-top:10px;"><label>生年月日（任意）</label><input id="sf_birth" placeholder="例：1986年6月7日" /></div>
         <div class="fg" style="margin-top:10px;"><label>備考</label><input id="sf_notes" placeholder="アレルギーなど" /></div>
         <div style="margin-top:10px;display:flex;gap:8px;">
@@ -1151,9 +1154,21 @@ async function loadSalon(){
     const sel=$('sf_menu');
     sel.innerHTML='<option value="">選択してください</option>';
     SALON_MENUS.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
+    fillStaffSelect('sf_staff', CURRENT_STAFF?CURRENT_STAFF.name:'');
     renderSalon();
     renderSalonCal();
   }catch(e){ $('salonList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
+}
+// 担当者プルダウンを埋める（初期値を指定可）
+function fillStaffSelect(selectId, selectedName){
+  const sel=$(selectId); if(!sel) return;
+  let h='<option value="">未設定</option>';
+  STAFF_LIST.forEach(s=>{ const nm=s.displayName||''; h+=`<option value="${esc(nm)}"${nm===selectedName?' selected':''}>${esc(nm)}</option>`; });
+  // ログイン担当者が一覧にない場合も選べるように
+  if(selectedName && !STAFF_LIST.some(s=>s.displayName===selectedName)){
+    h+=`<option value="${esc(selectedName)}" selected>${esc(selectedName)}</option>`;
+  }
+  sel.innerHTML=h;
 }
 function salonFiltered(){
   let list=SALON.slice();
@@ -1172,6 +1187,7 @@ function renderSalon(){
       <th style="padding:7px 10px;color:var(--muted);font-weight:500;white-space:nowrap;">希望日時</th>
       <th style="padding:7px 10px;color:var(--muted);font-weight:500;">氏名</th>
       <th style="padding:7px 10px;color:var(--muted);font-weight:500;">メニュー</th>
+      <th style="padding:7px 10px;color:var(--muted);font-weight:500;">担当</th>
       <th style="padding:7px 10px;color:var(--muted);font-weight:500;">電話</th>
       <th style="padding:7px 10px;color:var(--muted);font-weight:500;">店舗</th>
       <th style="padding:7px 10px;color:var(--muted);font-weight:500;">経路</th>
@@ -1189,6 +1205,13 @@ function renderSalon(){
       <td style="padding:7px 10px;font-weight:600;white-space:nowrap;${isToday?'color:var(--gold);':''}">${dtLabel}<br><span style="font-size:12px;">${esc(r.desired_time||'—')}</span></td>
       <td style="padding:7px 10px;font-weight:600;">${esc(r.name||'—')} ${isNew?'<span style="font-size:10px;background:#FBE9D6;color:#C26A12;border:1px solid #F0C089;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">NEW</span>':''}</td>
       <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.menu_name||'—')}</td>
+      <td style="padding:7px 10px;">
+        <select style="font-size:11px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;background:white;max-width:90px;" onchange="updateSalonStaff('${esc(r.id)}',this.value)">
+          <option value="">未設定</option>
+          ${STAFF_LIST.map(s=>`<option value="${esc(s.displayName||'')}"${r.staff_name===s.displayName?' selected':''}>${esc(s.displayName||'')}</option>`).join('')}
+          ${r.staff_name&&!STAFF_LIST.some(s=>s.displayName===r.staff_name)?`<option value="${esc(r.staff_name)}" selected>${esc(r.staff_name)}</option>`:''}
+        </select>
+      </td>
       <td style="padding:7px 10px;font-size:12px;">${esc(r.phone||'—')}</td>
       <td style="padding:7px 10px;"><span style="font-size:11px;background:var(--cream-dk,#f2f6f1);padding:2px 7px;border-radius:5px;">${esc(r.store||'—')}</span></td>
       <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.source||'—')}</td>
@@ -1252,6 +1275,11 @@ async function updateSalonStatus(id,status){
   try{ await call('updateReservationStatus',{id,status}); toast('ステータスを更新しました'); SALON=SALON.map(r=>r.id===id?{...r,status}:r); }
   catch(e){ toast(e.message); }
 }
+async function updateSalonStaff(id,staff_name){
+  try{ await call('updateReservation',{id,staff_name}); toast('担当者を更新しました'); SALON=SALON.map(r=>r.id===id?{...r,staff_name}:r); }
+  catch(e){ toast(e.message); }
+}
+window.updateSalonStaff=updateSalonStaff;
 async function addSalonReservation(){
   const name=$('sf_name').value.trim();
   if(!name){ toast('氏名を入力してください'); return; }
@@ -1259,11 +1287,12 @@ async function addSalonReservation(){
   const body={ store:$('sf_store').value, menu_id:menuId||null, menu_name:menuId?menuName:$('sf_menu').value||null,
     name, phone:$('sf_phone').value.trim()||null, desired_date:$('sf_date').value||null,
     desired_time:$('sf_time').value.trim()||null, gender:$('sf_gender').value||null,
-    birth_date:$('sf_birth').value.trim()||null,
+    birth_date:$('sf_birth').value.trim()||null, staff_name:$('sf_staff').value||null,
     notes:$('sf_notes').value.trim()||null, source:'電話', status:'受付中' };
   try{
     await call('addReservation',body); toast('予約を追加しました');
     ['sf_name','sf_phone','sf_date','sf_time','sf_birth','sf_notes'].forEach(id=>{$(id).value='';});
+    fillStaffSelect('sf_staff', CURRENT_STAFF?CURRENT_STAFF.name:'');
     $('salonForm').classList.add('hide'); await loadSalon();
   }catch(e){ toast(e.message); }
 }
