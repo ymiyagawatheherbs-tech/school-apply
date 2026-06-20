@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ご予約 — THE HERBS SCALP LABO</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F5EDE3; --bgCard:#FFFFFF; --bgSub:#F0EBE3; --bgSelected:#EAF0E9;
+    --green:#707862; --greenDark:#4A5240; --sage:#A9C0A6; --light:#C5D3C4;
+    --border:#DDD5CC; --borderSel:#A9C0A6; --text:#3D3D2E; --textSub:#6B6B5A;
+    --textMuted:#9A9A88; --error:#C0392B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+  .mincho{font-family:'Shippori Mincho B1',serif;}
+  .wrap{max-width:560px;margin:0 auto;padding:2rem 1rem 4rem;}
+
+  /* ヘッダー */
+  .hero{text-align:center;margin-bottom:2rem;}
+  .hero .brand{font-family:'Shippori Mincho B1',serif;font-size:1.05rem;letter-spacing:.18em;color:var(--green);margin-bottom:.5rem;}
+  .hero h1{font-family:'Shippori Mincho B1',serif;font-size:1.7rem;font-weight:700;color:var(--greenDark);margin-bottom:.4rem;}
+  .hero p{font-size:.85rem;color:var(--textSub);}
+
+  /* ステップインジケーター */
+  .steps{display:flex;justify-content:center;gap:.5rem;margin-bottom:1.8rem;}
+  .step-dot{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--textMuted);font-weight:600;}
+  .step-dot .num{width:24px;height:24px;border-radius:50%;background:var(--border);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;}
+  .step-dot.on .num{background:var(--green);}
+  .step-dot.on{color:var(--green);}
+  .step-sep{width:18px;height:1.5px;background:var(--border);align-self:center;}
+
+  /* カード */
+  .card{background:var(--bgCard);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(0,0,0,.03);}
+  .section-title{font-family:'Shippori Mincho B1',serif;font-size:1.1rem;font-weight:600;color:var(--green);margin-bottom:1rem;}
+
+  /* 店舗選択 */
+  .store-card{border:1.5px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:.9rem;cursor:pointer;transition:.15s;background:#FAFAF7;}
+  .store-card:hover{border-color:var(--light);background:var(--bgSelected);}
+  .store-card.sel{border-color:var(--borderSel);background:var(--bgSelected);}
+  .store-card h3{font-size:1rem;font-weight:700;color:var(--greenDark);margin-bottom:.5rem;}
+  .store-meta{font-size:.8rem;color:var(--textSub);margin-bottom:.25rem;display:flex;gap:.4rem;}
+  .store-meta .lbl{color:var(--textMuted);min-width:3.5em;flex-shrink:0;}
+  .store-notes{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--border);}
+  .store-notes li{font-size:.74rem;color:var(--textMuted);margin-bottom:.3rem;list-style:none;padding-left:1em;position:relative;}
+  .store-notes li::before{content:"※";position:absolute;left:0;}
+
+  /* メニュー */
+  .menu-cat{font-size:.8rem;font-weight:700;color:var(--green);letter-spacing:.05em;margin:1.2rem 0 .6rem;padding-bottom:.3rem;border-bottom:1.5px solid var(--light);}
+  .menu-cat:first-child{margin-top:0;}
+  .menu-card{border:1.5px solid var(--border);border-radius:9px;margin-bottom:.7rem;overflow:hidden;background:#FAFAF7;}
+  .menu-card.sel{border-color:var(--borderSel);background:var(--bgSelected);}
+  .menu-head{padding:.9rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;}
+  .menu-info h4{font-size:.92rem;font-weight:700;color:var(--greenDark);margin-bottom:.25rem;}
+  .menu-info .price{font-size:.85rem;color:var(--green);font-weight:600;}
+  .menu-info .dur{font-size:.74rem;color:var(--textMuted);margin-left:.5rem;}
+  .menu-select-btn{flex-shrink:0;padding:.4rem .9rem;border-radius:6px;border:1.5px solid var(--green);background:#fff;color:var(--green);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .menu-card.sel .menu-select-btn{background:var(--green);color:#fff;}
+  .menu-detail{padding:0 1rem 1rem;font-size:.8rem;color:var(--textSub);line-height:1.7;border-top:1px dashed var(--border);margin-top:0;padding-top:.8rem;}
+  .menu-toggle{font-size:.72rem;color:var(--sage);cursor:pointer;padding:.3rem 1rem .7rem;font-weight:600;}
+
+  /* フォーム */
+  label.field{display:block;font-size:.82rem;font-weight:600;color:var(--green);margin-bottom:.45rem;letter-spacing:.03em;}
+  label.field .req{color:var(--error);margin-left:2px;}
+  input[type=text],input[type=tel],input[type=email],input[type=date],select,textarea{
+    width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:6px;
+    font-size:.9rem;color:var(--text);background:#FAFAF7;outline:none;box-sizing:border-box;
+    font-family:'Noto Sans JP',sans-serif;}
+  input:focus,select:focus,textarea:focus{border-color:var(--sage);}
+  .field-group{margin-bottom:1.1rem;}
+  .err-msg{font-size:.75rem;color:var(--error);margin-top:.3rem;}
+  .row2{display:flex;gap:.8rem;}
+  .row2>div{flex:1;}
+  .agree{display:flex;align-items:flex-start;gap:.5rem;font-size:.8rem;color:var(--textSub);cursor:pointer;margin-bottom:1.1rem;}
+  .agree input{width:18px;height:18px;margin-top:2px;flex-shrink:0;}
+  .policy{background:var(--bgSub);border-radius:8px;padding:.9rem 1rem;font-size:.74rem;color:var(--textMuted);line-height:1.7;margin-bottom:1.2rem;}
+
+  /* ボタン */
+  .btn{width:100%;padding:.95rem;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+  .btn-primary{background:var(--green);color:#fff;}
+  .btn-primary:hover{background:var(--greenDark);}
+  .btn-primary:disabled{background:var(--border);cursor:not-allowed;}
+  .btn-ghost{background:#fff;color:var(--green);border:1.5px solid var(--border);margin-top:.7rem;}
+  .btn-ghost:hover{background:var(--bgSub);}
+
+  /* 選択中バナー */
+  .selected-banner{background:var(--bgSelected);border:1px solid var(--borderSel);border-radius:8px;padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.82rem;}
+  .selected-banner .lbl{color:var(--textMuted);font-size:.72rem;}
+  .selected-banner .val{color:var(--greenDark);font-weight:700;}
+
+  .loading,.empty{text-align:center;padding:2rem;color:var(--textMuted);font-size:.85rem;}
+
+  /* 完了画面 */
+  .done{text-align:center;padding:3rem 2rem;}
+  .done .check{width:72px;height:72px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;}
+  .done h2{font-family:'Shippori Mincho B1',serif;font-size:1.5rem;font-weight:700;color:var(--green);margin-bottom:1rem;}
+  .done p{font-size:.88rem;color:var(--textSub);line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="hero">
+    <div class="brand">THE HERBS</div>
+    <h1>ご予約</h1>
+    <p>ご希望の店舗・メニューをお選びください</p>
+  </div>
+  <div id="content"><div class="loading">読み込み中…</div></div>
+</div>
+
+<script>
+const API = 'https://herbs-booking-api.vercel.app/api/public-booking';
+
+const C_STORES = [
+  { value:'神戸阪急', label:'THE HERBS神戸阪急店', address:'神戸阪急本館6階 モーニングフロー内', hours:'10:00 〜 20:00', checkHours:'頭皮チェック受付：12:00 〜 16:00（随時受付も可）', phone:'070-2642-7366', notes:[] },
+  { value:'本店', label:'THE HERBS植物美容サロン', address:'兵庫県神戸市灘区大内通1-7-17 1F', hours:'水・金・土曜日 10:00〜20:00（不定期で月曜日）', checkHours:'完全予約制／クレジットカード決済のみ', phone:'070-2642-7366', notes:['初回はカウンセリングに約10分程度お時間をいただきます。','現金はご利用いただけません。クレジットカード決済のみとなります。','完全予約制です。お気軽にお問い合わせください。'] },
+];
+const TIME_HANKYU = ['12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'];
+const TIME_SALON = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+const CAT_ORDER = ['スカルプラボ','ベーシックケア','プレミアムパーソナルケア','セルフケア','フェイシャルケア','その他'];
+
+let step='store', store='', menus=[], menuId='', menuName='', expanded='';
+let form={ name:'',phone:'',email:'',date:'',time:'',message:'',agree:false };
+let errors={}, submitting=false;
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+async function post(action,extra={}){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extra})});
+  const d=await r.json(); if(!r.ok) throw new Error(d.error||'エラー'); return d;
+}
+function minDate(){ const t=new Date(); t.setDate(t.getDate()+1); return t.toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}); }
+
+function stepsBar(){
+  const s=['store','menu','form'];
+  const lbls={store:'店舗',menu:'メニュー',form:'お客様情報'};
+  const ci=s.indexOf(step);
+  return `<div class="steps">${s.map((k,i)=>`
+    <div class="step-dot ${i<=ci?'on':''}"><span class="num">${i+1}</span>${lbls[k]}</div>
+    ${i<2?'<div class="step-sep"></div>':''}`).join('')}</div>`;
+}
+
+function render(){
+  let h=stepsBar();
+  if(step==='store') h+=renderStore();
+  else if(step==='menu') h+=renderMenu();
+  else if(step==='form') h+=renderForm();
+  document.getElementById('content').innerHTML=h;
+}
+
+function renderStore(){
+  let h='<div class="card"><div class="section-title">店舗をお選びください</div>';
+  C_STORES.forEach(s=>{
+    h+=`<div class="store-card ${store===s.value?'sel':''}" onclick="selectStore('${s.value}')">
+      <h3>${esc(s.label)}</h3>
+      <div class="store-meta"><span class="lbl">住所</span>${esc(s.address)}</div>
+      <div class="store-meta"><span class="lbl">営業</span>${esc(s.hours)}</div>
+      <div class="store-meta"><span class="lbl">備考</span>${esc(s.checkHours)}</div>
+      ${s.notes.length?`<ul class="store-notes">${s.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`:''}
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function selectStore(v){ store=v; step='menu'; loadMenus(); }
+
+async function loadMenus(){
+  document.getElementById('content').innerHTML=stepsBar()+'<div class="loading">メニューを読み込み中…</div>';
+  try{
+    const d=await post('listPublicMenus',{store});
+    menus=d.menus||[];
+    menus.sort((a,b)=>{
+      const ai=CAT_ORDER.indexOf(a.category||''),bi=CAT_ORDER.indexOf(b.category||'');
+      const ca=ai===-1?99:ai, cb=bi===-1?99:bi;
+      if(ca!==cb)return ca-cb;
+      return (a.sort_order||0)-(b.sort_order||0);
+    });
+    render();
+  }catch(e){ document.getElementById('content').innerHTML=stepsBar()+`<div class="empty">${esc(e.message)}</div>`; }
+}
+
+function renderMenu(){
+  const si=C_STORES.find(s=>s.value===store);
+  let h=`<div class="card">
+    <div class="section-title">${esc(si.label)}</div>`;
+  if(!menus.length){ h+='<div class="empty">現在表示できるメニューがありません</div></div>'; return h; }
+  // カテゴリ別
+  const groups={};
+  menus.forEach(m=>{const c=m.category||'その他';(groups[c]=groups[c]||[]).push(m);});
+  Object.entries(groups).forEach(([cat,items])=>{
+    h+=`<div class="menu-cat">${esc(cat)}</div>`;
+    items.forEach(m=>{
+      const sel=menuId===m.id;
+      const exp=expanded===m.id;
+      h+=`<div class="menu-card ${sel?'sel':''}">
+        <div class="menu-head">
+          <div class="menu-info">
+            <h4>${esc(m.name)}</h4>
+            <span class="price">${m.price>0?'¥'+Number(m.price).toLocaleString():'無料'}</span>
+            <span class="dur">${m.duration_min||'—'}分</span>
+          </div>
+          <button class="menu-select-btn" onclick="selectMenu('${esc(m.id)}','${esc(m.name)}')">${sel?'選択中':'選択'}</button>
+        </div>
+        ${m.description?`<div class="menu-toggle" onclick="toggleMenu('${esc(m.id)}')">${exp?'▲ 閉じる':'▼ 詳細を見る'}</div>`:''}
+        ${exp&&m.description?`<div class="menu-detail">${esc(m.description)}</div>`:''}
+      </div>`;
+    });
+  });
+  h+='</div><button class="btn btn-ghost" onclick="backToStore()">← 店舗選択に戻る</button>';
+  return h;
+}
+
+function toggleMenu(id){ expanded=expanded===id?'':id; render(); }
+function selectMenu(id,name){ menuId=id; menuName=name; step='form'; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function backToStore(){ step='store'; menuId=''; menuName=''; render(); }
+function backToMenu(){ step='menu'; render(); }
+
+function renderForm(){
+  const si=C_STORES.find(s=>s.value===store);
+  const slots=store==='神戸阪急'?TIME_HANKYU:TIME_SALON;
+  let h=`<div class="card">
+    <div class="selected-banner">
+      <div class="lbl">ご予約内容</div>
+      <div class="val">${esc(si.label)}</div>
+      <div class="val">${esc(menuName)}</div>
+    </div>
+    <div class="field-group">
+      <label class="field">お名前<span class="req">*</span></label>
+      <input type="text" id="i_name" value="${esc(form.name)}" placeholder="山田 花子" oninput="form.name=this.value" />
+      ${errors.name?`<div class="err-msg">${errors.name}</div>`:''}
+    </div>
+    <div class="field-group">
+      <label class="field">電話番号<span class="req">*</span></label>
+      <input type="tel" id="i_phone" value="${esc(form.phone)}" placeholder="090-0000-0000" oninput="form.phone=this.value" />
+      ${errors.phone?`<div class="err-msg">${errors.phone}</div>`:''}
+    </div>
+    <div class="field-group">
+      <label class="field">メールアドレス</label>
+      <input type="email" id="i_email" value="${esc(form.email)}" placeholder="example@email.com" oninput="form.email=this.value" />
+    </div>
+    <div class="row2">
+      <div class="field-group">
+        <label class="field">ご希望日<span class="req">*</span></label>
+        <input type="date" id="i_date" min="${minDate()}" value="${esc(form.date)}" oninput="form.date=this.value" />
+        ${errors.date?`<div class="err-msg">${errors.date}</div>`:''}
+      </div>
+      <div class="field-group">
+        <label class="field">ご希望時間<span class="req">*</span></label>
+        <select id="i_time" onchange="form.time=this.value">
+          <option value="">選択してください</option>
+          ${slots.map(t=>`<option value="${t}"${form.time===t?' selected':''}>${t}</option>`).join('')}
+        </select>
+        ${errors.time?`<div class="err-msg">${errors.time}</div>`:''}
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field">ご相談・ご要望</label>
+      <textarea id="i_msg" rows="3" placeholder="お悩みやご質問があればご記入ください" oninput="form.message=this.value">${esc(form.message)}</textarea>
+    </div>
+    <div class="policy">
+      <strong>キャンセルポリシー</strong><br>
+      ご予約日の3日前まではキャンセル料はかかりません。2日前以降のキャンセルは施術料金の100%を申し受けます。
+    </div>
+    <label class="agree">
+      <input type="checkbox" id="i_agree" ${form.agree?'checked':''} onchange="form.agree=this.checked" />
+      <span>キャンセルポリシーに同意します<span class="req">*</span></span>
+    </label>
+    ${errors.agree?`<div class="err-msg" style="margin-top:-.8rem;margin-bottom:1rem;">${errors.agree}</div>`:''}
+    ${errors.submit?`<div class="err-msg" style="margin-bottom:1rem;">${errors.submit}</div>`:''}
+    <button class="btn btn-primary" onclick="submitBooking()" ${submitting?'disabled':''}>${submitting?'送信中…':'この内容で予約する'}</button>
+    <button class="btn btn-ghost" onclick="backToMenu()">← メニュー選択に戻る</button>
+  </div>`;
+  return h;
+}
+
+function validate(){
+  errors={};
+  if(!form.name.trim()) errors.name='お名前を入力してください';
+  if(!form.phone.trim()) errors.phone='電話番号を入力してください';
+  else if(!/^[\d\-\+\(\)\s]{7,20}$/.test(form.phone.trim())) errors.phone='正しい電話番号を入力してください';
+  if(!form.date) errors.date='ご希望日を選択してください';
+  if(!form.time) errors.time='ご希望時間を選択してください';
+  if(!form.agree) errors.agree='キャンセルポリシーへの同意が必要です';
+  return Object.keys(errors).length===0;
+}
+
+async function submitBooking(){
+  if(!validate()){ render(); return; }
+  submitting=true; render();
+  try{
+    await post('createReservation',{
+      store, menu_id:menuId, menu_name:menuName,
+      name:form.name.trim(), phone:form.phone.trim(),
+      email:form.email.trim()||null,
+      desired_date:form.date, desired_time:form.time,
+      gender:'女性', notes:form.message.trim()||null,
+    });
+    renderDone();
+  }catch(e){
+    submitting=false; errors.submit=e.message; render();
+  }
+}
+
+function renderDone(){
+  const si=C_STORES.find(s=>s.value===store);
+  document.getElementById('content').innerHTML=`
+    <div class="card done">
+      <div class="check">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>ご予約を受け付けました</h2>
+      <p>
+        ${esc(form.name)} 様<br><br>
+        <strong>${esc(si.label)}</strong><br>
+        ${esc(menuName)}<br>
+        ${esc(form.date)} ${esc(form.time)}<br><br>
+        ご予約内容を確認の上、担当者よりご連絡いたします。<br>
+        ご不明な点は ${esc(si.phone)} までお問い合わせください。
+      </p>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+render();
+</script>
+</body>
+</html>
