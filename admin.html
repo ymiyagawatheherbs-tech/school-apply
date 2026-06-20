@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>植物美容学校 予約管理システム｜管理ページ</title>
+<title>植物美容学校 講習予約システム｜管理ページ</title>
 <style>
   :root{
     --ink:#544739; --sage:#859A93; --cream:#FFFCF7; --bg:#F5F2EC;
@@ -203,7 +203,7 @@
   <header>
     <div class="wrap">
       <div>
-        <h1>植物美容学校 予約管理システム</h1>
+        <h1>植物美容学校 講習予約システム</h1>
         <div class="sub">管理ページ</div>
       </div>
       <div class="head-actions">
@@ -614,6 +614,7 @@
             <select id="sf_gender"><option value="">未回答</option><option value="女性">女性</option><option value="男性">男性</option></select>
           </div>
         </div>
+        <div class="fg" style="margin-top:10px;"><label>生年月日（任意）</label><input id="sf_birth" placeholder="例：1986年6月7日" /></div>
         <div class="fg" style="margin-top:10px;"><label>備考</label><input id="sf_notes" placeholder="アレルギーなど" /></div>
         <div style="margin-top:10px;display:flex;gap:8px;">
           <button class="btn btn-primary btn-sm" onclick="addSalonReservation()">追加する</button>
@@ -1147,10 +1148,11 @@ async function addSalonReservation(){
   const body={ store:$('sf_store').value, menu_id:menuId||null, menu_name:menuId?menuName:$('sf_menu').value||null,
     name, phone:$('sf_phone').value.trim()||null, desired_date:$('sf_date').value||null,
     desired_time:$('sf_time').value.trim()||null, gender:$('sf_gender').value||null,
+    birth_date:$('sf_birth').value.trim()||null,
     notes:$('sf_notes').value.trim()||null, source:'電話', status:'受付中' };
   try{
     await call('addReservation',body); toast('予約を追加しました');
-    ['sf_name','sf_phone','sf_date','sf_time','sf_notes'].forEach(id=>{$(id).value='';});
+    ['sf_name','sf_phone','sf_date','sf_time','sf_birth','sf_notes'].forEach(id=>{$(id).value='';});
     $('salonForm').classList.add('hide'); await loadSalon();
   }catch(e){ toast(e.message); }
 }
