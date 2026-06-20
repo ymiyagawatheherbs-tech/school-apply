@@ -183,6 +183,7 @@
     .frow{grid-template-columns:1fr;}
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -456,8 +457,13 @@
             </select>
           </div>
         </div>
-        <div class="fg" style="margin-bottom:10px;"><label>サービス画像URL</label>
-          <input id="mf_image_url" placeholder="https://... （画像のURLを貼り付け）" oninput="previewMenuImg()" />
+        <div class="fg" style="margin-bottom:10px;"><label>サービス画像</label>
+          <input id="mf_image_url" placeholder="https://... （画像URLを貼り付け）" oninput="previewMenuImg()" />
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+            <input type="file" id="mf_image_file" accept="image/*" style="display:none;" onchange="uploadMenuImg(this)" />
+            <button type="button" class="btn btn-sm" style="background:var(--bg);" onclick="document.getElementById('mf_image_file').click()">📁 画像をアップロード</button>
+            <span id="mf_upload_status" style="font-size:12px;color:var(--muted);"></span>
+          </div>
           <div id="mf_image_preview" style="margin-top:8px;"></div>
         </div>
         <div class="fg" style="margin-bottom:10px;"><label>メニュー名 <span style="color:#a04a3a;font-size:11px;">必須</span></label>
@@ -589,6 +595,12 @@
 
 <script>
 const API = 'https://herbs-booking-api.vercel.app/api/admin';
+
+// 画像アップロード用：予約用Supabaseに直接接続
+const SB_URL='https://gwggolaxwglziadgwyje.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3Z2dvbGF4d2dsemlhZGd3eWplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MjA1OTEsImV4cCI6MjA5NjM5NjU5MX0.jAPDv_WQlXcbiD1EbiiYQGlInkFrFqltFmk4nREJsqo';
+let sbClient=null;
+try{ sbClient=supabase.createClient(SB_URL,SB_KEY); }catch(e){ console.error('Supabase接続エラー:',e.message); }
 let PW = sessionStorage.getItem('herbs_admin_pw') || '';
 let ROLE = sessionStorage.getItem('herbs_admin_role') || '';
 
@@ -810,6 +822,32 @@ function previewMenuImg(){
   const box=$('mf_image_preview');
   if(url){ box.innerHTML=`<img src="${esc(url)}" style="max-width:160px;max-height:110px;border-radius:8px;border:1px solid var(--line);object-fit:cover;" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=&quot;color:#a04a3a;font-size:12px;&quot;>画像が読み込めません</span>');" />`; }
   else { box.innerHTML=''; }
+}
+async function uploadMenuImg(input){
+  const file=input.files&&input.files[0];
+  if(!file) return;
+  if(!sbClient){ toast('画像アップロードの接続エラー'); return; }
+  const status=$('mf_upload_status');
+  status.textContent='アップロード中…';
+  try{
+    // ファイル名：menu_タイムスタンプ.拡張子
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+    const path=`menu_${Date.now()}.${ext}`;
+    const { error }=await sbClient.storage.from('menu-images').upload(path,file,{cacheControl:'3600',upsert:false});
+    if(error) throw error;
+    // 公開URLを取得
+    const { data }=sbClient.storage.from('menu-images').getPublicUrl(path);
+    const publicUrl=data.publicUrl;
+    $('mf_image_url').value=publicUrl;
+    previewMenuImg();
+    status.textContent='✓ アップロード完了';
+    setTimeout(()=>{status.textContent='';},3000);
+  }catch(e){
+    console.error('画像アップロードエラー:',e);
+    status.textContent='';
+    toast('アップロード失敗：'+(e.message||e));
+  }
+  input.value=''; // 同じファイルを再選択できるようにリセット
 }
 function openMenuForm(id){
   const form=$('menuForm');
