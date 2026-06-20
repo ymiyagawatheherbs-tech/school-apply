@@ -459,12 +459,35 @@
         <div class="fg" style="margin-bottom:10px;"><label>メニュー名 <span style="color:#a04a3a;font-size:11px;">必須</span></label>
           <input id="mf_name" placeholder="定期スカルプケア（ボタニカルミスト）" />
         </div>
+        <div class="fg" style="margin-bottom:10px;"><label>フリガナ</label>
+          <input id="mf_yomi" placeholder="テイキスカルプケア" />
+        </div>
         <div class="frow">
           <div class="fg"><label>料金（円・税込）</label><input id="mf_price" type="number" placeholder="5500" min="0" /></div>
           <div class="fg"><label>所要時間（分）</label><input id="mf_duration" type="number" placeholder="45" min="0" /></div>
         </div>
-        <div class="fg" style="margin-bottom:10px;"><label>説明文</label>
+        <div class="frow">
+          <div class="fg"><label>料金表示テキスト</label><input id="mf_price_label" placeholder="税込" /></div>
+          <div class="fg"><label>対象性別</label>
+            <select id="mf_gender">
+              <option value="共通">共通</option>
+              <option value="女性">女性</option>
+              <option value="男性">男性</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:10px;"><label>説明文（予約フォームに表示）</label>
           <textarea id="mf_description" rows="3" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;" placeholder="メニューの説明を入力"></textarea>
+        </div>
+        <div class="fg" style="margin-bottom:10px;"><label>施術内容（詳細）</label>
+          <textarea id="mf_treatment" rows="4" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;" placeholder="1、カウンセリング&#10;2、マイクロスコープ頭皮チェック&#10;3、…"></textarea>
+        </div>
+        <div class="fg" style="margin-bottom:10px;"><label>こんな方におすすめ（対象者）</label>
+          <textarea id="mf_recommendation" rows="2" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;" placeholder="例：頭皮のべたつきやフケが気になる方、薄毛が心配な方"></textarea>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>表示順</label><input id="mf_sort_order" type="number" placeholder="0" /></div>
+          <div class="fg"></div>
         </div>
         <div style="display:flex;gap:16px;margin-bottom:14px;font-size:14px;align-items:center;">
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
@@ -780,20 +803,27 @@ function openMenuForm(id){
   if(!id){
     $('menuFormTitle').textContent='メニューを追加';
     $('mf_id').value='';
-    ['mf_name','mf_price','mf_duration','mf_description'].forEach(i=>$(i).value='');
+    ['mf_name','mf_yomi','mf_price','mf_duration','mf_price_label','mf_description','mf_treatment','mf_recommendation','mf_sort_order'].forEach(i=>$(i).value='');
     $('mf_category').value='スカルプラボ';
     $('mf_target_store').value='両店舗';
+    $('mf_gender').value='共通';
     $('mf_public').checked=true; $('mf_show').checked=true;
   } else {
     const m=MENUS_DATA.find(x=>x.id===id); if(!m) return;
     $('menuFormTitle').textContent='メニューを編集';
     $('mf_id').value=m.id;
     $('mf_name').value=m.name||'';
+    $('mf_yomi').value=m.yomi||'';
     $('mf_category').value=m.category||'スカルプラボ';
     $('mf_target_store').value=m.target_store||'両店舗';
     $('mf_price').value=m.price??'';
     $('mf_duration').value=m.duration_min??'';
+    $('mf_price_label').value=m.price_label||'';
+    $('mf_gender').value=m.gender||'共通';
     $('mf_description').value=m.description||'';
+    $('mf_treatment').value=m.treatment||'';
+    $('mf_recommendation').value=m.recommendation||'';
+    $('mf_sort_order').value=m.sort_order??'';
     $('mf_public').checked=m.is_public!==false;
     $('mf_show').checked=m.show_in_list!==false;
   }
@@ -805,10 +835,16 @@ async function saveMenu(){
   const data={
     id:$('mf_id').value||null,
     name, category:$('mf_category').value,
+    yomi:$('mf_yomi').value.trim()||null,
     target_store:$('mf_target_store').value,
     price:Number($('mf_price').value)||0,
     duration_min:Number($('mf_duration').value)||0,
+    price_label:$('mf_price_label').value.trim()||null,
+    gender:$('mf_gender').value,
     description:$('mf_description').value.trim()||null,
+    treatment:$('mf_treatment').value.trim()||null,
+    recommendation:$('mf_recommendation').value.trim()||null,
+    sort_order:Number($('mf_sort_order').value)||0,
     is_public:$('mf_public').checked,
     show_in_list:$('mf_show').checked,
   };
@@ -844,7 +880,7 @@ function salonFiltered(){
   if(SALON_STORE!=='all') list=list.filter(r=>r.store===SALON_STORE);
   if(SALON_STATUS!=='all') list=list.filter(r=>r.status===SALON_STATUS);
   if(SALON_CAL_PICK&&SALON_VIEW==='cal') list=list.filter(r=>r.desired_date===SALON_CAL_PICK);
-  list.sort((a,b)=>{const da=a.desired_date||'9999',db=b.desired_date||'9999';if(da!==db)return da>db?1:-1;return(a.desired_time||'')>(b.desired_time||'')?1:-1;});
+  list.sort((a,b)=>{const da=a.desired_date||'0000',db=b.desired_date||'0000';if(da!==db)return da>db?-1:1;return(a.desired_time||'')>(b.desired_time||'')?-1:1;});
   return list;
 }
 function renderSalon(){
@@ -865,11 +901,13 @@ function renderSalon(){
   list.forEach(r=>{
     const dt=r.desired_date||'';
     const isToday=dt===today;
+    const isNew=r.status==='受付中';
     const dtLabel=dt?new Date(dt+'T00:00:00+09:00').toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'}):'日程未定';
-    const borderLeft=isToday?'border-left:3px solid var(--gold);':'';
-    h+=`<tr style="border-bottom:1px solid var(--line);${borderLeft}">
+    const rowBg=isNew?'background:#FEF6EC;':'';
+    const borderLeft=isNew?'border-left:3px solid #E8911E;':isToday?'border-left:3px solid var(--gold);':'';
+    h+=`<tr style="border-bottom:1px solid var(--line);${rowBg}${borderLeft}">
       <td style="padding:7px 10px;font-weight:600;white-space:nowrap;${isToday?'color:var(--gold);':''}">${dtLabel}<br><span style="font-size:12px;">${esc(r.desired_time||'—')}</span></td>
-      <td style="padding:7px 10px;font-weight:600;">${esc(r.name||'—')}</td>
+      <td style="padding:7px 10px;font-weight:600;">${esc(r.name||'—')} ${isNew?'<span style="font-size:10px;background:#FBE9D6;color:#C26A12;border:1px solid #F0C089;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">NEW</span>':''}</td>
       <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.menu_name||'—')}</td>
       <td style="padding:7px 10px;font-size:12px;">${esc(r.phone||'—')}</td>
       <td style="padding:7px 10px;"><span style="font-size:11px;background:var(--cream-dk,#f2f6f1);padding:2px 7px;border-radius:5px;">${esc(r.store||'—')}</span></td>
