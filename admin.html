@@ -243,7 +243,13 @@
           <button class="btn btn-sm" style="background:var(--bg);" id="ucNext">次の月 ›</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-bottom:6px;">
-          ${['日','月','火','水','木','金','土'].map(d=>`<div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">${d}</div>`).join('')}
+          <div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">日</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">月</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">火</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">水</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">木</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">金</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700;padding:4px 0;">土</div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;" id="ucGrid"></div>
       </div>
@@ -570,7 +576,13 @@
           <button class="btn btn-sm" style="background:var(--bg);" onclick="SALON_CAL_M++;if(SALON_CAL_M>12){SALON_CAL_M=1;SALON_CAL_Y++;}SALON_CAL_PICK='';renderSalonCal();renderSalon();">›</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;margin-bottom:6px;">
-          ${['日','月','火','水','木','金','土'].map(d=>`<div style="font-size:11px;color:var(--muted);font-weight:600;">${d}</div>`).join('')}
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">日</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">月</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">火</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">水</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">木</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">金</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">土</div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;" id="salonCalWrap"></div>
         <div style="margin-top:8px;font-size:11px;color:var(--muted);">● 印のある日付をクリックすると絞り込みます</div>
