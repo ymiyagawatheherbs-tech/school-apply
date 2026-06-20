@@ -534,16 +534,16 @@ function renderMembers(){
       <th style="padding:10px 12px;color:var(--muted);font-weight:500;">サロン名・会社名</th>
       <th style="padding:10px 12px;color:var(--muted);font-weight:500;">担当者名</th>
       <th style="padding:10px 12px;color:var(--muted);font-weight:500;">メールアドレス</th>
-      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">登録日</th>
+      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">電話番号</th>
       <th style="padding:10px 12px;"></th>
     </tr></thead><tbody>`;
   MEMBERS.forEach(m=>{
-    const dt=m.created_at ? new Date(m.created_at).toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo'}) : '—';
+    const col=colorForSeries;
     h+=`<tr style="border-bottom:1px solid var(--line);">
       <td style="padding:10px 12px;font-weight:500;">${esc(m.salon_name||'—')}</td>
       <td style="padding:10px 12px;">${esc(m.contact_name||'—')}</td>
       <td style="padding:10px 12px;font-family:monospace;font-size:13px;">${esc(m.email)}</td>
-      <td style="padding:10px 12px;color:var(--muted);font-size:13px;">${dt}</td>
+      <td style="padding:10px 12px;font-size:13px;">${esc(m.phone||'—')}</td>
       <td style="padding:10px 12px;text-align:right;">
         <button class="btn btn-sm btn-del" onclick="deleteMember('${esc(m.id||m.email)}','${esc(m.email)}')">削除</button>
       </td>
