@@ -1282,7 +1282,7 @@ async function addSalonReservation(){
     name, phone:$('sf_phone').value.trim()||null, desired_date:$('sf_date').value||null,
     desired_time:$('sf_time').value.trim()||null, gender:$('sf_gender').value||null,
     birth_date:$('sf_birth').value.trim()||null, staff_name:$('sf_staff').value||null,
-    notes:$('sf_notes').value.trim()||null, source:'電話', status:'受付中' };
+    notes:$('sf_notes').value.trim()||null, source:'手動登録', status:'受付中' };
   try{
     await call('addReservation',body); toast('予約を追加しました');
     ['sf_name','sf_phone','sf_date','sf_time','sf_birth','sf_notes'].forEach(id=>{$(id).value='';});
