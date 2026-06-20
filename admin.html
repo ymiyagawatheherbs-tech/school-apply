@@ -914,7 +914,7 @@ function renderSalon(){
       <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.source||'—')}</td>
       <td style="padding:7px 10px;">
         <select style="font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:white;" onchange="updateSalonStatus('${esc(r.id)}',this.value)">
-          ${['受付中','確定','キャンセル'].map(s=>`<option value="${s}"${r.status===s?' selected':''}>${s}</option>`).join('')}
+          ${['受付中','確定','保留','キャンセル'].map(s=>`<option value="${s}"${r.status===s?' selected':''}>${s}</option>`).join('')}
         </select>
       </td>
       <td style="padding:7px 10px;text-align:right;">
