@@ -406,6 +406,10 @@
             <input id="mf_salon" placeholder="○○サロン" />
           </div>
           <div class="fg">
+            <label>担当者名</label>
+            <input id="mf_contact" placeholder="山田 花子" />
+          </div>
+          <div class="fg">
             <label>メールアドレス <span style="color:#a04a3a;font-size:11px;">必須</span></label>
             <input id="mf_email" type="email" placeholder="info@salon.com" />
           </div>
@@ -528,6 +532,7 @@ function renderMembers(){
   let h=`<table style="width:100%;border-collapse:collapse;font-size:14px;">
     <thead><tr style="border-bottom:2px solid var(--line);text-align:left;">
       <th style="padding:10px 12px;color:var(--muted);font-weight:500;">サロン名・会社名</th>
+      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">担当者名</th>
       <th style="padding:10px 12px;color:var(--muted);font-weight:500;">メールアドレス</th>
       <th style="padding:10px 12px;color:var(--muted);font-weight:500;">登録日</th>
       <th style="padding:10px 12px;"></th>
@@ -535,7 +540,8 @@ function renderMembers(){
   MEMBERS.forEach(m=>{
     const dt=m.created_at ? new Date(m.created_at).toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo'}) : '—';
     h+=`<tr style="border-bottom:1px solid var(--line);">
-      <td style="padding:10px 12px;font-weight:500;">${esc(m.salon_name||m.name||'—')}</td>
+      <td style="padding:10px 12px;font-weight:500;">${esc(m.salon_name||'—')}</td>
+      <td style="padding:10px 12px;">${esc(m.contact_name||'—')}</td>
       <td style="padding:10px 12px;font-family:monospace;font-size:13px;">${esc(m.email)}</td>
       <td style="padding:10px 12px;color:var(--muted);font-size:13px;">${dt}</td>
       <td style="padding:10px 12px;text-align:right;">
@@ -549,12 +555,13 @@ function renderMembers(){
 }
 async function addMember(){
   const salon=$('mf_salon').value.trim();
+  const contact=$('mf_contact').value.trim();
   const email=$('mf_email').value.trim();
   if(!email){ toast('メールアドレスを入力してください'); return; }
   try{
-    await call('addMember',{salon,email});
+    await call('addMember',{salon,contact,email});
     toast('会員を追加しました');
-    $('mf_salon').value=''; $('mf_email').value='';
+    $('mf_salon').value=''; $('mf_contact').value=''; $('mf_email').value='';
     $('memberForm').classList.add('hide');
     await loadMembers();
   }catch(e){ toast(e.message); }
