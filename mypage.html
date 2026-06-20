@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>予約の確認・変更 — THE HERBS</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F5EDE3; --bgCard:#FFFFFF; --bgSub:#F0EBE3; --bgSelected:#EAF0E9;
+    --green:#707862; --greenDark:#4A5240; --sage:#A9C0A6; --light:#C5D3C4;
+    --border:#DDD5CC; --borderSel:#A9C0A6; --text:#3D3D2E; --textSub:#6B6B5A;
+    --textMuted:#9A9A88; --error:#C0392B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+  .wrap{max-width:520px;margin:0 auto;padding:2rem 1rem 4rem;}
+  .hero{text-align:center;margin-bottom:1.8rem;}
+  .hero .brand{font-family:'Shippori Mincho B1',serif;font-size:1.05rem;letter-spacing:.18em;color:var(--green);margin-bottom:.5rem;}
+  .hero h1{font-family:'Shippori Mincho B1',serif;font-size:1.55rem;font-weight:700;color:var(--greenDark);margin-bottom:.4rem;}
+  .hero p{font-size:.84rem;color:var(--textSub);}
+  .card{background:var(--bgCard);border:1px solid var(--border);border-radius:12px;padding:1.6rem 1.4rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(0,0,0,.03);}
+  label.field{display:block;font-size:.82rem;font-weight:600;color:var(--green);margin-bottom:.45rem;letter-spacing:.03em;}
+  label.field .req{color:var(--error);margin-left:2px;}
+  input[type=text],input[type=tel],input[type=date],select{
+    width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:6px;
+    font-size:.92rem;color:var(--text);background:#FAFAF7;outline:none;box-sizing:border-box;font-family:inherit;}
+  input:focus,select:focus{border-color:var(--sage);}
+  .field-group{margin-bottom:1.1rem;}
+  .err-msg{font-size:.78rem;color:var(--error);margin-top:.5rem;text-align:center;}
+  .hint{font-size:.74rem;color:var(--textMuted);margin-top:.35rem;}
+  .btn{width:100%;padding:.9rem;border:none;border-radius:8px;font-size:.92rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+  .btn-primary{background:var(--green);color:#fff;}
+  .btn-primary:hover{background:var(--greenDark);}
+  .btn-primary:disabled{background:var(--border);cursor:not-allowed;}
+  .btn-ghost{background:#fff;color:var(--green);border:1.5px solid var(--border);margin-top:.7rem;}
+  .btn-ghost:hover{background:var(--bgSub);}
+  .btn-danger{background:#fff;color:var(--error);border:1.5px solid #E5BDB8;margin-top:.7rem;}
+  .btn-danger:hover{background:#FBEFED;}
+
+  .resv-box{background:var(--bgSelected);border:1px solid var(--borderSel);border-radius:10px;padding:1.2rem;margin-bottom:1.3rem;}
+  .resv-row{display:flex;padding:.4rem 0;border-bottom:1px dashed var(--border);font-size:.88rem;}
+  .resv-row:last-child{border-bottom:none;}
+  .resv-row .lbl{color:var(--textMuted);min-width:5.5em;font-size:.8rem;}
+  .resv-row .val{color:var(--greenDark);font-weight:600;flex:1;}
+  .status-tag{display:inline-block;font-size:.74rem;padding:2px 10px;border-radius:10px;font-weight:700;}
+  .st-new{background:#FBE9D6;color:#C26A12;}
+  .st-ok{background:#EAF3E6;color:#3D7A4A;}
+  .st-ng{background:#FBEAE7;color:var(--error);}
+
+  .policy{background:var(--bgSub);border-radius:8px;padding:.9rem 1rem;font-size:.76rem;color:var(--textMuted);line-height:1.7;margin:1rem 0;}
+  .row2{display:flex;gap:.8rem;}
+  .row2>div{flex:1;}
+  .section-ttl{font-family:'Shippori Mincho B1',serif;font-size:1.05rem;font-weight:600;color:var(--green);margin-bottom:1rem;text-align:center;}
+  .loading{text-align:center;padding:1rem;color:var(--textMuted);font-size:.85rem;}
+  .done-msg{text-align:center;padding:1rem 0;}
+  .done-msg .check{width:64px;height:64px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;}
+  .done-msg h3{font-family:'Shippori Mincho B1',serif;font-size:1.3rem;color:var(--green);margin-bottom:.8rem;}
+  .done-msg p{font-size:.86rem;color:var(--textSub);line-height:1.8;}
+  .edit-panel{display:none;margin-top:1rem;padding-top:1.3rem;border-top:1px solid var(--border);}
+  .edit-panel.open{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="brand">THE HERBS</div>
+    <h1>予約の確認・変更</h1>
+    <p>予約番号と電話番号でご確認いただけます</p>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+const API = 'https://herbs-booking-api.vercel.app/api/public-booking';
+const TIME_HANKYU = ['12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'];
+const TIME_SALON = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+
+let view='login', resv=null, authPhone='', authId='';
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+async function post(action,extra={}){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extra})});
+  const d=await r.json(); if(!r.ok) throw new Error(d.error||'エラー'); return d;
+}
+function minDate(){ const t=new Date(); t.setDate(t.getDate()+1); return t.toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}); }
+function fmtDate(d){ return d?new Date(d+'T00:00:00+09:00').toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'}):''; }
+
+// URLパラメータから予約番号を取得（完了画面からの遷移用）
+function getParam(k){ return new URLSearchParams(location.search).get(k)||''; }
+
+function render(){
+  if(view==='login') renderLogin();
+  else if(view==='detail') renderDetail();
+  else if(view==='done-cancel') renderDone('キャンセルを承りました','ご予約のキャンセルが完了しました。<br>またのご利用を心よりお待ちしております。');
+  else if(view==='done-update') renderDone('変更を承りました','ご予約の日時を変更いたしました。<br>当日お会いできることを楽しみにしております。');
+}
+
+function renderLogin(){
+  document.getElementById('content').innerHTML=`
+    <div class="card">
+      <div class="section-ttl">予約内容を確認する</div>
+      <div class="field-group">
+        <label class="field">予約番号<span class="req">*</span></label>
+        <input type="text" id="i_id" value="${esc(authId)}" placeholder="WEB1234567890" />
+        <div class="hint">ご予約完了時にお伝えした番号です（WEBから始まります）</div>
+      </div>
+      <div class="field-group">
+        <label class="field">電話番号<span class="req">*</span></label>
+        <input type="tel" id="i_phone" placeholder="090-0000-0000" />
+        <div class="hint">ご予約時に入力された電話番号</div>
+      </div>
+      <div id="loginErr" class="err-msg" style="margin-bottom:1rem;"></div>
+      <button class="btn btn-primary" id="b_find">予約を確認する</button>
+    </div>
+    <div class="policy" style="text-align:center;">
+      予約番号がわからない場合は、お電話（070-2642-7366）にてお問い合わせください。
+    </div>`;
+  document.getElementById('b_find').onclick=doFind;
+}
+
+async function doFind(){
+  const id=document.getElementById('i_id').value.trim();
+  const phone=document.getElementById('i_phone').value.trim();
+  const errEl=document.getElementById('loginErr');
+  errEl.textContent='';
+  if(!id||!phone){ errEl.textContent='予約番号と電話番号を入力してください'; return; }
+  const btn=document.getElementById('b_find'); btn.disabled=true; btn.textContent='確認中…';
+  try{
+    const d=await post('findReservation',{reservation_id:id,phone});
+    resv=d.reservation; authPhone=phone; authId=id; view='detail'; render();
+  }catch(e){ errEl.textContent=e.message; btn.disabled=false; btn.textContent='予約を確認する'; }
+}
+
+function renderDetail(){
+  const stClass=resv.status==='確定'?'st-ok':resv.status==='キャンセル'?'st-ng':'st-new';
+  const isCancelled=resv.status==='キャンセル';
+  const slots=resv.store==='神戸阪急'?TIME_HANKYU:TIME_SALON;
+  document.getElementById('content').innerHTML=`
+    <div class="card">
+      <div class="section-ttl">ご予約内容</div>
+      <div class="resv-box">
+        <div class="resv-row"><span class="lbl">状態</span><span class="val"><span class="status-tag ${stClass}">${esc(resv.status)}</span></span></div>
+        <div class="resv-row"><span class="lbl">店舗</span><span class="val">${esc(resv.store)}</span></div>
+        <div class="resv-row"><span class="lbl">メニュー</span><span class="val">${esc(resv.menu_name||'—')}</span></div>
+        <div class="resv-row"><span class="lbl">日時</span><span class="val">${fmtDate(resv.desired_date)} ${esc(resv.desired_time||'')}</span></div>
+        <div class="resv-row"><span class="lbl">お名前</span><span class="val">${esc(resv.name)} 様</span></div>
+        <div class="resv-row"><span class="lbl">予約番号</span><span class="val" style="font-size:.8rem;">${esc(resv.id)}</span></div>
+      </div>
+      ${isCancelled?`
+        <div class="policy" style="text-align:center;">この予約はキャンセル済みです。</div>
+      `:`
+        <button class="btn btn-primary" id="b_edit">日時を変更する</button>
+        <button class="btn btn-danger" id="b_cancel">予約をキャンセルする</button>
+
+        <div class="edit-panel" id="editPanel">
+          <div class="section-ttl" style="font-size:.95rem;">新しい日時を選択</div>
+          <div class="row2">
+            <div class="field-group">
+              <label class="field">ご希望日</label>
+              <input type="date" id="e_date" min="${minDate()}" value="${esc(resv.desired_date||'')}" />
+            </div>
+            <div class="field-group">
+              <label class="field">ご希望時間</label>
+              <select id="e_time">
+                <option value="">選択</option>
+                ${slots.map(t=>`<option value="${t}"${resv.desired_time===t?' selected':''}>${t}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div id="editErr" class="err-msg" style="margin-bottom:.8rem;"></div>
+          <button class="btn btn-primary" id="b_saveEdit">この日時に変更する</button>
+        </div>
+      `}
+      <button class="btn btn-ghost" id="b_back">← 戻る</button>
+    </div>
+    <div class="policy" style="text-align:center;">
+      キャンセルは3日前まで無料、2日前以降は施術料金の100%を申し受けます。<br>
+      ご不明な点はお電話（070-2642-7366）にてお問い合わせください。
+    </div>`;
+
+  const eb=document.getElementById('b_edit');
+  if(eb) eb.onclick=()=>document.getElementById('editPanel').classList.toggle('open');
+  const cb=document.getElementById('b_cancel');
+  if(cb) cb.onclick=doCancel;
+  const sb=document.getElementById('b_saveEdit');
+  if(sb) sb.onclick=doUpdate;
+  document.getElementById('b_back').onclick=()=>{ view='login'; resv=null; render(); };
+}
+
+async function doCancel(){
+  if(!confirm('本当にこの予約をキャンセルしますか？\nこの操作は取り消せません。')) return;
+  const btn=document.getElementById('b_cancel'); btn.disabled=true; btn.textContent='処理中…';
+  try{
+    await post('cancelReservation',{reservation_id:resv.id,phone:authPhone});
+    view='done-cancel'; render();
+  }catch(e){ alert(e.message); btn.disabled=false; btn.textContent='予約をキャンセルする'; }
+}
+
+async function doUpdate(){
+  const date=document.getElementById('e_date').value;
+  const time=document.getElementById('e_time').value;
+  const errEl=document.getElementById('editErr'); errEl.textContent='';
+  if(!date||!time){ errEl.textContent='変更後の日付と時間を選択してください'; return; }
+  const btn=document.getElementById('b_saveEdit'); btn.disabled=true; btn.textContent='変更中…';
+  try{
+    await post('updateReservation',{reservation_id:resv.id,phone:authPhone,desired_date:date,desired_time:time});
+    view='done-update'; render();
+  }catch(e){ errEl.textContent=e.message; btn.disabled=false; btn.textContent='この日時に変更する'; }
+}
+
+function renderDone(title,msg){
+  document.getElementById('content').innerHTML=`
+    <div class="card">
+      <div class="done-msg">
+        <div class="check"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <h3>${title}</h3>
+        <p>${msg}</p>
+      </div>
+      <button class="btn btn-ghost" onclick="location.href='mypage.html'">予約確認に戻る</button>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// 初期化：URLに予約番号があれば自動入力
+authId=getParam('id');
+render();
+</script>
+</body>
+</html>
