@@ -7,58 +7,79 @@
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#F5EDE3; --bgCard:#FFFFFF; --bgSub:#F0EBE3; --bgSelected:#EAF0E9;
-    --green:#707862; --greenDark:#4A5240; --sage:#A9C0A6; --light:#C5D3C4;
+    --bg:#F2E9DD; --bgCard:#FFFFFF; --bgSub:#F0EBE3; --bgSelected:#E8EEE4;
+    --green:#6E7A5A; --greenDark:#4A5240; --headerGreen:#5A6347; --sage:#A9C0A6; --light:#C5D3C4;
     --border:#DDD5CC; --borderSel:#A9C0A6; --text:#3D3D2E; --textSub:#6B6B5A;
     --textMuted:#9A9A88; --error:#C0392B;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
   .mincho{font-family:'Shippori Mincho B1',serif;}
-  .wrap{max-width:560px;margin:0 auto;padding:2rem 1rem 4rem;}
+  .wrap{max-width:620px;margin:0 auto;padding:2.5rem 1rem 3rem;}
 
-  /* ヘッダー */
+  /* 固定ヘッダー（深緑バー） */
+  .topbar{background:var(--headerGreen);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;}
+  .topbar .logo-area{display:flex;align-items:center;gap:.7rem;}
+  .topbar .logo-area img{width:42px;height:42px;object-fit:contain;background:#fff;border-radius:7px;padding:3px;}
+  .topbar .logo-text{color:#fff;line-height:1.3;}
+  .topbar .logo-text .sub{font-size:.6rem;letter-spacing:.2em;opacity:.85;}
+  .topbar .logo-text .main{font-family:'Shippori Mincho B1',serif;font-size:1.15rem;letter-spacing:.15em;font-weight:600;}
+  .topbar .formname{color:#fff;font-size:.85rem;opacity:.9;letter-spacing:.05em;}
+
+  /* フッター（深緑バー） */
+  .footer{background:var(--headerGreen);padding:2rem 1rem;text-align:center;margin-top:2rem;}
+  .footer img{width:40px;height:40px;object-fit:contain;opacity:.55;margin-bottom:.5rem;}
+  .footer .copy{color:rgba(255,255,255,.7);font-size:.72rem;letter-spacing:.03em;}
+
+  /* ヘッダー見出し */
   .hero{text-align:center;margin-bottom:2rem;}
-  .hero .brand{font-family:'Shippori Mincho B1',serif;font-size:1.05rem;letter-spacing:.18em;color:var(--green);margin-bottom:.5rem;}
-  .hero h1{font-family:'Shippori Mincho B1',serif;font-size:1.7rem;font-weight:700;color:var(--greenDark);margin-bottom:.4rem;}
+  .hero .brand{font-size:.78rem;letter-spacing:.35em;color:var(--sage);margin-bottom:.7rem;font-weight:600;}
+  .hero h1{font-family:'Shippori Mincho B1',serif;font-size:2rem;font-weight:700;color:var(--greenDark);margin-bottom:.4rem;letter-spacing:.08em;}
   .hero p{font-size:.85rem;color:var(--textSub);}
 
   /* ステップインジケーター */
-  .steps{display:flex;justify-content:center;gap:.5rem;margin-bottom:1.8rem;}
-  .step-dot{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--textMuted);font-weight:600;}
-  .step-dot .num{width:24px;height:24px;border-radius:50%;background:var(--border);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;}
-  .step-dot.on .num{background:var(--green);}
-  .step-dot.on{color:var(--green);}
-  .step-sep{width:18px;height:1.5px;background:var(--border);align-self:center;}
+  .steps{display:flex;justify-content:center;align-items:center;gap:.4rem;margin-bottom:2rem;flex-wrap:wrap;}
+  .step-dot{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--textMuted);font-weight:600;}
+  .step-dot .num{width:30px;height:30px;border-radius:50%;background:#D6CFC2;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;}
+  .step-dot.on .num{background:var(--greenDark);}
+  .step-dot.done .num{background:var(--sage);}
+  .step-dot.on{color:var(--greenDark);}
+  .step-sep{color:var(--textMuted);font-size:.9rem;}
 
   /* カード */
   .card{background:var(--bgCard);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(0,0,0,.03);}
   .section-title{font-family:'Shippori Mincho B1',serif;font-size:1.1rem;font-weight:600;color:var(--green);margin-bottom:1rem;}
 
+  /* STEPラベル */
+  .step-label{font-size:.92rem;color:var(--sage);font-weight:600;letter-spacing:.08em;margin-bottom:1.2rem;}
+
   /* 店舗選択 */
-  .store-card{border:1.5px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:.9rem;cursor:pointer;transition:.15s;background:#FAFAF7;}
-  .store-card:hover{border-color:var(--light);background:var(--bgSelected);}
+  .store-card{position:relative;background:#fff;border:1px solid #EDE6DB;border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1.1rem;cursor:pointer;transition:.15s;box-shadow:0 2px 14px rgba(0,0,0,.04);}
+  .store-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);}
   .store-card.sel{border-color:var(--borderSel);background:var(--bgSelected);}
-  .store-card h3{font-size:1rem;font-weight:700;color:var(--greenDark);margin-bottom:.5rem;}
-  .store-meta{font-size:.8rem;color:var(--textSub);margin-bottom:.25rem;display:flex;gap:.4rem;}
+  .store-card-arrow{position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);color:var(--sage);font-size:1.4rem;}
+  .store-card h3{font-size:1.15rem;font-weight:700;color:var(--greenDark);margin-bottom:.7rem;}
+  .store-meta{font-size:.85rem;color:var(--textSub);margin-bottom:.3rem;display:flex;gap:.5rem;}
   .store-meta .lbl{color:var(--textMuted);min-width:3.5em;flex-shrink:0;}
-  .store-notes{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--border);}
-  .store-notes li{font-size:.74rem;color:var(--textMuted);margin-bottom:.3rem;list-style:none;padding-left:1em;position:relative;}
+  .store-meta:last-of-type{color:var(--sage);font-weight:600;}
+  .store-notes{margin-top:.9rem;padding-top:.9rem;border-top:1px solid #EDE6DB;}
+  .store-notes li{font-size:.78rem;color:var(--textMuted);margin-bottom:.35rem;list-style:none;padding-left:1.2em;position:relative;}
   .store-notes li::before{content:"※";position:absolute;left:0;}
 
   /* メニュー */
-  .menu-cat{font-size:.8rem;font-weight:700;color:var(--green);letter-spacing:.05em;margin:1.2rem 0 .6rem;padding-bottom:.3rem;border-bottom:1.5px solid var(--light);}
+  .menu-cat{font-family:'Shippori Mincho B1',serif;font-size:1.15rem;font-weight:600;color:var(--greenDark);letter-spacing:.05em;margin:1.8rem 0 .9rem;padding-bottom:.5rem;border-bottom:1.5px solid var(--sage);}
   .menu-cat:first-child{margin-top:0;}
-  .menu-card{border:1.5px solid var(--border);border-radius:9px;margin-bottom:.7rem;overflow:hidden;background:#FAFAF7;}
+  .menu-card{border:1px solid #EDE6DB;border-radius:12px;margin-bottom:.9rem;overflow:hidden;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.04);}
   .menu-card.sel{border-color:var(--borderSel);background:var(--bgSelected);}
-  .menu-head{padding:.9rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;}
-  .menu-thumb{width:60px;height:60px;border-radius:7px;object-fit:cover;flex-shrink:0;border:1px solid var(--border);}
+  .menu-head{padding:1rem 1.2rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+  .menu-thumb{width:64px;height:64px;border-radius:9px;object-fit:cover;flex-shrink:0;}
   .menu-info{flex:1;min-width:0;}
-  .menu-info h4{font-size:.92rem;font-weight:700;color:var(--greenDark);margin-bottom:.25rem;}
-  .menu-info .price{font-size:.85rem;color:var(--green);font-weight:600;}
-  .menu-info .dur{font-size:.74rem;color:var(--textMuted);margin-left:.5rem;}
+  .menu-info h4{font-size:1rem;font-weight:700;color:var(--greenDark);margin-bottom:.3rem;}
+  .menu-info .price{font-size:.88rem;color:var(--text);font-weight:600;}
+  .menu-info .dur{font-size:.82rem;color:var(--textMuted);margin-right:.5rem;}
   .menu-select-btn{flex-shrink:0;padding:.4rem .9rem;border-radius:6px;border:1.5px solid var(--green);background:#fff;color:var(--green);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
   .menu-card.sel .menu-select-btn{background:var(--green);color:#fff;}
+  .menu-caret{flex-shrink:0;color:var(--sage);font-size:.85rem;align-self:center;}
   .menu-detail{padding:0 1rem 1rem;font-size:.8rem;color:var(--textSub);line-height:1.7;border-top:1px dashed var(--border);margin-top:0;padding-top:.8rem;}
   .menu-detail-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:.7rem;display:block;}
   .menu-detail p{margin-bottom:.7rem;}
@@ -93,9 +114,11 @@
   .btn-ghost:hover{background:var(--bgSub);}
 
   /* 選択中バナー */
-  .selected-banner{background:var(--bgSelected);border:1px solid var(--borderSel);border-radius:8px;padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.82rem;}
-  .selected-banner .lbl{color:var(--textMuted);font-size:.72rem;}
-  .selected-banner .val{color:var(--greenDark);font-weight:700;}
+  .selected-banner{background:var(--bgSelected);border:1px solid var(--borderSel);border-radius:12px;padding:1.1rem 1.4rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;}
+  .selected-banner .lbl{color:var(--sage);font-size:.78rem;font-weight:600;margin-bottom:.2rem;}
+  .selected-banner .val{color:var(--greenDark);font-weight:700;font-size:1rem;}
+  .change-btn{background:#fff;border:1px solid var(--borderSel);border-radius:8px;padding:.5rem 1.1rem;color:var(--green);font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  .change-btn:hover{background:var(--bgSub);}
 
   .loading,.empty{text-align:center;padding:2rem;color:var(--textMuted);font-size:.85rem;}
 
@@ -107,17 +130,35 @@
 </style>
 </head>
 <body>
-<div class="wrap" id="app">
-  <div class="hero">
-    <div class="brand">THE HERBS</div>
-    <h1>ご予約</h1>
-    <p>ご希望の店舗・メニューをお選びください</p>
-    <div style="margin-top:1rem;padding:.7rem 1rem;background:#FAFAF7;border:1.5px solid var(--border);border-radius:9px;display:inline-block;">
-      <span style="font-size:.8rem;color:var(--textSub);">すでにご予約済みの方は</span>
-      <a href="mypage.html" style="font-size:.85rem;color:var(--green);font-weight:700;text-decoration:underline;margin-left:.3rem;">予約の確認・変更はこちら</a>
+
+<!-- 固定ヘッダー（深緑バー） -->
+<div class="topbar">
+  <div class="logo-area">
+    <img src="logomark_olive.png" alt="THE HERBS" />
+    <div class="logo-text">
+      <div class="sub">BOTANICAL BEAUTY</div>
+      <div class="main">THE HERBS</div>
     </div>
   </div>
+  <div class="formname">ご予約フォーム</div>
+</div>
+
+<div class="wrap" id="app">
+  <div class="hero">
+    <div class="brand">RESERVATION</div>
+    <h1>ご予約・お申し込み</h1>
+  </div>
   <div id="content"><div class="loading">読み込み中…</div></div>
+  <div style="text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+    <span style="font-size:.8rem;color:var(--textSub);">すでにご予約済みの方は</span><br>
+    <a href="mypage.html" style="font-size:.88rem;color:var(--green);font-weight:700;text-decoration:underline;display:inline-block;margin-top:.4rem;">予約の確認・変更はこちら</a>
+  </div>
+</div>
+
+<!-- フッター（深緑バー） -->
+<div class="footer">
+  <img src="logomark_olive.png" alt="" style="filter:brightness(0) invert(1);" />
+  <div class="copy">© 2026 SCALP LABO / THE HERBS. All rights reserved.</div>
 </div>
 
 <script>
@@ -167,11 +208,11 @@ function minDate(){ const t=new Date(); t.setDate(t.getDate()+1); return t.toLoc
 
 function stepsBar(){
   const s=['store','menu','form'];
-  const lbls={store:'店舗',menu:'メニュー',form:'お客様情報'};
+  const lbls={store:'店舗選択',menu:'メニュー選択',form:'情報入力'};
   const ci=s.indexOf(step);
   return `<div class="steps">${s.map((k,i)=>`
-    <div class="step-dot ${i<=ci?'on':''}"><span class="num">${i+1}</span>${lbls[k]}</div>
-    ${i<2?'<div class="step-sep"></div>':''}`).join('')}</div>`;
+    <div class="step-dot ${i===ci?'on':(i<ci?'done':'')}"><span class="num">${i<ci?'✓':i+1}</span>${lbls[k]}</div>
+    ${i<2?'<span class="step-sep">›</span>':''}`).join('')}</div>`;
 }
 
 function render(){
@@ -184,9 +225,10 @@ function render(){
 }
 
 function renderStore(){
-  let h='<div class="card"><div class="section-title">店舗をお選びください</div>';
+  let h='<div class="step-label">STEP 1 — ご来店の店舗をお選びください</div>';
   C_STORES.forEach(s=>{
     h+=`<div class="store-card ${store===s.value?'sel':''}" onclick="selectStore('${s.value}')">
+      <div class="store-card-arrow">›</div>
       <h3>${esc(s.label)}</h3>
       <div class="store-meta"><span class="lbl">住所</span>${esc(s.address)}</div>
       <div class="store-meta"><span class="lbl">営業</span>${esc(s.hours)}</div>
@@ -194,7 +236,6 @@ function renderStore(){
       ${s.notes.length?`<ul class="store-notes">${s.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`:''}
     </div>`;
   });
-  h+='</div>';
   return h;
 }
 
@@ -217,9 +258,12 @@ async function loadMenus(){
 
 function renderMenu(){
   const si=C_STORES.find(s=>s.value===store);
-  let h=`<div class="card">
-    <div class="section-title">${esc(si.label)}</div>`;
-  if(!menus.length){ h+='<div class="empty">現在表示できるメニューがありません</div></div>'; return h; }
+  let h=`<div class="selected-banner">
+    <div><div class="lbl">選択中の店舗</div><div class="val">${esc(si.label)}</div></div>
+    <button class="change-btn" onclick="backToStore()">変更</button>
+  </div>
+  <div class="step-label">STEP 2 — ご希望のメニューをお選びください</div>`;
+  if(!menus.length){ h+='<div class="empty">現在表示できるメニューがありません</div>'; return h; }
   // カテゴリ別
   const groups={};
   menus.forEach(m=>{const c=m.category||'その他';(groups[c]=groups[c]||[]).push(m);});
@@ -231,26 +275,26 @@ function renderMenu(){
       const thumb=m.image_url?`<img class="menu-thumb" src="${esc(m.image_url)}" onerror="this.style.display='none';" alt="" />`:'';
       const hasDetail=m.description||m.treatment||m.recommendation||m.image_url;
       h+=`<div class="menu-card ${sel?'sel':''}">
-        <div class="menu-head">
+        <div class="menu-head" onclick="toggleMenu('${esc(m.id)}')">
           ${thumb}
           <div class="menu-info">
             <h4>${esc(m.name)}</h4>
-            <span class="price">${m.price>0?'¥'+Number(m.price).toLocaleString():'無料'}</span>
+            <span class="price">${m.price>0?'¥'+Number(m.price).toLocaleString()+'（税込）':'税込'}</span>
             <span class="dur">${m.duration_min||'—'}分</span>
           </div>
-          <button class="menu-select-btn" onclick="selectMenu('${esc(m.id)}','${esc(m.name)}')">${sel?'選択中':'選択'}</button>
+          <span class="menu-caret">${exp?'▲':'▼'}</span>
         </div>
-        ${hasDetail?`<div class="menu-toggle" onclick="toggleMenu('${esc(m.id)}')">${exp?'▲ 閉じる':'▼ 詳細を見る'}</div>`:''}
-        ${exp&&hasDetail?`<div class="menu-detail">
+        ${exp?`<div class="menu-detail">
           ${m.image_url?`<img class="menu-detail-img" src="${esc(m.image_url)}" onerror="this.style.display='none';" alt="" />`:''}
           ${m.description?`<p>${esc(m.description)}</p>`:''}
           ${m.treatment?`<div class="menu-detail-sec"><div class="menu-detail-label">施術内容</div><div class="menu-detail-txt">${esc(m.treatment)}</div></div>`:''}
           ${m.recommendation?`<div class="menu-detail-rec"><div class="menu-detail-label">こんな方におすすめ</div><div class="menu-detail-txt">${esc(m.recommendation)}</div></div>`:''}
+          <button class="btn btn-primary" style="margin-top:1rem;" onclick="selectMenu('${esc(m.id)}','${esc(m.name)}')">このメニューで予約する</button>
         </div>`:''}
       </div>`;
     });
   });
-  h+='</div><button class="btn btn-ghost" onclick="backToStore()">← 店舗選択に戻る</button>';
+  h+='<button class="btn btn-ghost" onclick="backToStore()">← 店舗選択に戻る</button>';
   return h;
 }
 
@@ -262,12 +306,12 @@ function backToMenu(){ step='menu'; render(); }
 function renderForm(){
   const si=C_STORES.find(s=>s.value===store);
   const slots=store==='神戸阪急'?TIME_HANKYU:TIME_SALON;
-  let h=`<div class="card">
-    <div class="selected-banner">
-      <div class="lbl">ご予約内容</div>
-      <div class="val">${esc(si.label)}</div>
-      <div class="val">${esc(menuName)}</div>
+  let h=`<div class="selected-banner">
+      <div><div class="lbl">ご予約内容</div><div class="val">${esc(si.label)}</div><div style="font-size:.85rem;color:var(--textSub);margin-top:.2rem;">${esc(menuName)}</div></div>
+      <button class="change-btn" onclick="backToMenu()">変更</button>
     </div>
+    <div class="step-label">STEP 3 — お客様情報をご入力ください</div>
+    <div class="card">
     <div class="field-group">
       <label class="field">お名前<span class="req">*</span></label>
       <input type="text" id="i_name" value="${esc(form.name)}" placeholder="山田 花子" />
