@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THE HERBS</title>
+<script>
+  (function () {
+    // 開いているドメイン名を見て、行き先を振り分けます
+    var host = (window.location.hostname || "").toLowerCase();
+
+    if (host.indexOf("booking") !== -1) {
+      // booking.scalp-labo.jp など「booking」を含むドメイン
+      //   → 一般のお客様のサロン予約ページ
+      window.location.replace("booking.html");
+    } else {
+      // それ以外（講習会のURL）
+      //   → これまで通り講習会の申込ページ
+      window.location.replace("apply.html");
+    }
+  })();
+</script>
+</head>
+<body></body>
+</html>
