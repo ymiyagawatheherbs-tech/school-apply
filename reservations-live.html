@@ -291,9 +291,8 @@ function render(){
     const isNew=r.status==='受付中';
     const dtLabel=dt?new Date(dt+'T00:00:00+09:00').toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'}):'日程未定';
     // 顧客照合
-    const cust=findCust(r.phone);
-    const custBadge=cust
-      ? `<a class="cust-tag cust-member" href="${STORE_APP}/customer-history-live.html?customerId=${encodeURIComponent(cust.id)}" target="_blank" rel="noopener" style="text-decoration:none;" title="顧客の履歴・カルテを開く">${esc(cust.name||'会員')} の履歴 ↗</a>`
+    const custBadge=r.customerId
+      ? `<a class="cust-tag cust-member" href="${STORE_APP}/customer-history-live.html?customerId=${encodeURIComponent(r.customerId)}" target="_blank" rel="noopener" style="text-decoration:none;" title="顧客の履歴・カルテを開く">${esc(r.customerName||'会員')} の履歴 ↗</a>`
       : `<span class="cust-tag cust-new">未登録</span>`;
     h+=`<tr class="${isNew?'new-row':''} ${isT?'today-row':''}">
       <td class="td-time${isT?' td-today':''}">${dtLabel}<br>${esc(r.desired_time||'—')}</td>
@@ -475,9 +474,9 @@ async function load(){
   document.getElementById('storeBadge').textContent=(d.store||STORE||'全店舗');
   const sel=document.getElementById('f_menu');
   sel.innerHTML='<option value="">選択してください</option>'+MENUS.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}（${m.duration_min}分）</option>`).join('');
+  const matched=ALL.filter(r=>r.customerId).length;
+  CUST_DIAG=`紐付${matched}件`;
   render();
-  // 顧客照合（バックグラウンドで実行し、完了後に再描画）
-  matchCustomers().then(render).catch(()=>{});
 }
 
 // ===== ログイン制御 =====
