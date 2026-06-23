@@ -53,6 +53,9 @@
   .b-ok{background:#EAF3E6;color:#3D7A4A;}
   .b-hold{background:#F3EEDB;color:#8A7320;border:1px solid #E0D29A;}
   .b-ng{background:#FBEAE7;color:var(--red);}
+  .b-web{background:#E7EEFB;color:#3B62B0;border:1px solid #C2D2F0;}
+  .b-tel{background:#E3F1EE;color:#2E776C;border:1px solid #BFE0D8;}
+  .b-walk{background:#FBEEDF;color:#B5702A;border:1px solid #F0CFA6;}
   .btn-edit{padding:4px 9px;font-size:11px;border-radius:6px;border:1px solid var(--line);background:var(--warm);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:700;margin-right:4px;}
   .btn-edit:hover{border-color:var(--green);}
   .cust-tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:7px;font-weight:700;margin-top:3px;}
@@ -149,12 +152,16 @@
       <div class="fg"><label>メニュー</label><select id="f_menu"><option value="">選択</option></select></div>
       <div class="fg"><label>氏名 *</label><input id="f_name" placeholder="山田 花子" /></div>
       <div class="fg"><label>電話番号</label><input id="f_phone" type="tel" placeholder="090-0000-0000" /></div>
+      <div class="fg"><label>メールアドレス</label><input id="f_email" type="email" placeholder="example@email.com" /></div>
     </div>
     <div class="frow">
       <div class="fg"><label>希望日</label><input id="f_date" type="date" /></div>
-      <div class="fg"><label>希望時間</label><input id="f_time" placeholder="14:00" /></div>
+      <div class="fg"><label>希望時間</label><select id="f_time"></select></div>
       <div class="fg"><label>性別</label>
         <select id="f_gender"><option value="">未回答</option><option value="女性">女性</option><option value="男性">男性</option></select>
+      </div>
+      <div class="fg"><label>予約経路</label>
+        <select id="f_source"><option value="電話予約">電話予約</option><option value="来店予約">来店予約</option><option value="Web予約">Web予約</option></select>
       </div>
     </div>
     <div class="frow">
@@ -182,9 +189,10 @@
       <div class="fg"><label>メニュー</label><select id="e_menu"><option value="">選択</option></select></div>
       <div class="fg"><label>氏名 *</label><input id="e_name" /></div>
       <div class="fg"><label>電話番号</label><input id="e_phone" type="tel" /></div>
+      <div class="fg"><label>メールアドレス</label><input id="e_email" type="email" /></div>
       <div style="display:flex;gap:10px;">
         <div class="fg" style="flex:1;"><label>希望日</label><input id="e_date" type="date" /></div>
-        <div class="fg" style="flex:1;"><label>希望時間</label><input id="e_time" placeholder="14:00" /></div>
+        <div class="fg" style="flex:1;"><label>希望時間</label><select id="e_time"></select></div>
       </div>
       <div class="fg"><label>備考</label><input id="e_notes" /></div>
     </div>
@@ -271,6 +279,7 @@ function render(){
   const list=filtered();
   document.getElementById('countBadge').textContent=`${list.length}件`;
   const badge=s=>{const m={'受付中':'b-new','確定':'b-ok','保留':'b-hold','キャンセル':'b-ng'};return`<span class="badge ${m[s]||''}">${esc(s)}</span>`;};
+  const routeBadge=src=>{const s=String(src||'');if(/web/i.test(s))return'<span class="badge b-web">Web</span>';if(s.includes('電話'))return'<span class="badge b-tel">電話</span>';if(s.includes('来店'))return'<span class="badge b-walk">来店</span>';return s?esc(s):'—';};
   const today=todayJST();
   if(!list.length){document.getElementById('listView').innerHTML='<div class="empty">該当する予約はありません</div>';return;}
   let h=`<table><thead><tr><th>希望日時</th><th>氏名</th><th>メニュー</th><th>電話</th><th>経路</th><th>ステータス</th><th></th></tr></thead><tbody>`;
@@ -288,8 +297,8 @@ function render(){
       <td class="td-time${isT?' td-today':''}">${dtLabel}<br>${esc(r.desired_time||'—')}</td>
       <td class="td-name">${esc(r.name)} ${isNew?'<span class="badge b-new" style="margin-left:4px;">NEW</span>':''}<br>${custBadge}</td>
       <td class="td-menu">${esc(r.menu_name||'—')}</td>
-      <td>${esc(r.phone||'—')}</td>
-      <td>${esc(r.source||'—')}</td>
+      <td>${esc(r.phone||'—')}${r.email?`<br><span style="font-size:11px;color:var(--muted);">${esc(r.email)}</span>`:''}</td>
+      <td>${routeBadge(r.source)}</td>
       <td>
         <select class="status-sel" data-id="${esc(r.id)}" onchange="chgStatus(this)">
           ${['受付中','確定','保留','キャンセル'].map(s=>`<option value="${s}"${r.status===s?' selected':''}>${s}</option>`).join('')}
@@ -396,7 +405,9 @@ function openEdit(r){
   }
   document.getElementById('e_name').value=r.name||'';
   document.getElementById('e_phone').value=r.phone||'';
+  document.getElementById('e_email').value=r.email||'';
   document.getElementById('e_date').value=r.desired_date||'';
+  ensureTimeOption('e_time',r.desired_time);
   document.getElementById('e_time').value=r.desired_time||'';
   document.getElementById('e_notes').value=r.notes||'';
   document.getElementById('editModal').style.display='flex';
@@ -417,6 +428,7 @@ async function saveEdit(){
     menu_name:menuName||null,
     name,
     phone:document.getElementById('e_phone').value.trim()||null,
+    email:document.getElementById('e_email').value.trim()||null,
     desired_date:document.getElementById('e_date').value||null,
     desired_time:document.getElementById('e_time').value.trim()||null,
     notes:document.getElementById('e_notes').value.trim()||null,
@@ -436,16 +448,19 @@ async function addResv(){
   const menuName=menuId?menuSel.options[menuSel.selectedIndex].text:'';
   const body={menu_id:menuId||null,menu_name:menuName||null,name,
     phone:document.getElementById('f_phone').value.trim()||null,
+    email:document.getElementById('f_email').value.trim()||null,
     desired_date:document.getElementById('f_date').value||null,
-    desired_time:document.getElementById('f_time').value.trim()||null,
+    desired_time:document.getElementById('f_time').value||null,
     gender:document.getElementById('f_gender').value||null,
     notes:document.getElementById('f_notes').value.trim()||null,
-    source:'手動登録',store:STORE||'本店'};
+    source:document.getElementById('f_source').value||'手動登録',store:STORE||'本店'};
   try{
     const d=await post('addReservation',body);
     ALL.push({...body,id:d.id,status:'受付中'});
     toast('追加しました');
-    ['f_name','f_phone','f_date','f_time','f_notes'].forEach(i=>document.getElementById(i).value='');
+    ['f_name','f_phone','f_email','f_date','f_notes'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('f_time').value='';
+    document.getElementById('f_source').value='電話予約';
     document.getElementById('f_menu').value='';
     closeForm();renderCal();render();
   }catch(e){toast(e.message);}
@@ -480,6 +495,22 @@ async function doLogin(){
     document.getElementById('loginErr').textContent=(/認証/.test(e.message)?'パスワードが違います':e.message);
   }
 }
+// ===== 希望時間ドロップダウン（30分刻み 10:00〜20:00）=====
+function fillTimeOptions(){
+  const opts=['<option value="">選択</option>'];
+  for(let h=10;h<=20;h++){ for(const m of ['00','30']){ if(h===20&&m==='30')break; opts.push(`<option value="${h}:${m}">${h}:${m}</option>`); } }
+  const html=opts.join('');
+  ['f_time','e_time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; });
+}
+function ensureTimeOption(selId,val){
+  if(!val) return;
+  const el=document.getElementById(selId);
+  if(el && !Array.from(el.options).some(o=>o.value===val)){
+    const o=document.createElement('option'); o.value=val; o.textContent=val; el.appendChild(o);
+  }
+}
+fillTimeOptions();
+
 document.getElementById('loginBtn').addEventListener('click',doLogin);
 document.getElementById('loginPw').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
 
