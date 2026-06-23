@@ -94,6 +94,16 @@
 </head>
 <body>
 
+<!-- ログイン画面（パスワード方式・秘密はファイルに残さない） -->
+<div id="loginView" style="position:fixed;inset:0;background:#544739;color:#EFEAE0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:300;">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;letter-spacing:3px;margin-bottom:6px;">THE HERBS</div>
+  <div style="font-size:13px;color:#A9BBB5;font-weight:700;margin-bottom:20px;">予約管理</div>
+  <div style="font-size:13px;color:#D8D0C4;margin-bottom:14px;">パスワードを入力してください</div>
+  <input id="loginPw" type="password" autocomplete="current-password" placeholder="パスワード" style="width:min(280px,80vw);padding:11px 13px;border:none;border-radius:9px;font-size:15px;margin-bottom:10px;" />
+  <div id="loginErr" style="color:#F2B8B0;font-size:13px;min-height:18px;margin-bottom:8px;font-weight:700;"></div>
+  <button id="loginBtn" style="width:min(280px,80vw);padding:12px;background:#6E847C;color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">ログイン</button>
+</div>
+
 <div class="hd">
   予約管理
   <span class="store-badge" id="storeBadge">読み込み中…</span>
@@ -187,7 +197,7 @@
 
 <script>
 const API='https://herbs-booking-api.vercel.app/api/store';
-const TOKEN='__STORE_TOKEN__';
+let PW = sessionStorage.getItem('resv_pw') || '';
 
 // 販売システムの顧客データベース（顧客照合用）
 const CUST_SB_URL='https://bpogujxrwdpzkfisscox.supabase.co';
@@ -236,11 +246,15 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
 function detectStore(){
-  try{const s=JSON.parse(localStorage.getItem('scalp_salon'));if(!s)return'';const n=(s.name||'').toLowerCase();if(n.includes('阪急'))return'神戸阪急';if(n.includes('本店')||n.includes('サロン'))return'本店';return s.name||'';}catch(e){return'';}
+  try{
+    const p=new URLSearchParams(location.search).get('store');
+    if(p){ const t=p.toLowerCase(); if(t.includes('阪急'))return'神戸阪急'; if(t.includes('本店')||t.includes('サロン'))return'本店'; return p; }
+    const s=JSON.parse(localStorage.getItem('scalp_salon'));if(!s)return'';const n=(s.name||'').toLowerCase();if(n.includes('阪急'))return'神戸阪急';if(n.includes('本店')||n.includes('サロン'))return'本店';return s.name||'';
+  }catch(e){return'';}
 }
 
 async function post(action,extra={}){
-  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store_token:TOKEN,action,store:STORE||undefined,...extra})});
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:PW,action,store:STORE||undefined,...extra})});
   const d=await r.json();if(!r.ok)throw new Error(d.error||'エラー');return d;
 }
 
@@ -439,19 +453,39 @@ async function addResv(){
 
 async function load(){
   STORE=detectStore();
-  document.getElementById('storeBadge').textContent=STORE||'全店舗';
-  try{
-    const d=await post('listReservations');
-    ALL=d.reservations||[];MENUS=d.menus||[];
-    const sel=document.getElementById('f_menu');
-    sel.innerHTML='<option value="">選択してください</option>'+MENUS.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}（${m.duration_min}分）</option>`).join('');
-    render();
-    // 顧客照合（バックグラウンドで実行し、完了後に再描画）
-    await matchCustomers();
-    render();
-  }catch(e){document.getElementById('listView').innerHTML=`<div class="empty">${esc(e.message)}</div>`;}
+  const d=await post('listReservations');
+  ALL=d.reservations||[];MENUS=d.menus||[];
+  document.getElementById('storeBadge').textContent=(d.store||STORE||'全店舗');
+  const sel=document.getElementById('f_menu');
+  sel.innerHTML='<option value="">選択してください</option>'+MENUS.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}（${m.duration_min}分）</option>`).join('');
+  render();
+  // 顧客照合（バックグラウンドで実行し、完了後に再描画）
+  matchCustomers().then(render).catch(()=>{});
 }
-load();
+
+// ===== ログイン制御 =====
+function showLogin(msg){ document.getElementById('loginView').style.display='flex'; document.getElementById('loginErr').textContent=msg||''; }
+function hideLogin(){ document.getElementById('loginView').style.display='none'; }
+async function doLogin(){
+  const pw=(document.getElementById('loginPw').value||'').trim();
+  if(!pw){ document.getElementById('loginErr').textContent='パスワードを入力してください'; return; }
+  PW=pw; document.getElementById('loginErr').textContent='確認中…';
+  try{
+    await load();
+    sessionStorage.setItem('resv_pw',PW);
+    document.getElementById('loginPw').value='';
+    hideLogin();
+  }catch(e){
+    PW=''; sessionStorage.removeItem('resv_pw');
+    document.getElementById('loginErr').textContent=(/認証/.test(e.message)?'パスワードが違います':e.message);
+  }
+}
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('loginPw').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+
+if(PW){ load().then(hideLogin).catch(()=>{ PW=''; sessionStorage.removeItem('resv_pw'); showLogin(); }); }
+else { showLogin(); }
+
 </script>
 </body>
 </html>
