@@ -90,6 +90,7 @@
   .cal-evt-new{background:#FBE9D6;color:#C26A12;font-weight:700;}
   .cal-evt-ok{background:#EAF3E6;color:#3D7A4A;}
   .cal-evt-cancel{background:#F3E8E6;color:var(--red);text-decoration:line-through;}
+  .cal-block{background:#5C5048;color:#fff;font-weight:700;}
   .cal-more{font-size:9px;color:var(--muted);padding:0 4px;}
   .cal-empty{visibility:hidden;}
   .view-toggle{display:flex;gap:5px;margin-bottom:10px;}
@@ -128,7 +129,8 @@
       <span class="chip" data-s="確定">確定</span>
       <span class="chip" data-s="キャンセル">キャンセル</span>
     </div>
-    <button class="btn btn-primary ml" id="addBtn">＋ 予約追加</button>
+    <button class="btn btn-ghost ml" id="blockBtn" onclick="openBlock()">ブロック設定</button>
+    <button class="btn btn-primary" id="addBtn">＋ 予約追加</button>
   </div>
 
   <!-- カレンダー（初期非表示） -->
@@ -228,6 +230,36 @@
   </div>
 </div>
 
+<!-- ブロック設定モーダル（予約不可枠） -->
+<div id="blockModal" style="display:none;position:fixed;inset:0;background:rgba(60,50,40,.42);z-index:120;align-items:flex-start;justify-content:center;padding:24px 14px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:14px;width:100%;max-width:460px;padding:20px 22px;box-shadow:0 18px 50px rgba(60,50,40,.25);margin:auto;">
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--deep);">ブロック設定（予約不可枠）</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;" id="block_store_label">店舗：—</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="fg"><label>日付</label><input id="blk_date" type="date" /></div>
+      <div class="fg"><label>種別</label>
+        <div class="reg-stores">
+          <button type="button" id="blk_type_day" class="reg-store on" onclick="setBlockType('day')">終日</button>
+          <button type="button" id="blk_type_time" class="reg-store" onclick="setBlockType('time')">時間帯</button>
+        </div>
+      </div>
+      <div id="blk_time_row" style="display:none;gap:10px;">
+        <div class="fg" style="flex:1;"><label>開始</label><select id="blk_start"></select></div>
+        <div class="fg" style="flex:1;"><label>終了</label><select id="blk_end"></select></div>
+      </div>
+      <div class="fg"><label>理由（任意）</label><input id="blk_reason" placeholder="お休み・満席など" /></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeBlock()">閉じる</button>
+      <button class="btn btn-primary" onclick="doAddBlock()">ブロックを追加</button>
+    </div>
+    <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px;">
+      <div style="font-size:13px;font-weight:700;color:var(--deep);margin-bottom:8px;">設定済みのブロック</div>
+      <div id="blockList" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const API='https://herbs-booking-api.vercel.app/api/store';
 const STORE_APP='https://theherbs-store-git-main-yumiko-s-projects.vercel.app';
@@ -274,7 +306,7 @@ async function matchCustomers(){
     CUST_DIAG=`顧客${total}件・紐付${matched}件`;
   }catch(e){ console.error('顧客照合エラー:',e.message); CUST_DIAG='顧客照合エラー'; }
 }
-let ALL=[],MENUS=[],STORE='',STATUS_F='all',VIEW='list';
+let ALL=[],MENUS=[],BLOCKS=[],STORE='',STATUS_F='all',VIEW='list';
 let CAL_Y=new Date().getFullYear(),CAL_M=new Date().getMonth()+1,CAL_PICK='';
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -373,9 +405,15 @@ function renderCal(){
       return `<div class="cal-evt cal-evt-${st}">${esc(r.desired_time||'')} ${esc(r.name||'')}</div>`;
     }).join('');
     const more=cnt>3?`<div class="cal-more">他${cnt-3}件</div>`:'';
-    h+=`<div class="${cls}" onclick="${cnt?`pickDay('${dateStr}')`:''}">
+    const dayBlocks=BLOCKS.filter(b=>b.block_date===dateStr);
+    const blockChips=dayBlocks.map(b=>{
+      const lbl=(b.start_time||b.end_time)?`休 ${esc(b.start_time||'')}〜${esc(b.end_time||'')}`:'終日休';
+      return `<div class="cal-evt cal-block">${lbl}</div>`;
+    }).join('');
+    const hasBlock=dayBlocks.length>0;
+    h+=`<div class="${cls}${hasBlock?' has':''}" onclick="${(cnt||hasBlock)?`pickDay('${dateStr}')`:''}">
       <div class="cal-daynum">${d}</div>
-      <div class="cal-evts">${evts}${more}</div>
+      <div class="cal-evts">${blockChips}${evts}${more}</div>
     </div>`;
   }
   document.getElementById('calGrid').innerHTML=h;
@@ -469,6 +507,61 @@ async function doRegister(){
     closeReg(); render();
   }catch(e){ toast(e.message); }
 }
+
+// ===== ブロック設定（予約不可枠） =====
+let BLK_TYPE='day';
+function setBlockType(t){ BLK_TYPE=t; document.getElementById('blk_type_day').classList.toggle('on',t==='day'); document.getElementById('blk_type_time').classList.toggle('on',t==='time'); document.getElementById('blk_time_row').style.display=(t==='time')?'flex':'none'; }
+function openBlock(){
+  const st=STORE||'（店舗未指定）';
+  document.getElementById('block_store_label').textContent='店舗：'+st;
+  document.getElementById('blk_date').value=(CAL_PICK||todayJST());
+  document.getElementById('blk_reason').value='';
+  setBlockType('day');
+  renderBlockList();
+  document.getElementById('blockModal').style.display='flex';
+}
+function closeBlock(){ document.getElementById('blockModal').style.display='none'; }
+function renderBlockList(){
+  const wrap=document.getElementById('blockList');
+  const list=BLOCKS.slice().sort((a,b)=>(a.block_date||'')>(b.block_date||'')?1:-1);
+  if(!list.length){ wrap.innerHTML='<div style="font-size:12px;color:var(--muted);">設定済みのブロックはありません</div>'; return; }
+  wrap.innerHTML=list.map(b=>{
+    const d=b.block_date?new Date(b.block_date+'T00:00:00+09:00').toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'}):'';
+    const span=(b.start_time||b.end_time)?`${esc(b.start_time||'')}〜${esc(b.end_time||'')}`:'終日';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#FBF1EA;border:1px solid #F0D9C6;border-radius:8px;padding:7px 10px;">
+      <div style="font-size:12.5px;color:var(--deep);">${d} ・ ${span}${b.reason?` ・ ${esc(b.reason)}`:''}</div>
+      <button class="btn btn-ghost" style="padding:3px 9px;font-size:12px;" onclick="doDeleteBlock('${esc(b.id)}')">解除</button>
+    </div>`;
+  }).join('');
+}
+async function doAddBlock(){
+  const date=document.getElementById('blk_date').value;
+  if(!date){ toast('日付を選んでください'); return; }
+  let start=null,end=null;
+  if(BLK_TYPE==='time'){
+    start=document.getElementById('blk_start').value||null;
+    end=document.getElementById('blk_end').value||null;
+    if(!start||!end){ toast('開始と終了の時刻を選んでください'); return; }
+    if(start>=end){ toast('終了は開始より後にしてください'); return; }
+  }
+  const body={ block_date:date, start_time:start, end_time:end, reason:document.getElementById('blk_reason').value.trim()||null };
+  try{
+    const d=await post('addBlock',body);
+    BLOCKS.push({ id:d.id, store:STORE, block_date:date, start_time:start, end_time:end, reason:body.reason });
+    toast('ブロックを追加しました');
+    document.getElementById('blk_reason').value='';
+    renderBlockList(); renderCal();
+  }catch(e){ toast(e.message); }
+}
+async function doDeleteBlock(id){
+  try{
+    await post('deleteBlock',{id});
+    BLOCKS=BLOCKS.filter(b=>String(b.id)!==String(id));
+    toast('ブロックを解除しました');
+    renderBlockList(); renderCal();
+  }catch(e){ toast(e.message); }
+}
+
 async function saveEdit(){
   const name=document.getElementById('e_name').value.trim();
   if(!name){ toast('氏名を入力してください'); return; }
@@ -525,7 +618,7 @@ async function addResv(){
 async function load(){
   STORE=detectStore();
   const d=await post('listReservations');
-  ALL=d.reservations||[];MENUS=d.menus||[];
+  ALL=d.reservations||[];MENUS=d.menus||[];BLOCKS=d.blocks||[];
   document.getElementById('storeBadge').textContent=(d.store||STORE||'全店舗');
   const sel=document.getElementById('f_menu');
   sel.innerHTML='<option value="">選択してください</option>'+MENUS.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}（${m.duration_min}分）</option>`).join('');
@@ -556,7 +649,7 @@ function fillTimeOptions(){
   const opts=['<option value="">選択</option>'];
   for(let h=10;h<=20;h++){ for(const m of ['00','30']){ if(h===20&&m==='30')break; opts.push(`<option value="${h}:${m}">${h}:${m}</option>`); } }
   const html=opts.join('');
-  ['f_time','e_time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; });
+  ['f_time','e_time','blk_start','blk_end'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; });
 }
 function ensureTimeOption(selId,val){
   if(!val) return;
