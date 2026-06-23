@@ -205,6 +205,7 @@
 
 <script>
 const API='https://herbs-booking-api.vercel.app/api/store';
+const STORE_APP='https://theherbs-store-git-main-yumiko-s-projects.vercel.app';
 let PW = sessionStorage.getItem('resv_pw') || '';
 
 // 販売システムの顧客データベース（顧客照合用）
@@ -291,7 +292,7 @@ function render(){
     // 顧客照合
     const cust=findCust(r.phone);
     const custBadge=cust
-      ? `<span class="cust-tag cust-member" title="会員 ${esc(cust.memberId||'')}">会員 ${esc(cust.memberId||'登録済')}</span>`
+      ? `<a class="cust-tag cust-member" href="${STORE_APP}/customer-history-live.html?customerId=${encodeURIComponent(cust.id)}" target="_blank" rel="noopener" style="text-decoration:none;" title="顧客の履歴・カルテを開く">${esc(cust.name||'会員')} の履歴 ↗</a>`
       : `<span class="cust-tag cust-new">未登録</span>`;
     h+=`<tr class="${isNew?'new-row':''} ${isT?'today-row':''}">
       <td class="td-time${isT?' td-today':''}">${dtLabel}<br>${esc(r.desired_time||'—')}</td>
