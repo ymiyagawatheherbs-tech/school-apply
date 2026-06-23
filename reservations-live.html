@@ -56,6 +56,9 @@
   .b-web{background:#E7EEFB;color:#3B62B0;border:1px solid #C2D2F0;}
   .b-tel{background:#E3F1EE;color:#2E776C;border:1px solid #BFE0D8;}
   .b-walk{background:#FBEEDF;color:#B5702A;border:1px solid #F0CFA6;}
+  .reg-stores{display:flex;gap:8px;}
+  .reg-store{flex:1;padding:9px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;}
+  .reg-store.on{background:#6E847C;color:#fff;border-color:#6E847C;}
   .btn-edit{padding:4px 9px;font-size:11px;border-radius:6px;border:1px solid var(--line);background:var(--warm);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:700;margin-right:4px;}
   .btn-edit:hover{border-color:var(--green);}
   .cust-tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:7px;font-weight:700;margin-top:3px;}
@@ -203,6 +206,28 @@
   </div>
 </div>
 
+<!-- 顧客の新規登録モーダル -->
+<div id="regModal" style="display:none;position:fixed;inset:0;background:rgba(60,50,40,.42);z-index:120;align-items:flex-start;justify-content:center;padding:24px 14px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:14px;width:100%;max-width:420px;padding:20px 22px;box-shadow:0 18px 50px rgba(60,50,40,.25);margin:auto;">
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;color:var(--deep);">顧客の新規登録</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="fg"><label>氏名 *</label><input id="reg_name" placeholder="山田 花子" /></div>
+      <div class="fg"><label>電話番号（任意）</label><input id="reg_phone" type="tel" placeholder="090-0000-0000" /></div>
+      <div class="fg"><label>メールアドレス（任意）</label><input id="reg_email" type="email" placeholder="example@email.com" /></div>
+      <div class="fg"><label>登録する店舗</label>
+        <div class="reg-stores">
+          <button type="button" id="reg_store_hankyu" class="reg-store" onclick="setRegSalon(30002)">神戸阪急</button>
+          <button type="button" id="reg_store_honten" class="reg-store" onclick="setRegSalon(60001)">本店</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeReg()">キャンセル</button>
+      <button class="btn btn-primary" onclick="doRegister()">登録する</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API='https://herbs-booking-api.vercel.app/api/store';
 const STORE_APP='https://theherbs-store-git-main-yumiko-s-projects.vercel.app';
@@ -293,7 +318,7 @@ function render(){
     // 顧客照合
     const custBadge=r.customerId
       ? `<a class="cust-tag cust-member" href="${STORE_APP}/customer-history-live.html?customerId=${encodeURIComponent(r.customerId)}" target="_blank" rel="noopener" style="text-decoration:none;" title="顧客の履歴・カルテを開く">${esc(r.customerName||'会員')} の履歴 ↗</a>`
-      : `<span class="cust-tag cust-new">未登録</span>`;
+      : `<button class="cust-tag cust-new" onclick="openReg('${esc(r.id)}')" style="cursor:pointer;" title="この方を顧客として登録">未登録 ＋登録</button>`;
     h+=`<tr class="${isNew?'new-row':''} ${isT?'today-row':''}">
       <td class="td-time${isT?' td-today':''}">${dtLabel}<br>${esc(r.desired_time||'—')}</td>
       <td class="td-name">${esc(r.name)} ${isNew?'<span class="badge b-new" style="margin-left:4px;">NEW</span>':''}<br>${custBadge}</td>
@@ -414,6 +439,36 @@ function openEdit(r){
   document.getElementById('editModal').style.display='flex';
 }
 function closeEdit(){ document.getElementById('editModal').style.display='none'; EDIT_ID=null; }
+
+// ===== 顧客の新規登録（予約画面から） =====
+let REG_ID=null, REG_SALON=null;
+function setRegSalon(sid){ REG_SALON=sid; document.getElementById('reg_store_hankyu').classList.toggle('on',sid===30002); document.getElementById('reg_store_honten').classList.toggle('on',sid===60001); }
+function openReg(id){
+  const r=ALL.find(x=>String(x.id)===String(id)); if(!r) return;
+  REG_ID=id;
+  document.getElementById('reg_name').value=r.name||'';
+  document.getElementById('reg_phone').value=r.phone||'';
+  document.getElementById('reg_email').value=r.email||'';
+  setRegSalon(STORE==='本店'?60001:30002);
+  document.getElementById('regModal').style.display='flex';
+}
+function closeReg(){ document.getElementById('regModal').style.display='none'; REG_ID=null; }
+async function doRegister(){
+  const name=document.getElementById('reg_name').value.trim();
+  if(!name){ toast('氏名を入力してください'); return; }
+  const body={ name,
+    phone:document.getElementById('reg_phone').value.trim()||null,
+    email:document.getElementById('reg_email').value.trim()||null,
+    salonId:REG_SALON };
+  try{
+    const d=await post('registerCustomer',body);
+    const rid=REG_ID;
+    ALL=ALL.map(r=>String(r.id)===String(rid)?{...r,customerId:d.customerId,customerName:d.customerName,memberId:d.memberId}:r);
+    const matched=ALL.filter(r=>r.customerId).length; CUST_DIAG=`紐付${matched}件`;
+    toast('顧客登録しました（会員ID '+(d.memberId||'')+'）');
+    closeReg(); render();
+  }catch(e){ toast(e.message); }
+}
 async function saveEdit(){
   const name=document.getElementById('e_name').value.trim();
   if(!name){ toast('氏名を入力してください'); return; }
