@@ -215,6 +215,7 @@ let custClient=null;
 try{ custClient=supabase.createClient(CUST_SB_URL,CUST_SB_KEY); }catch(e){ console.error('顧客DB接続エラー:',e.message); }
 let CUST_MAP={}; // 電話番号(数字のみ) → 顧客 のキャッシュ
 let CUST_MAP8={}; // 電話番号末尾8桁 → 顧客（形式違い吸収用）
+let CUST_DIAG=''; // 顧客照合の状況（診断表示用）
 
 // 電話番号を数字だけにする
 function normPhone(s){ return String(s||'').replace(/[^\d]/g,''); }
@@ -227,26 +228,26 @@ function findCust(phone){
 
 // 予約一覧の電話番号をまとめて顧客照合
 async function matchCustomers(){
-  if(!custClient) return;
-  // 予約の電話番号（数字のみ）を集める
-  const phones=[...new Set(ALL.map(r=>normPhone(r.phone)).filter(p=>p.length>=10))];
-  if(!phones.length) return;
+  if(!custClient){ CUST_DIAG='顧客DB未接続'; return; }
   try{
-    CUST_MAP={};
-    // 電話番号でピンポイント検索（ハイフン有無の両パターンで照合）
-    // 顧客テーブルの電話番号形式が不明なため、全件ではなく予約の電話番号で絞り込む
-    // Supabaseのorフィルタで一括検索（100件ずつ分割）
-    for(let i=0;i<phones.length;i+=50){
-      const chunk=phones.slice(i,i+50);
-      // 各電話番号について、数字一致を試みる
-      // まず顧客テーブルから該当しそうなものを取得
-      const orConditions=chunk.map(p=>`phone.ilike.%${p.slice(-8)}%`).join(',');
+    CUST_MAP={}; CUST_MAP8={};
+    let total=0, matched=0;
+    // 顧客を全件読み込み（1000件ずつページング）し、電話番号を数字だけで突き合わせる
+    for(let page=0; page<15; page++){
+      const from=page*1000;
       const { data, error } = await custClient.from('customers')
-        .select('id,name,memberId,phone').or(orConditions).neq('isDeleted',true).limit(200);
-      if(error){ console.error('顧客照合エラー:',error.message); continue; }
-      (data||[]).forEach(c=>{ const p=normPhone(c.phone); if(p.length>=10){ CUST_MAP[p]=c; CUST_MAP8[p.slice(-8)]=c; } });
+        .select('id,name,memberId,phone').neq('isDeleted',true).range(from, from+999);
+      if(error){ console.error('顧客照合エラー:',error.message); CUST_DIAG='顧客読込エラー'; return; }
+      if(!data || !data.length) break;
+      data.forEach(c=>{ const p=normPhone(c.phone); if(p.length>=10){ CUST_MAP[p]=c; CUST_MAP8[p.slice(-8)]=c; } });
+      total+=data.length;
+      if(data.length<1000) break;
     }
-  }catch(e){ console.error('顧客照合エラー:',e.message); }
+    // 予約のうち何件が顧客とひもづいたか
+    const seen=new Set();
+    ALL.forEach(r=>{ const c=findCust(r.phone); if(c){ const k=String(r.phone); if(!seen.has(k)){ seen.add(k); matched++; } } });
+    CUST_DIAG=`顧客${total}件・紐付${matched}件`;
+  }catch(e){ console.error('顧客照合エラー:',e.message); CUST_DIAG='顧客照合エラー'; }
 }
 let ALL=[],MENUS=[],STORE='',STATUS_F='all',VIEW='list';
 let CAL_Y=new Date().getFullYear(),CAL_M=new Date().getMonth()+1,CAL_PICK='';
@@ -278,7 +279,7 @@ function filtered(){
 
 function render(){
   const list=filtered();
-  document.getElementById('countBadge').textContent=`${list.length}件`;
+  document.getElementById('countBadge').textContent=`${list.length}件`+(CUST_DIAG?` ・ ${CUST_DIAG}`:'');
   const badge=s=>{const m={'受付中':'b-new','確定':'b-ok','保留':'b-hold','キャンセル':'b-ng'};return`<span class="badge ${m[s]||''}">${esc(s)}</span>`;};
   const routeBadge=src=>{const s=String(src||'');if(/web/i.test(s))return'<span class="badge b-web">Web</span>';if(s.includes('電話'))return'<span class="badge b-tel">電話</span>';if(s.includes('来店'))return'<span class="badge b-walk">来店</span>';return s?esc(s):'—';};
   const today=todayJST();
