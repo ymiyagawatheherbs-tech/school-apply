@@ -574,6 +574,7 @@
           <span class="chip active" data-store="本店">本店</span>
         </div>
         <div style="flex:1;"></div>
+        <button class="btn btn-ghost btn-sm" onclick="openBlockModal()">ブロック設定</button>
         <button class="btn btn-primary btn-sm" onclick="$('salonForm').classList.toggle('hide')">＋ 手動予約を追加</button>
       </div>
       <!-- ステータスフィルター -->
@@ -625,7 +626,9 @@
         </div>
         <div class="frow">
           <div class="fg"><label>希望日</label><input id="sf_date" type="date" /></div>
-          <div class="fg"><label>希望時間</label><input id="sf_time" placeholder="14:00" /></div>
+          <div class="fg"><label>希望時間</label>
+            <select id="sf_time"><option value="">選択</option></select>
+          </div>
           <div class="fg"><label>性別</label>
             <select id="sf_gender"><option value="">未回答</option><option value="女性">女性</option><option value="男性">男性</option></select>
           </div>
@@ -633,6 +636,7 @@
         <div class="fg" style="margin-top:10px;"><label>担当者（任意）</label>
           <select id="sf_staff"><option value="">未設定</option></select>
         </div>
+        <div class="fg" style="margin-top:10px;"><label>メールアドレス（任意）</label><input id="sf_email" placeholder="info@example.com" type="email" /></div>
         <div class="fg" style="margin-top:10px;"><label>生年月日（任意）</label><input id="sf_birth" placeholder="例：1986年6月7日" /></div>
         <div class="fg" style="margin-top:10px;"><label>備考</label><input id="sf_notes" placeholder="アレルギーなど" /></div>
         <div style="margin-top:10px;display:flex;gap:8px;">
@@ -643,6 +647,50 @@
 
       <div id="salonList"><div class="empty">読み込み中…</div></div>
     </div>
+
+    <!-- 新規顧客登録モーダル -->
+    <div id="regModal" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--cream);border-radius:14px;padding:22px;max-width:380px;width:100%;">
+        <h3 style="margin:0 0 4px;font-size:16px;">顧客を新規登録</h3>
+        <p style="margin:0 0 14px;font-size:12px;color:var(--muted);">この予約のお客様を顧客台帳に登録します。会員IDは自動で発行されます。</p>
+        <div class="fg"><label>氏名 <span style="color:#a04a3a;font-size:11px;">必須</span></label><input id="reg_name" placeholder="山田 花子" /></div>
+        <div class="fg"><label>電話番号</label><input id="reg_phone" placeholder="090-0000-0000" type="tel" /></div>
+        <div class="fg"><label>メールアドレス</label><input id="reg_email" placeholder="info@example.com" type="email" /></div>
+        <div class="err" id="regErr"></div>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button class="btn btn-primary btn-sm" id="regBtn" onclick="doRegister()">登録する</button>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="$('regModal').classList.add('hide')">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ブロック（予約不可枠）設定モーダル -->
+    <div id="blockModal" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--cream);border-radius:14px;padding:22px;max-width:440px;width:100%;max-height:88vh;overflow:auto;">
+        <h3 style="margin:0 0 4px;font-size:16px;">ブロック設定（予約不可枠）</h3>
+        <p style="margin:0 0 14px;font-size:12px;color:var(--muted);">休業日や予約を受けない時間帯を設定します。お客様の予約フォームにも反映され、その枠は予約できなくなります。</p>
+        <div class="fg"><label>日付</label><input id="blk_date" type="date" /></div>
+        <div class="fg"><label>種別</label>
+          <div style="display:flex;gap:6px;">
+            <span id="blk_type_day" class="chip active" onclick="setBlkType('day')" style="cursor:pointer;">終日</span>
+            <span id="blk_type_time" class="chip" onclick="setBlkType('time')" style="cursor:pointer;">時間帯</span>
+          </div>
+        </div>
+        <div id="blk_time_row" class="frow hide">
+          <div class="fg"><label>開始</label><select id="blk_start"><option value="">選択</option></select></div>
+          <div class="fg"><label>終了</label><select id="blk_end"><option value="">選択</option></select></div>
+        </div>
+        <div class="fg"><label>理由（任意）</label><input id="blk_reason" placeholder="例：研修・休業" /></div>
+        <div class="err" id="blkErr"></div>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button class="btn btn-primary btn-sm" id="blkAddBtn" onclick="doAddBlock()">追加する</button>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="$('blockModal').classList.add('hide')">閉じる</button>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--line);margin:16px 0;" />
+        <div style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px;">設定済みのブロック</div>
+        <div id="blockList"><div class="empty" style="padding:14px 0;">読み込み中…</div></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -650,6 +698,20 @@
 
 <script>
 const API = 'https://herbs-booking-api.vercel.app/api/admin';
+
+// 店頭アプリ（顧客履歴ページのリンク先）
+const STORE_APP = 'https://theherbs-store-git-main-yumiko-s-projects.vercel.app';
+
+// 経路バッジ（Web=青 / 電話=ティール / 来店=オレンジ / その他=灰）
+function srcBadge(src){
+  const s = src||'';
+  let bg='#eee', col='#777';
+  if(/Web/i.test(s)){ bg='#E3EEFB'; col='#2E6FB0'; }
+  else if(/電話/.test(s)){ bg='#E1F0EE'; col='#2C7A70'; }
+  else if(/来店/.test(s)){ bg='#FBEDDD'; col='#B06A1E'; }
+  if(!s) return '<span style="color:var(--muted);">—</span>';
+  return `<span style="font-size:11px;font-weight:700;background:${bg};color:${col};border-radius:6px;padding:2px 8px;white-space:nowrap;">${esc(s)}</span>`;
+}
 
 // 画像アップロード用：予約用Supabaseに直接接続
 const SB_URL='https://gwggolaxwglziadgwyje.supabase.co';
@@ -1137,22 +1199,120 @@ async function deleteMenu(id,name){
 }
 
 /* ===== サロン予約 ===== */
-let SALON=[], SALON_STORE='本店', SALON_STATUS='all', SALON_MENUS=[];
+let SALON=[], SALON_STORE='本店', SALON_STATUS='all', SALON_MENUS=[], BLOCKS=[], REG_TARGET_ID=null;
 let SALON_VIEW='list', SALON_CAL_Y=new Date().getFullYear(), SALON_CAL_M=new Date().getMonth()+1, SALON_CAL_PICK='';
+// 希望時間ドロップダウン（30分刻み 10:00〜20:00）
+function fillSalonTimeOptions(){
+  const opts=['<option value="">選択</option>'];
+  for(let hh=10;hh<=20;hh++){ for(const mm of ['00','30']){ if(hh===20&&mm==='30')break; opts.push(`<option value="${hh}:${mm}">${hh}:${mm}</option>`); } }
+  const html=opts.join('');
+  ['sf_time','blk_start','blk_end'].forEach(id=>{ const el=$(id); if(el) el.innerHTML=html; });
+}
 async function loadSalon(){
   $('salonList').innerHTML='<div class="empty">読み込み中…</div>';
   try{
     const d=await call('listReservations');
     SALON=d.reservations||[];
     SALON_MENUS=d.menus||[];
+    BLOCKS=d.blocks||[];
+    fillSalonTimeOptions();
     const sel=$('sf_menu');
     sel.innerHTML='<option value="">選択してください</option>';
     SALON_MENUS.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
     fillStaffSelect('sf_staff', CURRENT_STAFF?CURRENT_STAFF.name:'');
     renderSalon();
     renderSalonCal();
+    renderBlockList();
   }catch(e){ $('salonList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
 }
+
+/* ===== 新規顧客登録（予約画面から） ===== */
+function openRegModal(reservationId){
+  REG_TARGET_ID=reservationId;
+  const r=SALON.find(x=>x.id===reservationId);
+  $('reg_name').value=r?(r.name||''):'';
+  $('reg_phone').value=r?(r.phone||''):'';
+  $('reg_email').value=r?(r.email||''):'';
+  $('regErr').textContent='';
+  $('regModal').classList.remove('hide');
+}
+window.openRegModal=openRegModal;
+async function doRegister(){
+  const name=$('reg_name').value.trim();
+  if(!name){ $('regErr').textContent='氏名を入力してください'; return; }
+  $('regBtn').disabled=true; $('regErr').textContent='登録中…';
+  try{
+    const d=await call('registerCustomer',{ name, phone:$('reg_phone').value.trim()||null, email:$('reg_email').value.trim()||null });
+    // 対象の予約に顧客情報をひもづけ（画面を即時反映）
+    SALON=SALON.map(r=>r.id===REG_TARGET_ID?{...r,customerId:d.customerId,customerName:d.customerName,memberId:d.memberId}:r);
+    $('regModal').classList.add('hide');
+    renderSalon();
+    toast('顧客を登録しました（会員ID：'+(d.memberId||'—')+'）');
+  }catch(e){ $('regErr').textContent=e.message; }
+  finally{ $('regBtn').disabled=false; }
+}
+window.doRegister=doRegister;
+
+/* ===== ブロック（予約不可枠）設定 ===== */
+let BLK_TYPE='day';
+function openBlockModal(){
+  fillSalonTimeOptions();
+  $('blk_date').value=''; $('blk_reason').value=''; $('blkErr').textContent='';
+  setBlkType('day');
+  renderBlockList();
+  $('blockModal').classList.remove('hide');
+}
+window.openBlockModal=openBlockModal;
+function setBlkType(t){
+  BLK_TYPE=t;
+  $('blk_type_day').classList.toggle('active',t==='day');
+  $('blk_type_time').classList.toggle('active',t==='time');
+  $('blk_time_row').classList.toggle('hide',t!=='time');
+}
+window.setBlkType=setBlkType;
+function renderBlockList(){
+  const box=$('blockList'); if(!box) return;
+  if(!BLOCKS.length){ box.innerHTML='<div class="empty" style="padding:14px 0;">設定済みのブロックはありません</div>'; return; }
+  const sorted=BLOCKS.slice().sort((a,b)=>(a.block_date||'')>(b.block_date||'')?1:-1);
+  box.innerHTML=sorted.map(b=>{
+    const span=(!b.start_time&&!b.end_time)?'終日休':`休 ${b.start_time||''}〜${b.end_time||''}`;
+    const dl=b.block_date?new Date(b.block_date+'T00:00:00+09:00').toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'}):'—';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;">
+      <div><b>${dl}</b>　<span style="color:#A85B52;font-weight:700;">${esc(span)}</span>${b.reason?`　<span style="color:var(--muted);">${esc(b.reason)}</span>`:''}</div>
+      <button class="btn btn-sm btn-del" onclick="doDeleteBlock('${esc(b.id)}')">解除</button>
+    </div>`;
+  }).join('');
+}
+async function doAddBlock(){
+  const date=$('blk_date').value;
+  if(!date){ $('blkErr').textContent='日付を選んでください'; return; }
+  let start_time=null,end_time=null;
+  if(BLK_TYPE==='time'){
+    start_time=$('blk_start').value||null; end_time=$('blk_end').value||null;
+    if(!start_time||!end_time){ $('blkErr').textContent='開始・終了の時間を選んでください'; return; }
+    if(start_time>=end_time){ $('blkErr').textContent='終了は開始より後にしてください'; return; }
+  }
+  $('blkAddBtn').disabled=true; $('blkErr').textContent='追加中…';
+  try{
+    await call('addBlock',{ block_date:date, start_time, end_time, reason:$('blk_reason').value.trim()||null });
+    $('blkErr').textContent=''; $('blk_reason').value='';
+    const d=await call('listReservations'); BLOCKS=d.blocks||[];
+    renderBlockList();
+    toast('ブロックを追加しました');
+  }catch(e){ $('blkErr').textContent=e.message; }
+  finally{ $('blkAddBtn').disabled=false; }
+}
+window.doAddBlock=doAddBlock;
+async function doDeleteBlock(id){
+  if(!confirm('このブロックを解除しますか？')) return;
+  try{
+    await call('deleteBlock',{id});
+    BLOCKS=BLOCKS.filter(b=>String(b.id)!==String(id));
+    renderBlockList();
+    toast('解除しました');
+  }catch(e){ toast(e.message); }
+}
+window.doDeleteBlock=doDeleteBlock;
 // 担当者プルダウンを埋める（初期値を指定可）
 function fillStaffSelect(selectId, selectedName){
   const sel=$(selectId); if(!sel) return;
@@ -1197,7 +1357,11 @@ function renderSalon(){
     const borderLeft=isNew?'border-left:3px solid #E8911E;':isToday?'border-left:3px solid var(--gold);':'';
     h+=`<tr style="border-bottom:1px solid var(--line);${rowBg}${borderLeft}">
       <td style="padding:7px 10px;font-weight:600;white-space:nowrap;${isToday?'color:var(--gold);':''}">${dtLabel}<br><span style="font-size:12px;">${esc(r.desired_time||'—')}</span></td>
-      <td style="padding:7px 10px;font-weight:600;">${esc(r.name||'—')} ${isNew?'<span style="font-size:10px;background:#FBE9D6;color:#C26A12;border:1px solid #F0C089;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">NEW</span>':''}</td>
+      <td style="padding:7px 10px;font-weight:600;">${esc(r.name||'—')} ${isNew?'<span style="font-size:10px;background:#FBE9D6;color:#C26A12;border:1px solid #F0C089;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">NEW</span>':''}
+        <div style="margin-top:3px;">${r.customerId
+          ? `<a href="${STORE_APP}/customer-history-live.html?customerId=${encodeURIComponent(r.customerId)}" target="_blank" rel="noopener" style="font-size:11px;color:#5C7F6B;text-decoration:none;border:1px solid #cdded3;background:#f1f6f2;border-radius:6px;padding:1px 7px;white-space:nowrap;">${esc(r.customerName||r.name||'')} の履歴 ↗</a>`
+          : `<button onclick="openRegModal('${esc(r.id)}')" style="font-size:11px;color:var(--muted);border:1px dashed var(--line);background:#fff;border-radius:6px;padding:1px 7px;cursor:pointer;font-family:inherit;white-space:nowrap;">未登録 ＋登録</button>`}</div>
+      </td>
       <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.menu_name||'—')}</td>
       <td style="padding:7px 10px;">
         <select style="font-size:11px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;background:white;max-width:90px;" onchange="updateSalonStaff('${esc(r.id)}',this.value)">
@@ -1206,9 +1370,9 @@ function renderSalon(){
           ${r.staff_name&&!STAFF_LIST.some(s=>s.displayName===r.staff_name)?`<option value="${esc(r.staff_name)}" selected>${esc(r.staff_name)}</option>`:''}
         </select>
       </td>
-      <td style="padding:7px 10px;font-size:12px;">${esc(r.phone||'—')}</td>
+      <td style="padding:7px 10px;font-size:12px;">${esc(r.phone||'—')}${r.email?`<br><span style="font-size:11px;color:var(--muted);word-break:break-all;">${esc(r.email)}</span>`:''}</td>
       <td style="padding:7px 10px;"><span style="font-size:11px;background:var(--cream-dk,#f2f6f1);padding:2px 7px;border-radius:5px;">${esc(r.store||'—')}</span></td>
-      <td style="padding:7px 10px;font-size:12px;color:var(--muted);">${esc(r.source||'—')}</td>
+      <td style="padding:7px 10px;font-size:12px;">${srcBadge(r.source)}</td>
       <td style="padding:7px 10px;">
         <select style="font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:white;" onchange="updateSalonStatus('${esc(r.id)}',this.value)">
           ${['受付中','確定','保留','キャンセル'].map(s=>`<option value="${s}"${r.status===s?' selected':''}>${s}</option>`).join('')}
@@ -1279,13 +1443,13 @@ async function addSalonReservation(){
   if(!name){ toast('氏名を入力してください'); return; }
   const menuSel=$('sf_menu'); const menuId=menuSel.value; const menuName=menuSel.options[menuSel.selectedIndex]?.text||'';
   const body={ store:$('sf_store').value, menu_id:menuId||null, menu_name:menuId?menuName:$('sf_menu').value||null,
-    name, phone:$('sf_phone').value.trim()||null, desired_date:$('sf_date').value||null,
+    name, phone:$('sf_phone').value.trim()||null, email:$('sf_email').value.trim()||null, desired_date:$('sf_date').value||null,
     desired_time:$('sf_time').value.trim()||null, gender:$('sf_gender').value||null,
     birth_date:$('sf_birth').value.trim()||null, staff_name:$('sf_staff').value||null,
     notes:$('sf_notes').value.trim()||null, source:'手動登録', status:'受付中' };
   try{
     await call('addReservation',body); toast('予約を追加しました');
-    ['sf_name','sf_phone','sf_date','sf_time','sf_birth','sf_notes'].forEach(id=>{$(id).value='';});
+    ['sf_name','sf_phone','sf_email','sf_date','sf_time','sf_birth','sf_notes'].forEach(id=>{$(id).value='';});
     fillStaffSelect('sf_staff', CURRENT_STAFF?CURRENT_STAFF.name:'');
     $('salonForm').classList.add('hide'); await loadSalon();
   }catch(e){ toast(e.message); }
