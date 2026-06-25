@@ -356,6 +356,27 @@ function selectMenu(id,name){ menuId=id; menuName=name; step='form'; render(); w
 function backToStore(){ step='store'; menuId=''; menuName=''; render(); }
 function backToMenu(){ step='menu'; render(); }
 
+// 時間の<select>のHTMLを生成（日付変更時に、この中身だけ差し替える）
+function timeSelectHtml(slots){
+  const opts = ['<option value="">' + (busyLoading?'空き状況を確認中…':'選択してください') + '</option>']
+    .concat(slots.map(t=>{
+      const busy=isSlotBusy(t);
+      return `<option value="${t}"${form.time===t?' selected':''}${busy?' disabled':''}>${t}${busy?'（予約済）':''}</option>`;
+    }));
+  return `<select id="i_time">${opts.join('')}</select>`;
+}
+
+// 時間欄だけを再描画して、選択イベントを再接続する（画面全体は作り直さない）
+function refreshTimeField(){
+  const slots = store==='神戸阪急'?TIME_HANKYU:TIME_SALON;
+  const wrap = document.getElementById('time_wrap');
+  if(wrap){
+    wrap.innerHTML = timeSelectHtml(slots);
+    const t=document.getElementById('i_time');
+    if(t) t.onchange=e=>{ form.time=e.target.value; const te=document.getElementById('time_err'); if(te) te.innerHTML=''; };
+  }
+}
+
 function renderForm(){
   const si=C_STORES.find(s=>s.value===store);
   const slots=store==='神戸阪急'?TIME_HANKYU:TIME_SALON;
@@ -389,16 +410,13 @@ function renderForm(){
         <label class="field">ご希望日<span class="req">*</span></label>
         <input type="date" id="i_date" min="${minDate()}" value="${esc(form.date)}" />
         ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">木曜・日曜はお休みです</div>`:''}
-        ${errors.date?`<div class="err-msg">${errors.date}</div>`:''}
+        <div id="date_err">${errors.date?`<div class="err-msg">${errors.date}</div>`:''}</div>
       </div>
       <div class="field-group">
         <label class="field">ご希望時間<span class="req">*</span></label>
-        <select id="i_time">
-          <option value="">${busyLoading?'空き状況を確認中…':'選択してください'}</option>
-          ${slots.map(t=>{ const busy=isSlotBusy(t); return `<option value="${t}"${form.time===t?' selected':''}${busy?' disabled':''}>${t}${busy?'（予約済）':''}</option>`;}).join('')}
-        </select>
+        <div id="time_wrap">${timeSelectHtml(slots)}</div>
         ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">講習会・他のご予約と重なる時間は選べません</div>`:''}
-        ${errors.time?`<div class="err-msg">${errors.time}</div>`:''}
+        <div id="time_err">${errors.time?`<div class="err-msg">${errors.time}</div>`:''}</div>
       </div>
     </div>
     <div class="field-group">
@@ -429,17 +447,25 @@ function bindFormEvents(){
   const bd=document.getElementById('i_birth'); if(bd) bd.oninput=e=>{form.birth=e.target.value;};
   const d=document.getElementById('i_date'); if(d) d.onchange=async e=>{
     const v=e.target.value;
+    const dateErr=document.getElementById('date_err');
     // 本店は木曜・日曜が休み
     if(v&&store==='本店'){
       const wd=new Date(v+'T00:00:00+09:00').getDay(); // 0=日,4=木
       if(wd===0||wd===4){
-        errors.date='本店は木曜・日曜はお休みです。別の日をお選びください。';
-        form.date=''; form.time=''; busyTimes=[]; render(); return;
+        form.date=''; form.time=''; busyTimes=[];
+        if(dateErr) dateErr.innerHTML='<div class="err-msg">本店は木曜・日曜はお休みです。別の日をお選びください。</div>';
+        refreshTimeField();
+        return;
       }
     }
-    form.date=v; form.time=''; errors.date=''; await loadBusyTimes(); render();
+    form.date=v; form.time=''; errors.date='';
+    if(dateErr) dateErr.innerHTML='';
+    // 「確認中…」を表示してから空き状況を取得し、時間欄だけ差し替える（画面全体は作り直さない＝カレンダーが閉じない）
+    busyLoading=true; refreshTimeField();
+    await loadBusyTimes();
+    busyLoading=false; refreshTimeField();
   };
-  const t=document.getElementById('i_time'); if(t) t.onchange=e=>{form.time=e.target.value;};
+  const t=document.getElementById('i_time'); if(t) t.onchange=e=>{ form.time=e.target.value; const te=document.getElementById('time_err'); if(te) te.innerHTML=''; };
   const msg=document.getElementById('i_msg'); if(msg) msg.oninput=e=>{form.message=e.target.value;};
   const ag=document.getElementById('i_agree'); if(ag) ag.onchange=e=>{form.agree=e.target.checked;};
   const sb=document.getElementById('b_submit'); if(sb) sb.onclick=submitBooking;
