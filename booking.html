@@ -38,13 +38,16 @@
   .hero p{font-size:.85rem;color:var(--textSub);}
 
   /* ステップインジケーター */
-  .steps{display:flex;justify-content:center;align-items:center;gap:.4rem;margin-bottom:2rem;flex-wrap:wrap;}
-  .step-dot{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--textMuted);font-weight:600;}
-  .step-dot .num{width:30px;height:30px;border-radius:50%;background:#D6CFC2;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;}
+  /* ステップインジケーター（3つを均等幅で並べ、番号を上・ラベルを下に。スマホでも窮屈にならない） */
+  .steps{display:flex;justify-content:center;align-items:flex-start;gap:0;margin:0 auto 2rem;max-width:420px;}
+  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.78rem;color:var(--textMuted);font-weight:600;text-align:center;position:relative;}
+  .step-dot .num{width:32px;height:32px;border-radius:50%;background:#D6CFC2;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;z-index:1;}
   .step-dot.on .num{background:var(--greenDark);}
   .step-dot.done .num{background:var(--sage);}
   .step-dot.on{color:var(--greenDark);}
-  .step-sep{color:var(--textMuted);font-size:.9rem;}
+  /* ステップ間をつなぐ線（番号の高さの中央に。最初のステップ以外の左側に引く） */
+  .step-dot:not(:first-child)::before{content:"";position:absolute;top:16px;left:-50%;width:100%;height:2px;background:#D6CFC2;z-index:0;}
+  .step-dot.on:not(:first-child)::before,.step-dot.done:not(:first-child)::before{background:var(--sage);}
 
   /* カード */
   .card{background:var(--bgCard);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(0,0,0,.03);}
@@ -255,8 +258,7 @@ function stepsBar(){
   const lbls={store:'店舗選択',menu:'メニュー選択',form:'情報入力'};
   const ci=s.indexOf(step);
   return `<div class="steps">${s.map((k,i)=>`
-    <div class="step-dot ${i===ci?'on':(i<ci?'done':'')}"><span class="num">${i<ci?'✓':i+1}</span>${lbls[k]}</div>
-    ${i<2?'<span class="step-sep">›</span>':''}`).join('')}</div>`;
+    <div class="step-dot ${i===ci?'on':(i<ci?'done':'')}"><span class="num">${i<ci?'✓':i+1}</span><span class="step-label-txt">${lbls[k]}</span></div>`).join('')}</div>`;
 }
 
 // LINE連携中の小さなバッジ（フォーム上部に表示）
