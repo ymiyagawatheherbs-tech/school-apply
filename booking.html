@@ -427,7 +427,7 @@ function bindFormEvents(){
   const p=document.getElementById('i_phone'); if(p) p.oninput=e=>{form.phone=e.target.value;};
   const em=document.getElementById('i_email'); if(em) em.oninput=e=>{form.email=e.target.value;};
   const bd=document.getElementById('i_birth'); if(bd) bd.oninput=e=>{form.birth=e.target.value;};
-  const d=document.getElementById('i_date'); if(d) d.oninput=async e=>{
+  const d=document.getElementById('i_date'); if(d) d.onchange=async e=>{
     const v=e.target.value;
     // 本店は木曜・日曜が休み
     if(v&&store==='本店'){
