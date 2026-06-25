@@ -258,11 +258,8 @@ async function post(action,extra={}){
 function minDate(){ const t=new Date(); t.setDate(t.getDate()+1); return t.toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}); }
 
 function stepsBar(){
-  const s=['store','menu','form'];
-  const lbls={store:'店舗選択',menu:'メニュー選択',form:'情報入力'};
-  const ci=s.indexOf(step);
-  return `<div class="steps">${s.map((k,i)=>`
-    <div class="step-dot ${i===ci?'on':(i<ci?'done':'')}"><div class="step-num-row"><span class="num">${i<ci?'✓':i+1}</span></div><span class="step-label-txt">${lbls[k]}</span></div>`).join('')}</div>`;
+  // 丸い番号のステップインジケーターは非表示。各画面の「STEP 1 — …」の文字ラベルで段階を示す。
+  return '';
 }
 
 // LINE連携中の小さなバッジ（フォーム上部に表示）
