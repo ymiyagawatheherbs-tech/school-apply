@@ -105,6 +105,10 @@
   .agree input{width:18px;height:18px;margin-top:2px;flex-shrink:0;}
   .policy{background:var(--bgSub);border-radius:8px;padding:.9rem 1rem;font-size:.74rem;color:var(--textMuted);line-height:1.7;margin-bottom:1.2rem;}
 
+  /* LINE連携バッジ */
+  .line-badge{display:flex;align-items:center;gap:.5rem;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:8px;padding:.7rem 1rem;margin-bottom:1.2rem;font-size:.8rem;color:#2E7D32;}
+  .line-badge svg{flex-shrink:0;}
+
   /* ボタン */
   .btn{width:100%;padding:.95rem;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
   .btn-primary{background:var(--green);color:#fff;}
@@ -161,8 +165,48 @@
   <div class="copy">© 2026 SCALP LABO / THE HERBS. All rights reserved.</div>
 </div>
 
+<!-- LIFF SDK（LINE連携用。?line= が無い通常ブラウザ閲覧でも読み込むだけで害はない） -->
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
 const API = 'https://herbs-booking-api.vercel.app/api/public-booking';
+
+// ===== LINE連携（LIFF）=====
+// URLの ?line=hankyu / ?line=honten で「どの公式アカウント経由か」を判定し、
+// 対応するLIFFを初期化してお客様のLINEユーザーIDを取得する。
+// ?line= が無い場合はLIFFを使わず、従来どおり（LINE紐付け無し→連絡はメール）。
+const LIFF_IDS = {
+  hankyu: '2009700937-rd2GBj8s', // 神戸阪急のLINEログインチャネルのLIFF
+  honten: '2009766022-luxTH2VG', // 本店のLINEログインチャネルのLIFF
+};
+let lineChannel = '';   // 'hankyu' | 'honten' | ''（経由した公式アカウント）
+let lineUserId = '';    // お客様のLINEユーザーID（取得できた場合のみ）
+
+function getQuery(name){
+  try { return new URLSearchParams(location.search).get(name) || ''; } catch(e){ return ''; }
+}
+
+// LIFFを初期化してLINEユーザーIDを取得する。失敗しても予約フローは止めない。
+async function initLine(){
+  const ch = getQuery('line'); // 'hankyu' | 'honten' | ''
+  if (ch !== 'hankyu' && ch !== 'honten') return; // LINE経由でなければ何もしない
+  lineChannel = ch;
+  const liffId = LIFF_IDS[ch];
+  if (!liffId || typeof liff === 'undefined') return;
+  try {
+    await liff.init({ liffId });
+    if (liff.isLoggedIn()) {
+      const profile = await liff.getProfile();
+      lineUserId = profile.userId || '';
+    } else {
+      // 外部ブラウザ等でログインしていない場合は、LINEログインへ誘導（戻り先は同じページ）
+      liff.login({ redirectUri: location.href });
+      return; // ログイン後にこのページが再読み込みされる
+    }
+  } catch (e) {
+    console.warn('LIFF初期化に失敗:', e && e.message ? e.message : e);
+    // 失敗してもメール運用にフォールバックするだけなので、予約は続行可能
+  }
+}
 
 const C_STORES = [
   { value:'神戸阪急', label:'THE HERBS神戸阪急店', address:'神戸阪急本館6階 モーニングフロー内', hours:'10:00 〜 20:00', checkHours:'頭皮チェック受付：12:00 〜 16:00（随時受付も可）', phone:'070-2642-7366', lineUrl:'https://line.me/ti/p/@theherbs_kobe', lineName:'THE HERBS 神戸阪急', notes:[] },
@@ -213,6 +257,15 @@ function stepsBar(){
   return `<div class="steps">${s.map((k,i)=>`
     <div class="step-dot ${i===ci?'on':(i<ci?'done':'')}"><span class="num">${i<ci?'✓':i+1}</span>${lbls[k]}</div>
     ${i<2?'<span class="step-sep">›</span>':''}`).join('')}</div>`;
+}
+
+// LINE連携中の小さなバッジ（フォーム上部に表示）
+function lineBadge(){
+  if(!lineUserId) return '';
+  return `<div class="line-badge">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="#06C755"><path d="M12 2C6.48 2 2 5.64 2 10.12c0 4.02 3.55 7.39 8.35 8.03.32.07.77.21.88.49.1.25.07.64.03.89l-.14.85c-.04.25-.2.98.86.53 1.06-.45 5.7-3.36 7.78-5.75C21.05 13.5 22 11.92 22 10.12 22 5.64 17.52 2 12 2z"/></svg>
+    LINEと連携済みです。ご予約の確認・変更・キャンセルのご連絡をLINEでお送りします。
+  </div>`;
 }
 
 function render(){
@@ -311,6 +364,7 @@ function renderForm(){
       <button class="change-btn" onclick="backToMenu()">変更</button>
     </div>
     <div class="step-label">STEP 3 — お客様情報をご入力ください</div>
+    ${lineBadge()}
     <div class="card">
     <div class="field-group">
       <label class="field">お名前<span class="req">*</span></label>
@@ -414,6 +468,9 @@ async function submitBooking(){
       birth_date:form.birth||null,
       desired_date:form.date, desired_time:form.time,
       gender:'女性', notes:form.message.trim()||null,
+      // LINE連携情報（取得できた場合のみ送る。無ければ従来どおりメール運用）
+      line_user_id: lineUserId || null,
+      line_channel: lineChannel || null,
     });
     lastBookingId=d.id||'';
     renderDone();
@@ -425,6 +482,8 @@ async function submitBooking(){
 function renderDone(){
   const si=C_STORES.find(s=>s.value===store);
   const dateLabel=form.date?new Date(form.date+'T00:00:00+09:00').toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'}):'';
+  // LINE連携済みの場合は連絡方法の案内を変える
+  const lineLinked = !!lineUserId;
   document.getElementById('content').innerHTML=`
     <div class="card done">
       <div class="check">
@@ -456,6 +515,11 @@ function renderDone(){
         <a href="mypage.html?id=${esc(lastBookingId)}" style="display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.85rem;background:var(--green);color:#fff;border-radius:8px;font-size:.9rem;font-weight:700;text-decoration:none;margin-bottom:.6rem;">
           予約を確認・変更する
         </a>
+        ${lineLinked ? `
+        <div style="border-top:1px dashed var(--border);margin:1rem 0 .9rem;"></div>
+        <div style="background:#E8F5E9;border:1px solid #A5D6A7;border-radius:8px;padding:.9rem 1rem;font-size:.82rem;color:#2E7D32;line-height:1.7;text-align:center;">
+          LINEと連携済みです。<br>ご予約の確認・変更・キャンセルは、LINEのトーク画面からも承ります。
+        </div>` : `
         <div style="border-top:1px dashed var(--border);margin:1rem 0 .9rem;"></div>
         <div style="font-size:.85rem;font-weight:600;color:var(--green);margin-bottom:.7rem;text-align:center;">
           LINEからの変更も承ります
@@ -464,7 +528,7 @@ function renderDone(){
            style="display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.85rem;background:#06C755;color:#fff;border-radius:8px;font-size:.9rem;font-weight:700;text-decoration:none;white-space:nowrap;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M12 2C6.48 2 2 5.64 2 10.12c0 4.02 3.55 7.39 8.35 8.03.32.07.77.21.88.49.1.25.07.64.03.89l-.14.85c-.04.25-.2.98.86.53 1.06-.45 5.7-3.36 7.78-5.75C21.05 13.5 22 11.92 22 10.12 22 5.64 17.52 2 12 2z"/></svg>
           LINEで友だち追加
-        </a>
+        </a>`}
         <p style="font-size:.72rem;color:var(--textMuted);line-height:1.6;margin-top:.9rem;">
           ※ キャンセルは3日前まで無料、2日前以降は施術料金の100%を申し受けます。<br>
           ※ お電話でも承ります：${esc(si.phone)}
@@ -482,7 +546,11 @@ window.backToStore=backToStore;
 window.backToMenu=backToMenu;
 window.submitBooking=submitBooking;
 
-render();
+// 起動：先にLINE連携を試みてから画面を描画する
+(async function(){
+  try { await initLine(); } catch(e){ /* LINE連携失敗時もフォームは表示する */ }
+  render();
+})();
 </script>
 </body>
 </html>
