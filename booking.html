@@ -38,16 +38,20 @@
   .hero p{font-size:.85rem;color:var(--textSub);}
 
   /* ステップインジケーター */
-  /* ステップインジケーター（3つを均等幅で並べ、番号を上・ラベルを下に。スマホでも窮屈にならない） */
-  .steps{display:flex;justify-content:center;align-items:flex-start;gap:0;margin:0 auto 2rem;max-width:420px;}
-  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.78rem;color:var(--textMuted);font-weight:600;text-align:center;position:relative;}
-  .step-dot .num{width:32px;height:32px;border-radius:50%;background:#D6CFC2;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;z-index:1;}
+  /* ステップインジケーター（3つを均等幅。番号の丸を必ず同じ高さに固定し、その下にラベル） */
+  .steps{display:flex;justify-content:center;gap:0;margin:0 auto 2rem;max-width:400px;}
+  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;font-size:.78rem;color:var(--textMuted);font-weight:600;text-align:center;}
+  /* 番号の丸。線はこの行（高さ34px固定）の中に置くので、ラベル文字数に関係なく必ず揃う */
+  .step-num-row{position:relative;width:100%;height:34px;display:flex;align-items:center;justify-content:center;}
+  .step-dot .num{width:32px;height:32px;border-radius:50%;background:#D6CFC2;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;position:relative;z-index:1;}
   .step-dot.on .num{background:var(--greenDark);}
   .step-dot.done .num{background:var(--sage);}
   .step-dot.on{color:var(--greenDark);}
-  /* ステップ間をつなぐ線（番号の高さの中央に。最初のステップ以外の左側に引く） */
-  .step-dot:not(:first-child)::before{content:"";position:absolute;top:16px;left:-50%;width:100%;height:2px;background:#D6CFC2;z-index:0;}
-  .step-dot.on:not(:first-child)::before,.step-dot.done:not(:first-child)::before{background:var(--sage);}
+  .step-label-txt{margin-top:.45rem;line-height:1.3;}
+  /* ステップ間をつなぐ線。num-row（高さ34px）の中央＝17pxに引くので、丸の中心に必ず一致 */
+  .step-num-row::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:2px;background:#D6CFC2;z-index:0;}
+  .step-dot:first-child .step-num-row::before{display:none;}
+  .step-dot.on .step-num-row::before,.step-dot.done .step-num-row::before{background:var(--sage);}
 
   /* カード */
   .card{background:var(--bgCard);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 16px rgba(0,0,0,.03);}
@@ -258,7 +262,7 @@ function stepsBar(){
   const lbls={store:'店舗選択',menu:'メニュー選択',form:'情報入力'};
   const ci=s.indexOf(step);
   return `<div class="steps">${s.map((k,i)=>`
-    <div class="step-dot ${i===ci?'on':(i<ci?'done':'')}"><span class="num">${i<ci?'✓':i+1}</span><span class="step-label-txt">${lbls[k]}</span></div>`).join('')}</div>`;
+    <div class="step-dot ${i===ci?'on':(i<ci?'done':'')}"><div class="step-num-row"><span class="num">${i<ci?'✓':i+1}</span></div><span class="step-label-txt">${lbls[k]}</span></div>`).join('')}</div>`;
 }
 
 // LINE連携中の小さなバッジ（フォーム上部に表示）
