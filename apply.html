@@ -112,8 +112,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--cream);color:var(--b
 .cal-daylabel{font-size:14px;font-weight:700;color:var(--brown);margin:14px 0 10px}
 
 /* BACK LINK */
-.back-link{font-size:12px;color:var(--gold);cursor:pointer;background:none;border:none;padding:0;margin-bottom:16px;display:flex;align-items:center;gap:4px}
-.back-link:hover{color:var(--brown-md)}
+.back-link{font-size:13px;color:var(--brown-md);cursor:pointer;background:var(--cream-dk);border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;margin-bottom:16px;display:inline-flex;align-items:center;gap:6px;font-weight:600;transition:all var(--t)}
+.back-link:hover{border-color:var(--gold);background:#fff;color:var(--brown)}
+.back-link::before{content:'←';font-size:14px}
 
 /* SELECTED SUMMARY */
 .selected-summary{background:var(--cream-dk);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:20px}
@@ -294,7 +295,7 @@ body:has(#step1:not(.active)) .hero-card { display: none !important; }
       <div style="font-size:10px;letter-spacing:.15em;color:var(--muted);margin-bottom:4px;">選択中のシリーズ</div>
       <div id="selectedSeriesName" style="font-size:16px;font-weight:700;color:var(--brown);"></div>
     </div>
-    <button class="back-link" onclick="goStep(1)">← シリーズ選択に戻る</button>
+    <button class="back-link" onclick="goStep(1)">別のシリーズを選び直す</button>
     <p class="step-heading" id="step2-heading">日程を選んでください</p>
     <div id="calWrap" class="cal-wrap"></div>
     <div class="schedule-list" id="scheduleList"></div>
@@ -311,7 +312,7 @@ body:has(#step1:not(.active)) .hero-card { display: none !important; }
       <div id="summaryCourseName" style="font-size:15px;font-weight:700;color:var(--brown);margin-bottom:6px;"></div>
       <div id="summaryCourseDate" style="font-size:12px;color:var(--muted);"></div>
     </div>
-    <button class="back-link" onclick="goStep(2)">← 日程選択に戻る</button>
+    <button class="back-link" onclick="goStep(2)">日程を選び直す</button>
 
     <div class="selected-summary">
       <div class="summary-body">
@@ -366,7 +367,7 @@ body:has(#step1:not(.active)) .hero-card { display: none !important; }
 
   <!-- STEP 4: 確認 -->
   <div class="form-step" id="step4">
-    <button class="back-link" onclick="goStep(3)">← 内容を修正する</button>
+    <button class="back-link" onclick="goStep(3)">入力内容を修正する</button>
     <div class="form-section">
       <p class="form-section-title">お申し込み内容のご確認</p>
       <table class="confirm-table">
@@ -469,7 +470,7 @@ const STATIC_COURSES = {
     { id:'TA-04-B-260914', title:'体質カウンセリング — パーソナルカウンセリングを学ぶ',                date:'2026年9月14日（月）10:00〜16:00',  tag:'本講座' },
     { id:'TA-04-F-260928', title:'【フォローアップ】体質カウンセリング — パーソナルカウンセリングを学ぶ', date:'2026年9月28日（月）10:00〜13:00', tag:'フォローアップ' },
   ],
-  '美容師向けハーブケア':   [],
+  'スカルプハーブケア':     [],
   'ハーブスチーマー':       [],
   '頭皮用ハーブゴマージュ': [],
   'ビオゴマージュ':         [],
@@ -500,7 +501,7 @@ function renderSeriesGrid() {
   grid.innerHTML = '';
 
   // シリーズ表示順の定義
-  const ORDER = ['フェイスケア全12回','体質学講習会','美容師向けハーブケア','ハーブスチーマー','頭皮用ハーブゴマージュ','ビオゴマージュ','スカルプラボ'];
+  const ORDER = ['フェイスケア全12回','体質学講習会','スカルプハーブケア','ハーブスチーマー','頭皮用ハーブゴマージュ','ビオゴマージュ','スカルプラボ'];
   const keys  = ORDER.filter(k => COURSES[k] !== undefined)
                      .concat(Object.keys(COURSES).filter(k => !ORDER.includes(k)));
 
@@ -866,13 +867,40 @@ function showError(msg){ const e=document.getElementById('errorBanner'); e.textC
 function hideError(){ document.getElementById('errorBanner').classList.remove('show'); }
 
 // ============================================================
-// URLパラメーター処理（?series=体質学講習会 で直接日程選択へ）
+// URLパラメーター処理
+//   ?s=sg         → 英字コードでシリーズを直接開く（推奨・文字化けしない）
+//   ?series=体質学講習会 → 日本語シリーズ名でも従来どおり開ける
+//   ?course=SC-z  → 特定の講座だけに絞り込む（任意）
 // ============================================================
+
+// シリーズの英字コード → 正式なシリーズ名 の対応表
+// コードは、実際の講座コードの頭文字に合わせています（例 TH-a-… → th）
+// シリーズを追加したら、ここに1行足してください（コードは小文字）
+const SERIES_CODES = {
+  fa: 'フェイスケア全12回',
+  ta: '体質学講習会',
+  th: '頭皮用ハーブゴマージュ',   // 講座コード TH-a-…
+  hs: 'ハーブスチーマー',         // 講座コード HS-a-…
+  sc: 'スカルプラボ',             // 講座コード SC-…
+  bg: 'ビオゴマージュ',           // 講座コード BG-a-…
+  hb: 'スカルプハーブケア',       // 講座コード HB-a-…
+};
+
 window.addEventListener('DOMContentLoaded', async () => {
   await loadCourses();
   const params = new URLSearchParams(window.location.search);
-  const series = params.get('series');
   const course = params.get('course');
+
+  // まず英字コード（?s=）を優先して見る
+  const code = (params.get('s') || '').trim().toLowerCase();
+  let series = SERIES_CODES[code] || null;
+
+  // 英字コードが無ければ、従来の日本語シリーズ名（?series=）を見る
+  if (!series) {
+    const raw = params.get('series');
+    if (raw && COURSES[raw] !== undefined) series = raw;
+  }
+
   if (series && COURSES[series] !== undefined) {
     selectSeries(series, course || null);
   }
