@@ -99,6 +99,7 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+  
 <body>
 
 <!-- ログイン画面（パスワード方式・秘密はファイルに残さない） -->
@@ -675,6 +676,57 @@ document.getElementById('loginPw').addEventListener('keydown',e=>{ if(e.key==='E
 if(PW){ load().then(hideLogin).catch(()=>{ PW=''; sessionStorage.removeItem('resv_pw'); showLogin(); }); }
 else { showLogin(); }
 
+</script>
+  <!--
+  ▼ 追加方法 ▼
+  reservations-live.html（神戸阪急の予約管理）の、いちばん下にある </body> の直前に、
+  下の <script> ... </script> のかたまりを丸ごと貼り付けて保存してください。
+  既存のコードや接続キーには一切触れません。末尾に足すだけです。
+-->
+<script>
+(function () {
+  // 店舗管理アプリ（親）の URL。store.html を別ドメイン/独自ドメインに変えたら、ここも合わせる。
+  var PARENT = 'https://theherbs-store-git-main-yumiko-s-projects.vercel.app';
+  if (window === window.parent) return; // 単独で開いたときは何もしない（埋め込み時のみ動く）
+
+  function toParent(m) { try { window.parent.postMessage(m, PARENT); } catch (e) {} }
+  function authed() { try { return (typeof PW !== 'undefined' && !!PW); } catch (e) { return false; } }
+
+  var lastPw = '';
+  try { lastPw = sessionStorage.getItem('resv_pw') || ''; } catch (e) {}
+  var field = document.getElementById('loginPw');
+  if (field) field.addEventListener('input', function () { lastPw = field.value; });
+
+  // 親から保存済みパスワードが届いたら、自動でログイン
+  window.addEventListener('message', function (e) {
+    if (e.origin !== PARENT) return;
+    var d = e.data || {};
+    if (d.type === 'herbs-auth' && d.pw) {
+      if (authed()) return; // すでにログイン済みなら何もしない
+      lastPw = d.pw;
+      if (field) field.value = d.pw;
+      if (typeof doLogin === 'function') doLogin();
+      // 保存されていたパスワードが間違っていたら、親に破棄させる（次回は手入力になる）
+      setTimeout(function () { if (!authed()) toParent({ type: 'herbs-auth-bad' }); }, 4000);
+    }
+  });
+
+  // ログイン状態の変化を監視：成功したら親に保存、ログアウトしたら親に破棄を依頼
+  var lv = document.getElementById('loginView');
+  function isLoggedIn() { return lv ? (lv.style.display === 'none') : false; }
+  var wasIn = isLoggedIn();
+  if (wasIn && lastPw) toParent({ type: 'herbs-auth-ok', pw: lastPw });
+  if (lv) {
+    new MutationObserver(function () {
+      var now = isLoggedIn();
+      if (now && !wasIn && lastPw) toParent({ type: 'herbs-auth-ok', pw: lastPw });
+      if (!now && wasIn) toParent({ type: 'herbs-auth-forget' });
+      wasIn = now;
+    }).observe(lv, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  toParent({ type: 'herbs-hello' }); // 準備完了 → 親が保存済みパスワードを返してくる
+})();
 </script>
 </body>
 </html>
