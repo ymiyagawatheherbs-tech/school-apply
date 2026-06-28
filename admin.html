@@ -1409,28 +1409,43 @@ function renderSalonCal(){
   const daysInMonth=new Date(SALON_CAL_Y,SALON_CAL_M,0).getDate();
   const startDow=new Date(SALON_CAL_Y,SALON_CAL_M-1,1).getDay();
   const today=new Date().toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-');
-  const dayCount={};
+  // その月の予約を日付ごとにまとめる（店舗・ステータスの絞り込みを反映）
+  const dayItems={};
   SALON.filter(r=>SALON_STORE==='all'||r.store===SALON_STORE).filter(r=>SALON_STATUS==='all'||r.status===SALON_STATUS).forEach(r=>{
     if(!r.desired_date)return;
     const d=new Date(r.desired_date+'T00:00:00+09:00');
     if(d.getFullYear()===SALON_CAL_Y&&d.getMonth()+1===SALON_CAL_M){
       const dd=String(d.getDate()).padStart(2,'0');
-      dayCount[dd]=(dayCount[dd]||0)+1;
+      (dayItems[dd]=dayItems[dd]||[]).push(r);
     }
   });
+  // 各日の予約を時間順に並べる
+  Object.values(dayItems).forEach(arr=>arr.sort((a,b)=>(a.desired_time||'')>(b.desired_time||'')?1:-1));
   $('salonCalTitle').textContent=`${SALON_CAL_Y}年${SALON_CAL_M}月`;
   let h='';
-  for(let i=0;i<startDow;i++) h+=`<div style="aspect-ratio:1"></div>`;
+  for(let i=0;i<startDow;i++) h+=`<div></div>`;
   for(let d=1;d<=daysInMonth;d++){
     const dd=String(d).padStart(2,'0');
     const dateStr=`${SALON_CAL_Y}-${String(SALON_CAL_M).padStart(2,'0')}-${dd}`;
-    const cnt=dayCount[dd]||0;
+    const items=dayItems[dd]||[];
+    const cnt=items.length;
     const isT=dateStr===today;
     const isP=dateStr===SALON_CAL_PICK;
-    const bg=isP?'background:var(--gold);color:white;':'background:var(--cream-dk,#f2f6f1);';
-    const border=isT?'border:2px solid var(--muted);':'border:1px solid var(--line);';
-    h+=`<div onclick="${cnt?`salonPickDay('${dateStr}')`:'void 0'}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:13px;${cnt?`${bg}${border}cursor:pointer;font-weight:700;`:'color:#ccc;'}">
-      ${d}${cnt?`<div style="width:5px;height:5px;border-radius:50%;background:${isP?'white':'var(--gold)'};margin-top:2px;"></div>`:''}
+    const cellBg=isP?'#EFF3F0':(cnt?'#fff':'#FBF8F2');
+    const cellBorder=isT?'2px solid var(--gold)':(isP?'1px solid var(--green-hi,#6E847C)':'1px solid var(--line)');
+    // 予約を最大3件まで「時刻 氏名（メニュー）」で表示
+    const evs=items.slice(0,3).map(r=>{
+      const cancelled=r.status==='キャンセル';
+      const label=`${r.desired_time||''} ${r.name||''}（${r.menu_name||'—'}）`.trim();
+      const style=cancelled
+        ? 'background:#F3E8E6;color:#A85B52;text-decoration:line-through;'
+        : 'background:#E7EFE9;color:#3D6B50;';
+      return `<div title="${esc(label)}" style="font-size:10px;line-height:1.4;padding:1px 4px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${style}">${esc(label)}</div>`;
+    }).join('');
+    const more=cnt>3?`<div style="font-size:9px;color:var(--muted);padding-left:2px;">他${cnt-3}件</div>`:'';
+    h+=`<div onclick="${cnt?`salonPickDay('${dateStr}')`:'void 0'}" style="min-height:74px;display:flex;flex-direction:column;align-items:stretch;border-radius:8px;padding:3px 4px;background:${cellBg};border:${cellBorder};${cnt?'cursor:pointer;':''}overflow:hidden;">
+      <div style="font-size:11px;font-weight:700;text-align:left;padding-left:2px;color:${isT?'var(--gold)':'var(--ink)'};margin-bottom:2px;">${d}</div>
+      ${evs}${more}
     </div>`;
   }
   calWrap.innerHTML=h;
