@@ -164,7 +164,7 @@
     <h3>予約を追加（電話・来店受付）</h3>
     <div class="frow">
       <div class="fg"><label>メニュー</label><select id="f_menu"><option value="">選択</option></select></div>
-      <div class="fg"><label>氏名 *</label><input id="f_name" placeholder="山田 花子" /></div>
+      <div class="fg" style="position:relative;"><label>氏名 * <span style="color:var(--muted);font-weight:400;">入力で登録済み顧客を検索</span></label><input id="f_name" placeholder="山田 花子" autocomplete="off" oninput="onFNameInput()" /><input type="hidden" id="f_line_user_id" /><input type="hidden" id="f_customer_id" /><div id="f_cust_suggest" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:40;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.10);max-height:240px;overflow:auto;margin-top:2px;"></div></div>
       <div class="fg"><label>電話番号</label><input id="f_phone" type="tel" placeholder="090-0000-0000" /></div>
       <div class="fg"><label>メールアドレス</label><input id="f_email" type="email" placeholder="example@email.com" /></div>
     </div>
@@ -610,19 +610,70 @@ async function addResv(){
     desired_date:document.getElementById('f_date').value||null,
     desired_time:document.getElementById('f_time').value||null,
     gender:document.getElementById('f_gender').value||null,
+    line_user_id:document.getElementById('f_line_user_id').value||null,
     notes:document.getElementById('f_notes').value.trim()||null,
     source:document.getElementById('f_source').value||'手動登録',store:STORE||'本店'};
   try{
     const d=await post('addReservation',body);
     ALL.push({...body,id:d.id,status:'受付中'});
-    toast('追加しました');
-    ['f_name','f_phone','f_email','f_date','f_notes'].forEach(i=>document.getElementById(i).value='');
+    const c=d&&d.confirm?d.confirm:{};
+    const sent=[]; if(c.mail) sent.push('メール'); if(c.line) sent.push('LINE');
+    toast(sent.length?`追加し、${sent.join('と')}で確認を送りました`:'追加しました');
+    ['f_name','f_phone','f_email','f_date','f_notes','f_line_user_id','f_customer_id'].forEach(i=>document.getElementById(i).value='');
+    hideFSuggest();
     document.getElementById('f_time').value='';
     document.getElementById('f_source').value='電話予約';
     document.getElementById('f_menu').value='';
     closeForm();renderCal();render();
   }catch(e){toast(e.message);}
 }
+
+/* ===== 氏名で顧客台帳を検索して自動入力（両店舗対象） ===== */
+let F_SEARCH_TIMER=null;
+function onFNameInput(){
+  document.getElementById('f_line_user_id').value='';
+  document.getElementById('f_customer_id').value='';
+  const q=document.getElementById('f_name').value.trim();
+  if(F_SEARCH_TIMER) clearTimeout(F_SEARCH_TIMER);
+  if(q.length<1){ hideFSuggest(); return; }
+  F_SEARCH_TIMER=setTimeout(()=>runFSearch(q),250);
+}
+async function runFSearch(q){
+  try{ const d=await post('searchCustomers',{q}); renderFSuggest(d.customers||[]); }
+  catch(e){ hideFSuggest(); }
+}
+function hideFSuggest(){ const b=document.getElementById('f_cust_suggest'); if(b){ b.style.display='none'; b.innerHTML=''; } }
+function renderFSuggest(list){
+  const box=document.getElementById('f_cust_suggest'); if(!box) return;
+  if(!list.length){ box.style.display='none'; box.innerHTML=''; return; }
+  window.__F_CANDS=list;
+  box.innerHTML=list.map((c,i)=>{
+    const sub=[c.nameKana||'', c.phone||'', c.email||''].filter(Boolean).join(' ／ ');
+    const tags=[];
+    if(c.line_user_id) tags.push('<span style="font-size:10px;color:#06845b;background:#e5f6ee;border-radius:5px;padding:1px 6px;">LINE</span>');
+    if(c.memberId) tags.push(`<span style="font-size:10px;color:var(--muted);">${esc(c.memberId)}</span>`);
+    return `<div onclick="pickFCustomer(${i})" style="padding:8px 11px;border-bottom:1px solid #f0ebe0;cursor:pointer;" onmouseover="this.style.background='#f7f3ec'" onmouseout="this.style.background='#fff'">
+      <div style="font-weight:700;font-size:13.5px;display:flex;gap:6px;align-items:center;">${esc(c.name||'（無名）')} ${tags.join(' ')}</div>
+      ${sub?`<div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${esc(sub)}</div>`:''}
+    </div>`;
+  }).join('');
+  box.style.display='block';
+}
+function pickFCustomer(i){
+  const c=(window.__F_CANDS||[])[i]; if(!c) return;
+  document.getElementById('f_name').value=c.name||'';
+  document.getElementById('f_phone').value=c.phone||'';
+  document.getElementById('f_email').value=c.email||'';
+  document.getElementById('f_line_user_id').value=c.line_user_id||'';
+  document.getElementById('f_customer_id').value=c.id||'';
+  hideFSuggest();
+  if(c.line_user_id) toast('LINE連携あり：メールとLINEで確認を送ります');
+}
+document.addEventListener('click',e=>{
+  const wrap=document.getElementById('f_cust_suggest'); const inp=document.getElementById('f_name');
+  if(!wrap||!inp) return;
+  if(e.target!==inp && !wrap.contains(e.target)) hideFSuggest();
+});
 
 async function load(){
   STORE=detectStore();
