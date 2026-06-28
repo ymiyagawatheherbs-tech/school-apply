@@ -628,8 +628,11 @@
           </div>
         </div>
         <div class="frow">
-          <div class="fg"><label>氏名 <span style="color:#a04a3a;font-size:11px;">必須</span></label>
-            <input id="sf_name" placeholder="山田 花子" />
+          <div class="fg" style="position:relative;"><label>氏名 <span style="color:#a04a3a;font-size:11px;">必須</span> <span style="color:var(--muted);font-size:11px;font-weight:400;">入力すると登録済みのお客様を検索</span></label>
+            <input id="sf_name" placeholder="山田 花子" autocomplete="off" oninput="onSfNameInput()" />
+            <input type="hidden" id="sf_line_user_id" />
+            <input type="hidden" id="sf_customer_id" />
+            <div id="sf_cust_suggest" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:40;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.10);max-height:240px;overflow:auto;margin-top:2px;"></div>
           </div>
           <div class="fg"><label>電話番号</label>
             <input id="sf_phone" placeholder="090-0000-0000" type="tel" />
@@ -1453,6 +1456,61 @@ async function updateSalonStaff(id,staff_name){
   catch(e){ toast(e.message); }
 }
 window.updateSalonStaff=updateSalonStaff;
+
+/* ===== 手動予約フォーム：氏名で顧客台帳を検索して自動入力 ===== */
+let SF_SEARCH_TIMER=null;
+function onSfNameInput(){
+  // 自分で名前を打ち直したら、前に選んだ顧客のひもづけは解除
+  $('sf_line_user_id').value='';
+  $('sf_customer_id').value='';
+  const q=$('sf_name').value.trim();
+  if(SF_SEARCH_TIMER) clearTimeout(SF_SEARCH_TIMER);
+  if(q.length<1){ hideSfSuggest(); return; }
+  // 入力が落ち着いてから検索（打つたびに叩かない）
+  SF_SEARCH_TIMER=setTimeout(()=>runSfSearch(q),250);
+}
+window.onSfNameInput=onSfNameInput;
+async function runSfSearch(q){
+  try{
+    const d=await call('searchCustomers',{q});
+    renderSfSuggest(d.customers||[]);
+  }catch(e){ hideSfSuggest(); }
+}
+function hideSfSuggest(){ const b=$('sf_cust_suggest'); if(b){ b.style.display='none'; b.innerHTML=''; } }
+function renderSfSuggest(list){
+  const box=$('sf_cust_suggest'); if(!box) return;
+  if(!list.length){ box.style.display='none'; box.innerHTML=''; return; }
+  window.__SF_CANDS=list;
+  box.innerHTML=list.map((c,i)=>{
+    const sub=[c.nameKana||'', c.phone||'', c.email||''].filter(Boolean).join(' ／ ');
+    const tags=[];
+    if(c.line_user_id) tags.push('<span style="font-size:10px;color:#06845b;background:#e5f6ee;border-radius:5px;padding:1px 6px;">LINE</span>');
+    if(c.memberId) tags.push(`<span style="font-size:10px;color:var(--muted);">${esc(c.memberId)}</span>`);
+    return `<div onclick="pickSfCustomer(${i})" style="padding:8px 11px;border-bottom:1px solid #f0ebe0;cursor:pointer;" onmouseover="this.style.background='#f7f3ec'" onmouseout="this.style.background='#fff'">
+      <div style="font-weight:700;font-size:13.5px;display:flex;gap:6px;align-items:center;">${esc(c.name||'（無名）')} ${tags.join(' ')}</div>
+      ${sub?`<div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${esc(sub)}</div>`:''}
+    </div>`;
+  }).join('');
+  box.style.display='block';
+}
+function pickSfCustomer(i){
+  const c=(window.__SF_CANDS||[])[i]; if(!c) return;
+  $('sf_name').value=c.name||'';
+  $('sf_phone').value=c.phone||'';
+  $('sf_email').value=c.email||'';
+  $('sf_line_user_id').value=c.line_user_id||'';
+  $('sf_customer_id').value=c.id||'';
+  hideSfSuggest();
+  if(c.line_user_id) toast('LINE連携あり：メールとLINEで確認を送ります');
+}
+window.pickSfCustomer=pickSfCustomer;
+// フォーム外をクリックしたら候補を閉じる
+document.addEventListener('click',e=>{
+  const wrap=$('sf_cust_suggest'); const inp=$('sf_name');
+  if(!wrap||!inp) return;
+  if(e.target!==inp && !wrap.contains(e.target)) hideSfSuggest();
+});
+
 async function addSalonReservation(){
   const name=$('sf_name').value.trim();
   if(!name){ toast('氏名を入力してください'); return; }
@@ -1461,10 +1519,15 @@ async function addSalonReservation(){
     name, phone:$('sf_phone').value.trim()||null, email:$('sf_email').value.trim()||null, desired_date:$('sf_date').value||null,
     desired_time:$('sf_time').value.trim()||null, gender:$('sf_gender').value||null,
     birth_date:$('sf_birth').value.trim()||null, staff_name:$('sf_staff').value||null,
+    line_user_id:$('sf_line_user_id').value||null,
     notes:$('sf_notes').value.trim()||null, source:'手動登録', status:'受付中' };
   try{
-    await call('addReservation',body); toast('予約を追加しました');
-    ['sf_name','sf_phone','sf_email','sf_date','sf_time','sf_birth','sf_notes'].forEach(id=>{$(id).value='';});
+    const r=await call('addReservation',body);
+    const c=r&&r.confirm?r.confirm:{};
+    const sent=[]; if(c.mail) sent.push('メール'); if(c.line) sent.push('LINE');
+    toast(sent.length?`予約を追加し、${sent.join('と')}で確認を送りました`:'予約を追加しました');
+    ['sf_name','sf_phone','sf_email','sf_date','sf_time','sf_birth','sf_notes','sf_line_user_id','sf_customer_id'].forEach(id=>{$(id).value='';});
+    hideSfSuggest();
     fillStaffSelect('sf_staff', CURRENT_STAFF?CURRENT_STAFF.name:'');
     $('salonForm').classList.add('hide'); await loadSalon();
   }catch(e){ toast(e.message); }
