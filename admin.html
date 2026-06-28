@@ -302,6 +302,7 @@
       <div class="toolbar">
         <button class="btn btn-primary btn-sm" id="newCourseBtn">＋ 新規講座を追加</button>
         <button class="btn btn-ghost btn-sm" id="bulkBtn">🔁 繰り返しで一括登録</button>
+        <button class="btn btn-sm" style="background:#6E847C;color:#fff;" onclick="syncRosters()">📅 参加者をカレンダーに反映</button>
         <span class="spacer"></span>
         <span class="count" id="csCount"></span>
         <button class="btn btn-ghost btn-sm" id="csViewToggle">📅 カレンダー表示</button>
@@ -1567,6 +1568,16 @@ $('bkFilters').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
 });
 
 /* ===== 講座管理 ===== */
+// 未来の講座の参加者を、Googleカレンダーの講座予定にまとめて反映する
+async function syncRosters(){
+  if(!confirm('これから開催の講座について、確定した参加者をGoogleカレンダーの各講座予定に反映します。よろしいですか？')) return;
+  toast('反映中…');
+  try{
+    const d=await call('syncCourseRosters');
+    toast(`反映しました（更新 ${d.ok}件 ／ 対象外 ${d.skipped}件${d.fail?` ／ 失敗 ${d.fail}件`:''}）`);
+  }catch(e){ toast(e.message); }
+}
+window.syncRosters=syncRosters;
 async function loadCourses(){
   $('csList').innerHTML='<div class="empty">読み込み中…</div>';
   try{ const d=await call('listCourses'); COURSES=d.courses||[]; SERIES_LIST=d.series||[]; renderCourses(); fillSeriesSelect(); }
