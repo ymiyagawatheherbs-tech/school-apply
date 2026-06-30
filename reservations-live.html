@@ -348,6 +348,8 @@ function render(){
   document.getElementById('countBadge').textContent=`${list.length}件`+(CUST_DIAG?` ・ ${CUST_DIAG}`:'');
   const badge=s=>{const m={'受付中':'b-new','確定':'b-ok','保留':'b-hold','キャンセル':'b-ng'};return`<span class="badge ${m[s]||''}">${esc(s)}</span>`;};
   const routeBadge=src=>{const s=String(src||'');if(/web/i.test(s))return'<span class="badge b-web">Web</span>';if(s.includes('電話'))return'<span class="badge b-tel">電話</span>';if(s.includes('来店'))return'<span class="badge b-walk">来店</span>';return s?esc(s):'—';};
+  // 連絡手段バッジ：LINE宛先があればLINE、無くてメールがあればメール、どちらも無ければ電話のみ
+  const contactBadge=r=>{if(r.line_user_id)return'<span class="badge b-ok" title="LINEで連絡できます">LINE</span>';if(r.email)return'<span class="badge b-web" title="メールで連絡できます">メール</span>';return'<span class="badge" style="background:#EFEAE0;color:#8a8275;" title="電話で連絡してください">電話のみ</span>';};
   const today=todayJST();
   if(!list.length){document.getElementById('listView').innerHTML='<div class="empty">該当する予約はありません</div>';return;}
   let h=`<table><thead><tr><th>希望日時</th><th>氏名</th><th>メニュー</th><th>電話</th><th>経路</th><th>ステータス</th><th></th></tr></thead><tbody>`;
@@ -362,7 +364,7 @@ function render(){
       : `<button class="cust-tag cust-new" onclick="openReg('${esc(r.id)}')" style="cursor:pointer;" title="この方を顧客として登録">未登録 ＋登録</button>`;
     h+=`<tr class="${isNew?'new-row':''} ${isT?'today-row':''}">
       <td class="td-time${isT?' td-today':''}">${dtLabel}<br>${esc(r.desired_time||'—')}</td>
-      <td class="td-name">${esc(r.name)} ${isNew?'<span class="badge b-new" style="margin-left:4px;">NEW</span>':''}<br>${custBadge}</td>
+      <td class="td-name">${esc(r.name)} ${isNew?'<span class="badge b-new" style="margin-left:4px;">NEW</span>':''} ${contactBadge(r)}<br>${custBadge}</td>
       <td class="td-menu">${esc(r.menu_name||'—')}</td>
       <td>${esc(r.phone||'—')}${r.email?`<br><span style="font-size:11px;color:var(--muted);">${esc(r.email)}</span>`:''}</td>
       <td>${routeBadge(r.source)}</td>
