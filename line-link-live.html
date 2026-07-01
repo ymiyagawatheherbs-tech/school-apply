@@ -130,9 +130,12 @@ function renderSuggest(idx, list){
   const box=document.getElementById('sg-'+idx);
   if(!list.length){ box.style.display='none'; box.innerHTML=''; return; }
   window.__CANDS=window.__CANDS||{}; window.__CANDS[idx]=list;
+  const p=PENDING[idx];
+  const col=(p&&p.line_channel==='honten')?'line_user_id_honten':'line_user_id_hankyu';
+  const chLabel=(p&&p.line_channel==='honten')?'本店':'神戸阪急';
   box.innerHTML=list.map((c,i)=>{
     const sub=[c.nameKana||'', c.phone||'', c.email||''].filter(Boolean).join(' ／ ');
-    const linked=c.line_user_id?'<span class="linked-note">LINE連携済</span>':'';
+    const linked=c[col]?`<span class="linked-note">${chLabel}LINE連携済</span>`:'';
     return `<div class="sg-item" onclick="doLink(${idx},${i})">
       <div class="sg-name">${esc(c.name||'（無名）')} ${linked}</div>
       ${sub?`<div class="sg-sub">${esc(sub)}</div>`:''}
@@ -144,8 +147,11 @@ function renderSuggest(idx, list){
 async function doLink(idx, i){
   const c=(window.__CANDS&&window.__CANDS[idx]||[])[i]; if(!c) return;
   const p=PENDING[idx]; if(!p) return;
-  if(c.line_user_id && c.line_user_id!==p.line_user_id){
-    if(!confirm(`${c.name||'この顧客'} には既に別のLINEが連携されています。上書きして結びつけますか？`)) return;
+  const col=(p.line_channel==='honten')?'line_user_id_honten':'line_user_id_hankyu';
+  const chLabel=(p.line_channel==='honten')?'本店':'神戸阪急';
+  // 同じ店舗の列に、別のIDが既に入っている場合だけ上書き確認（他店舗のIDは影響しない）
+  if(c[col] && c[col]!==p.line_user_id){
+    if(!confirm(`${c.name||'この顧客'} には既に別の${chLabel}LINEが連携されています。上書きして結びつけますか？`)) return;
   }
   try{
     await post('linkLineToCustomer',{ line_user_id:p.line_user_id, customer_id:c.id });
