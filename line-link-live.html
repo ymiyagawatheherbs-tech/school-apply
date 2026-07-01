@@ -149,13 +149,31 @@ async function doLink(idx, i){
   const p=PENDING[idx]; if(!p) return;
   const col=(p.line_channel==='honten')?'line_user_id_honten':'line_user_id_hankyu';
   const chLabel=(p.line_channel==='honten')?'本店':'神戸阪急';
-  // 同じ店舗の列に、別のIDが既に入っている場合だけ上書き確認（他店舗のIDは影響しない）
+  const dispName=p.display_name||'（表示名なし）';
+  const custName=c.name||'（無名）';
+  const custSub=[c.nameKana||'', c.phone||''].filter(Boolean).join(' / ');
+
+  // 押し間違い防止：必ず確認を挟む。誰と誰を結びつけるかを明示する。
   if(c[col] && c[col]!==p.line_user_id){
-    if(!confirm(`${c.name||'この顧客'} には既に別の${chLabel}LINEが連携されています。上書きして結びつけますか？`)) return;
+    // 同じ店舗に既に別のLINEが連携されている場合は、より強い警告
+    if(!confirm(
+      `【ご注意】上書きになります\n\n`+
+      `${custName} さんには、既に別の${chLabel}LINEが連携されています。\n`+
+      `このまま進めると、以前のLINEは外れ、新しいLINE（${dispName}）に置き換わります。\n\n`+
+      `本当に上書きして結びつけますか？`
+    )) return;
+  } else {
+    // 通常の確認
+    if(!confirm(
+      `以下を結びつけます。よろしいですか？\n\n`+
+      `LINE：${dispName}（${chLabel}）\n`+
+      `お客様：${custName}${custSub?'（'+custSub+'）':''}\n\n`+
+      `※${chLabel}のLINEとして、このお客様に連携されます。`
+    )) return;
   }
   try{
     await post('linkLineToCustomer',{ line_user_id:p.line_user_id, customer_id:c.id });
-    toast(`${c.name||'顧客'} と結びつけました`);
+    toast(`${custName} と結びつけました`);
     PENDING=PENDING.filter((_,k)=>k!==idx);
     render();
   }catch(e){ toast(e.message); }
