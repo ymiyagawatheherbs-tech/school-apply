@@ -103,19 +103,14 @@
 
 <script>
 const STORE_APP='https://theherbs-store-git-main-yumiko-s-projects.vercel.app';
-// 販売/顧客DB（顧客台帳）
-const CUST_SB_URL='https://bpogujxrwdpzkfisscox.supabase.co';
-const CUST_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwb2d1anhyd2RwemtmaXNzY294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1OTQ0NjEsImV4cCI6MjA5NzE3MDQ2MX0.b39pjEYrTbS_U49Ud5GTEHh_luveh5wkZdtnWJN2x0M';
-// 予約システムのパスワード検証に使うAPI（既存の店舗APIを利用）
-const AUTH_API='https://herbs-booking-api.vercel.app/api/store';
-
-let custClient=null;
-try{ custClient=supabase.createClient(CUST_SB_URL,CUST_SB_KEY); }catch(e){ console.error('顧客DB接続エラー:',e.message); }
+// 予約・顧客の取得は、パスワード認証済みのサーバーAPI経由（RLSに守られた顧客台帳を安全に読む）
+const API='https://herbs-booking-api.vercel.app/api/store';
 
 let PW = sessionStorage.getItem('resv_pw') || '';
-let ALL=[];              // 誕生日ありの全顧客（月・店舗で絞る前）
+let ALL=[];              // 現在の月で取得済みの誕生日顧客
 let VIEW_MONTH=new Date().getMonth()+1; // 表示中の月（1〜12）
 let STORE_F='all';
+let LOAD_TOKEN=0;       // 月切り替えの取得競合を防ぐための番号
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
@@ -133,23 +128,16 @@ function parseBD(bd){
   return { year:y, month:mo, day:d, age };
 }
 
-// 顧客台帳から誕生日ありの顧客を全件読み込む（1000件ずつページング）
-async function loadCustomers(){
-  if(!custClient) throw new Error('顧客DBに接続できません');
-  const rows=[];
-  for(let page=0; page<15; page++){
-    const from=page*1000;
-    const { data, error } = await custClient.from('customers')
-      .select('id,name,nameKana,birthDate,gender,phone,email,line_user_id,salonId,lastVisitDate,memberId')
-      .neq('isDeleted',true)
-      .not('birthDate','is',null)
-      .range(from, from+999);
-    if(error) throw new Error('顧客読込エラー: '+error.message);
-    if(!data || !data.length) break;
-    rows.push(...data);
-    if(data.length<1000) break;
-  }
-  return rows;
+// サーバーAPIを叩く共通関数
+async function post(action, extra={}){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:PW,action,...extra})});
+  const d=await r.json(); if(!r.ok) throw new Error(d.error||'エラー'); return d;
+}
+
+// 指定した月の誕生日顧客を、サーバー経由で取得（RLSに守られた台帳を安全に読む）
+async function loadMonth(month){
+  const d=await post('listBirthdayCustomers',{ month });
+  return d.customers||[];
 }
 
 // 連絡手段バッジ
@@ -162,8 +150,8 @@ function storeName(sid){ if(String(sid)==='30002')return'神戸阪急'; if(Strin
 
 function render(){
   document.getElementById('mTitle').textContent=`${VIEW_MONTH}月`;
-  // 表示中の月が誕生月の人だけ、店舗で絞る
-  let list=ALL.filter(c=>{ const b=parseBD(c.birthDate); return b && b.month===VIEW_MONTH; });
+  // ALL は「表示中の月」の誕生日顧客（サーバーで月絞り済み）。ここでは店舗で絞る。
+  let list=ALL.slice();
   if(STORE_F!=='all') list=list.filter(c=>String(c.salonId)===STORE_F);
   // 誕生日の日付順
   list.sort((a,b)=>{ const ba=parseBD(a.birthDate), bb=parseBD(b.birthDate); return (ba?ba.day:99)-(bb?bb.day:99); });
@@ -204,10 +192,27 @@ function render(){
   document.getElementById('listView').innerHTML=h;
 }
 
+// 指定月を読み込んで表示（取得中は「読み込み中」を出し、競合を防ぐ）
+async function showMonth(month){
+  VIEW_MONTH=month;
+  document.getElementById('mTitle').textContent=`${VIEW_MONTH}月`;
+  document.getElementById('listView').innerHTML='<div class="empty">読み込み中…</div>';
+  document.getElementById('summary').innerHTML='';
+  const token=++LOAD_TOKEN;
+  try{
+    const rows=await loadMonth(month);
+    if(token!==LOAD_TOKEN) return; // 途中で月が変わっていたら破棄
+    ALL=rows; render();
+  }catch(e){
+    if(token!==LOAD_TOKEN) return;
+    document.getElementById('listView').innerHTML=`<div class="empty">読み込みに失敗しました：${esc(e.message)}</div>`;
+  }
+}
+
 // 月ナビ
-document.getElementById('mPrev').onclick=()=>{ VIEW_MONTH--; if(VIEW_MONTH<1)VIEW_MONTH=12; render(); };
-document.getElementById('mNext').onclick=()=>{ VIEW_MONTH++; if(VIEW_MONTH>12)VIEW_MONTH=1; render(); };
-document.getElementById('mToday').onclick=()=>{ VIEW_MONTH=new Date().getMonth()+1; render(); };
+document.getElementById('mPrev').onclick=()=>{ let m=VIEW_MONTH-1; if(m<1)m=12; showMonth(m); };
+document.getElementById('mNext').onclick=()=>{ let m=VIEW_MONTH+1; if(m>12)m=1; showMonth(m); };
+document.getElementById('mToday').onclick=()=>{ showMonth(new Date().getMonth()+1); };
 
 // 店舗絞り込み
 document.getElementById('storeChips').addEventListener('click',e=>{
@@ -220,16 +225,15 @@ document.getElementById('storeChips').addEventListener('click',e=>{
 
 // ===== データ読み込み =====
 async function load(){
-  ALL=await loadCustomers();
-  render();
+  await showMonth(VIEW_MONTH);
 }
 
 // ===== ログイン（既存の店舗APIでパスワード検証）=====
 function showLogin(msg){ document.getElementById('loginView').style.display='flex'; document.getElementById('loginErr').textContent=msg||''; }
 function hideLogin(){ document.getElementById('loginView').style.display='none'; }
 async function verifyPw(pw){
-  // 既存の店舗APIに軽いアクションを投げて、パスワードが通るか確認する
-  const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw,action:'listReservations'})});
+  // 誕生日取得APIに軽く投げて、パスワードが通るか確認する
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw,action:'listBirthdayCustomers',month:new Date().getMonth()+1})});
   if(!r.ok){ const d=await r.json().catch(()=>({})); throw new Error(d.error||'認証エラー'); }
   return true;
 }
