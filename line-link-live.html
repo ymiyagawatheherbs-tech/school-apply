@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LINE紐づけ — THE HERBS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+  :root{--ink:#544739;--muted:#766A5B;--paper:#FFFCF7;--surface:#FFFFFF;--deep:#544739;--green:#859A93;--green-hi:#6E847C;--sage:#A9BBB5;--line:#EBE5DB;--warm:#FAF6EF;--amber:#B5783A;--red:#B5483A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Noto Sans JP",sans-serif;background:var(--paper);color:var(--ink);font-size:13px;line-height:1.5;}
+  .hd{background:var(--deep);color:#EFEAE0;padding:10px 16px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;}
+  .store-badge{font-size:11px;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:10px;}
+  .wrap{padding:12px 16px;max-width:900px;margin:0 auto;}
+  .lead{font-size:12.5px;color:var(--muted);background:var(--warm);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:12px;line-height:1.7;}
+
+  .row{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;}
+  .row-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .disp{font-size:15px;font-weight:700;color:var(--deep);}
+  .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;}
+  .b-ch{background:#EAF3E6;color:#3D7A4A;}
+  .b-cnt{background:#EEF1F4;color:#5B6B78;}
+  .meta{font-size:11.5px;color:var(--muted);margin-top:3px;}
+  .msg{font-size:12.5px;color:var(--ink);background:var(--warm);border-radius:8px;padding:7px 10px;margin-top:8px;white-space:pre-wrap;word-break:break-word;}
+  .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+  .btn{padding:7px 14px;border-radius:8px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+  .btn-primary{background:var(--deep);color:#fff;}
+  .btn-ghost{background:var(--warm);border:1px solid var(--line);color:var(--ink);}
+  .btn-ignore{background:#FBEAE7;border:1px solid #F0C8C4;color:var(--red);}
+
+  .search-box{position:relative;flex:1;min-width:200px;}
+  .search-box input{width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13px;background:var(--warm);outline:none;}
+  .search-box input:focus{border-color:var(--green);background:#fff;}
+  .suggest{display:none;position:absolute;left:0;right:0;top:100%;z-index:40;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.10);max-height:260px;overflow:auto;margin-top:2px;}
+  .sg-item{padding:9px 11px;border-bottom:1px solid #f0ebe0;cursor:pointer;}
+  .sg-item:hover{background:#f7f3ec;}
+  .sg-name{font-weight:700;font-size:13.5px;display:flex;gap:6px;align-items:center;}
+  .sg-sub{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .linked-note{font-size:11px;color:#06845b;background:#e5f6ee;border-radius:5px;padding:1px 6px;}
+
+  .empty{text-align:center;padding:32px;color:var(--muted);}
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--deep);color:#fff;padding:9px 18px;border-radius:18px;font-size:12px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;}
+  .toast.show{opacity:1;}
+</style>
+<meta name="apple-mobile-web-app-title" content="LINE紐づけ" />
+</head>
+
+<body>
+
+<!-- ログイン画面 -->
+<div id="loginView" style="position:fixed;inset:0;background:#544739;color:#EFEAE0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:300;">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;letter-spacing:3px;margin-bottom:6px;">THE HERBS</div>
+  <div style="font-size:13px;color:#A9BBB5;font-weight:700;margin-bottom:20px;">LINE紐づけ</div>
+  <div style="font-size:13px;color:#D8D0C4;margin-bottom:14px;">パスワードを入力してください</div>
+  <input id="loginPw" type="password" autocomplete="current-password" placeholder="パスワード" style="width:min(280px,80vw);padding:11px 13px;border:none;border-radius:9px;font-size:15px;margin-bottom:10px;" />
+  <div id="loginErr" style="color:#F2B8B0;font-size:13px;min-height:18px;margin-bottom:8px;font-weight:700;"></div>
+  <button id="loginBtn" style="width:min(280px,80vw);padding:12px;background:#6E847C;color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">ログイン</button>
+</div>
+
+<div class="hd">
+  LINE紐づけ
+  <span class="store-badge" id="countBadge">—</span>
+  <button onclick="doLogout()" style="margin-left:auto;font-size:12px;font-weight:700;color:#EFEAE0;background:rgba(255,255,255,.16);border:none;border-radius:7px;padding:5px 11px;cursor:pointer;font-family:inherit;">ログアウト</button>
+</div>
+
+<div class="wrap">
+  <div class="lead">
+    公式LINEにメッセージをくださったお客様のうち、まだ顧客台帳とつながっていない方の一覧です。表示名や最後のメッセージを手がかりに、台帳のお客様を検索して結びつけてください。結びつけると、その方へLINEでご連絡・配信ができるようになります。
+  </div>
+  <div id="listView"><div class="empty">読み込み中…</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API='https://herbs-booking-api.vercel.app/api/store';
+let PW = sessionStorage.getItem('resv_pw') || '';
+let PENDING=[];
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function chName(k){ if(k==='hankyu')return'神戸阪急'; if(k==='honten')return'本店'; return k||'—'; }
+function fmtDT(ts){ if(!ts)return'—'; try{ return new Date(ts).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return String(ts); } }
+
+async function post(action, extra={}){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:PW,action,...extra})});
+  const d=await r.json(); if(!r.ok) throw new Error(d.error||'エラー'); return d;
+}
+
+function render(){
+  document.getElementById('countBadge').textContent=`未紐づけ ${PENDING.length}件`;
+  if(!PENDING.length){ document.getElementById('listView').innerHTML='<div class="empty">未紐づけのLINEユーザーはいません</div>'; return; }
+  let h='';
+  PENDING.forEach((p,idx)=>{
+    h+=`<div class="row" id="row-${idx}">
+      <div class="row-top">
+        <span class="disp">${esc(p.display_name||'（表示名なし）')}</span>
+        <span class="badge b-ch">${esc(chName(p.line_channel))}</span>
+        <span class="badge b-cnt">${p.message_count||1}回</span>
+      </div>
+      <div class="meta">最終受信：${fmtDT(p.last_received_at)}　／　LINE ID：${esc(String(p.line_user_id||'').slice(0,10))}…</div>
+      ${p.last_message?`<div class="msg">${esc(p.last_message)}</div>`:''}
+      <div class="actions">
+        <div class="search-box">
+          <input type="text" placeholder="台帳の顧客を氏名で検索…" oninput="onSearch(${idx}, this.value)" autocomplete="off" />
+          <div class="suggest" id="sg-${idx}"></div>
+        </div>
+        <button class="btn btn-ignore" onclick="doIgnore(${idx})">対象外にする</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('listView').innerHTML=h;
+}
+
+// 顧客検索（既存のsearchCustomersを使う）
+const timers={};
+function onSearch(idx, q){
+  q=(q||'').trim();
+  const box=document.getElementById('sg-'+idx);
+  if(timers[idx]) clearTimeout(timers[idx]);
+  if(q.length<1){ box.style.display='none'; box.innerHTML=''; return; }
+  timers[idx]=setTimeout(async ()=>{
+    try{
+      const d=await post('searchCustomers',{q});
+      renderSuggest(idx, d.customers||[]);
+    }catch(e){ box.style.display='none'; }
+  }, 250);
+}
+function renderSuggest(idx, list){
+  const box=document.getElementById('sg-'+idx);
+  if(!list.length){ box.style.display='none'; box.innerHTML=''; return; }
+  window.__CANDS=window.__CANDS||{}; window.__CANDS[idx]=list;
+  box.innerHTML=list.map((c,i)=>{
+    const sub=[c.nameKana||'', c.phone||'', c.email||''].filter(Boolean).join(' ／ ');
+    const linked=c.line_user_id?'<span class="linked-note">LINE連携済</span>':'';
+    return `<div class="sg-item" onclick="doLink(${idx},${i})">
+      <div class="sg-name">${esc(c.name||'（無名）')} ${linked}</div>
+      ${sub?`<div class="sg-sub">${esc(sub)}</div>`:''}
+    </div>`;
+  }).join('');
+  box.style.display='block';
+}
+
+async function doLink(idx, i){
+  const c=(window.__CANDS&&window.__CANDS[idx]||[])[i]; if(!c) return;
+  const p=PENDING[idx]; if(!p) return;
+  if(c.line_user_id && c.line_user_id!==p.line_user_id){
+    if(!confirm(`${c.name||'この顧客'} には既に別のLINEが連携されています。上書きして結びつけますか？`)) return;
+  }
+  try{
+    await post('linkLineToCustomer',{ line_user_id:p.line_user_id, customer_id:c.id });
+    toast(`${c.name||'顧客'} と結びつけました`);
+    PENDING=PENDING.filter((_,k)=>k!==idx);
+    render();
+  }catch(e){ toast(e.message); }
+}
+
+async function doIgnore(idx){
+  const p=PENDING[idx]; if(!p) return;
+  if(!confirm('このLINEユーザーを対象外（無視）にしますか？一覧から消えます。')) return;
+  try{
+    await post('ignorePendingLine',{ line_user_id:p.line_user_id });
+    toast('対象外にしました');
+    PENDING=PENDING.filter((_,k)=>k!==idx);
+    render();
+  }catch(e){ toast(e.message); }
+}
+
+async function load(){
+  const d=await post('listPendingLine');
+  PENDING=d.pending||[];
+  render();
+}
+
+// ===== ログイン =====
+function showLogin(msg){ document.getElementById('loginView').style.display='flex'; document.getElementById('loginErr').textContent=msg||''; }
+function hideLogin(){ document.getElementById('loginView').style.display='none'; }
+async function verifyPw(pw){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw,action:'listPendingLine'})});
+  if(!r.ok){ const d=await r.json().catch(()=>({})); throw new Error(d.error||'認証エラー'); }
+  return true;
+}
+async function doLogin(){
+  const pw=(document.getElementById('loginPw').value||'').trim();
+  if(!pw){ document.getElementById('loginErr').textContent='パスワードを入力してください'; return; }
+  document.getElementById('loginErr').textContent='確認中…';
+  try{
+    await verifyPw(pw);
+    PW=pw; sessionStorage.setItem('resv_pw',PW);
+    document.getElementById('loginPw').value='';
+    hideLogin();
+    await load();
+  }catch(e){
+    PW=''; sessionStorage.removeItem('resv_pw');
+    document.getElementById('loginErr').textContent=(/認証|パスワード/.test(e.message)?'パスワードが違います':e.message);
+  }
+}
+function doLogout(){
+  PW=''; sessionStorage.removeItem('resv_pw');
+  PENDING=[]; document.getElementById('listView').innerHTML='<div class="empty">—</div>';
+  showLogin('ログアウトしました');
+}
+
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('loginPw').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+
+if(PW){ verifyPw(PW).then(()=>{ hideLogin(); return load(); }).catch(()=>{ PW=''; sessionStorage.removeItem('resv_pw'); showLogin(); }); }
+else { showLogin(); }
+</script>
+</body>
+</html>
