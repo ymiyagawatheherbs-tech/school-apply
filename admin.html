@@ -1822,12 +1822,13 @@ function renderCourses(){
       <div class="course-row${past?' is-past':''}" style="border-left:5px solid ${col}">
         <div class="ctop">
           <div>
-            <div class="ctitle">${esc(c.title)}${past?' <span class="past-tag">終了</span>':''}</div>
+            <div class="ctitle">${esc(c.title)}${past?' <span class="past-tag">終了</span>':''}${c.is_confirmed?' <span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#B5483A;border-radius:8px;padding:1px 8px;margin-left:4px;">開催確定・サロン枠停止</span>':''}</div>
             <div class="cmeta">${fmtDate(c.course_date)} ／ ${esc(c.place||'—')} ／ 定員${c.capacity??'—'}　予約${c.booking_count}件</div>
             <div class="cmeta">会員¥${Number(c.price_member||0).toLocaleString()} ／ 通常¥${Number(c.price_normal||0).toLocaleString()} ／ ${esc(c.status||'')}${c.zoom_url?' ／ Zoom設定あり':''}</div>
             <div class="cmeta" style="color:#b9b1a3;">${esc(c.id)}</div>
           </div>
           <div><div class="cactions">
+            <button class="btn btn-sm ${c.is_confirmed?'btn-del':'btn-ghost'}" onclick="toggleConfirm('${esc(c.id)}',${c.is_confirmed?'true':'false'})">${c.is_confirmed?'開催確定を解除':'開催確定にする'}</button>
             <button class="btn btn-sm btn-ghost" onclick="copyApplyUrl('${esc(c.series_id||'')}','${esc(c.id)}')">🔗 URL</button>
             <button class="btn btn-sm btn-ghost" onclick="editCourse('${esc(c.id)}')">編集</button>
             <button class="btn btn-sm btn-ghost" onclick="duplicateCourse('${esc(c.id)}')">複製</button>
@@ -2091,6 +2092,19 @@ $('saveCourseBtn').onclick=async()=>{
 window.delCourse=async(id)=>{
   if(!confirm('この講座を削除しますか？（予約がある場合は削除できません）')) return;
   try{ await call('deleteCourse',{id}); toast('削除しました'); await loadCourses(); }
+  catch(e){ alert(e.message); }
+};
+window.toggleConfirm=async(id,cur)=>{
+  const now = (cur===true||cur==='true');
+  const next = !now;
+  const msg = next
+    ? 'この講習会を「開催確定」にします。\n\n確定すると、この講習会の時間帯は、お客様の予約フォームでサロン予約を受け付けなくなります（自動で塞がれます）。よろしいですか？'
+    : '「開催確定」を解除します。\n\n解除すると、この講習会の時間帯でも、サロン予約を受け付けるようになります。よろしいですか？';
+  if(!confirm(msg)) return;
+  // 既存の講座データに is_confirmed だけ上書きして、updateCourse（body.course 形式）で送る
+  const c = COURSES.find(x=>x.id===id) || { id };
+  const course = { ...c, is_confirmed: next };
+  try{ await call('updateCourse',{ course }); toast(next?'開催確定にしました（サロン枠を停止）':'開催確定を解除しました'); await loadCourses(); }
   catch(e){ alert(e.message); }
 };
 $('csReload').onclick=loadCourses;
