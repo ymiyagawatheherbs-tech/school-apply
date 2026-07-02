@@ -1337,8 +1337,11 @@ async function doAddBlock(){
     if(start_time>=end_time){ $('blkErr').textContent='終了は開始より後にしてください'; return; }
   }
   $('blkAddBtn').disabled=true; $('blkErr').textContent='追加中…';
+  // ブロックは特定店舗に対して作る。上部の店舗フィルターで選んでいる店舗を使う。
+  const blkStore = (SALON_STORE && SALON_STORE!=='all') ? SALON_STORE : null;
+  if(!blkStore){ $('blkErr').textContent='上部の店舗（本店／神戸阪急）を選んでから追加してください'; $('blkAddBtn').disabled=false; return; }
   try{
-    await call('addBlock',{ block_date:date, start_time, end_time, reason:$('blk_reason').value.trim()||null });
+    await call('addBlock',{ store:blkStore, block_date:date, start_time, end_time, reason:$('blk_reason').value.trim()||null });
     $('blkErr').textContent=''; $('blk_reason').value='';
     const d=await call('listReservations'); BLOCKS=d.blocks||[];
     renderBlockList();
