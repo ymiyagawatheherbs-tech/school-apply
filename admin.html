@@ -661,7 +661,32 @@
 
       <div id="salonList"><div class="empty">読み込み中…</div></div>
     </div>
-
+<!-- 予約編集モーダル -->
+    <div id="editModal" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--cream);border-radius:14px;padding:22px;max-width:440px;width:100%;max-height:88vh;overflow:auto;">
+        <h3 style="margin:0 0 4px;font-size:16px;">予約を編集</h3>
+        <p style="margin:0 0 14px;font-size:12px;color:var(--muted);">日時・メニュー・お客様情報を変更できます。保存するとカレンダーにも反映されます。</p>
+        <input type="hidden" id="ef_id" />
+        <div class="fg"><label>メニュー</label>
+          <select id="ef_menu"><option value="">選択してください</option></select>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>希望日</label><input id="ef_date" type="date" /></div>
+          <div class="fg"><label>希望時間</label><select id="ef_time"><option value="">選択</option></select></div>
+        </div>
+        <div class="fg"><label>氏名</label><input id="ef_name" placeholder="山田 花子" /></div>
+        <div class="frow">
+          <div class="fg"><label>電話番号</label><input id="ef_phone" type="tel" placeholder="090-0000-0000" /></div>
+          <div class="fg"><label>メール</label><input id="ef_email" type="email" placeholder="info@example.com" /></div>
+        </div>
+        <div class="fg"><label>備考</label><input id="ef_notes" placeholder="アレルギーなど" /></div>
+        <div class="err" id="efErr"></div>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button class="btn btn-primary btn-sm" id="efSaveBtn" onclick="saveEditReservation()">保存する</button>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="$('editModal').classList.add('hide')">キャンセル</button>
+        </div>
+      </div>
+    </div>
     <!-- 新規顧客登録モーダル -->
     <div id="regModal" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;">
       <div style="background:var(--cream);border-radius:14px;padding:22px;max-width:380px;width:100%;">
@@ -1396,7 +1421,8 @@ function renderSalon(){
           ${['受付中','確定','保留','キャンセル'].map(s=>`<option value="${s}"${r.status===s?' selected':''}>${s}</option>`).join('')}
         </select>
       </td>
-      <td style="padding:7px 10px;text-align:right;">
+      <td style="padding:7px 10px;text-align:right;white-space:nowrap;">
+        <button class="btn btn-sm btn-ghost" onclick="openEditModal('${esc(r.id)}')">編集</button>
         <button class="btn btn-sm btn-del" onclick="deleteSalonReservation('${esc(r.id)}')">削除</button>
       </td>
     </tr>`;
@@ -1547,6 +1573,52 @@ async function addSalonReservation(){
     $('salonForm').classList.add('hide'); await loadSalon();
   }catch(e){ toast(e.message); }
 }
+  /* ===== 予約の編集 ===== */
+function openEditModal(id){
+  const r=SALON.find(x=>x.id===id); if(!r) return;
+  // メニュー候補を埋める（サロン予約のメニュー一覧を流用）
+  const sel=$('ef_menu');
+  sel.innerHTML='<option value="">選択してください</option>';
+  SALON_MENUS.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; if(String(m.id)===String(r.menu_id))o.selected=true; sel.appendChild(o); });
+  // 時間候補を埋める
+  fillSalonTimeOptions();
+  $('ef_id').value=r.id;
+  $('ef_date').value=r.desired_date||'';
+  $('ef_time').value=r.desired_time||'';
+  $('ef_name').value=r.name||'';
+  $('ef_phone').value=r.phone||'';
+  $('ef_email').value=r.email||'';
+  $('ef_notes').value=r.notes||'';
+  $('efErr').textContent='';
+  $('editModal').classList.remove('hide');
+}
+window.openEditModal=openEditModal;
+async function saveEditReservation(){
+  const id=$('ef_id').value; if(!id) return;
+  const menuSel=$('ef_menu'); const menuId=menuSel.value;
+  const menuName=menuId?(menuSel.options[menuSel.selectedIndex]?.text||''):'';
+  const name=$('ef_name').value.trim();
+  if(!name){ $('efErr').textContent='氏名を入力してください'; return; }
+  $('efSaveBtn').disabled=true; $('efErr').textContent='保存中…';
+  try{
+    await call('updateReservation',{
+      id,
+      menu_id:menuId||null,
+      menu_name:menuId?menuName:null,
+      name,
+      phone:$('ef_phone').value.trim()||null,
+      email:$('ef_email').value.trim()||null,
+      desired_date:$('ef_date').value||null,
+      desired_time:$('ef_time').value||null,
+      notes:$('ef_notes').value.trim()||null,
+    });
+    $('editModal').classList.add('hide');
+    toast('予約を更新しました');
+    await loadSalon();
+  }catch(e){ $('efErr').textContent=e.message; }
+  finally{ $('efSaveBtn').disabled=false; }
+}
+window.saveEditReservation=saveEditReservation;
 async function deleteSalonReservation(id){
   if(!confirm('この予約を削除しますか？')) return;
   try{ await call('deleteReservation',{id}); toast('削除しました'); await loadSalon(); }
