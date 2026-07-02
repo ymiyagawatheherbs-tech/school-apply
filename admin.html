@@ -1249,7 +1249,33 @@ function fillSalonTimeOptions(){
   const opts=['<option value="">選択</option>'];
   for(let hh=10;hh<=20;hh++){ for(const mm of ['00','30']){ if(hh===20&&mm==='30')break; opts.push(`<option value="${hh}:${mm}">${hh}:${mm}</option>`); } }
   const html=opts.join('');
- ['sf_time','blk_start','blk_end','ef_time'].forEach(id=>{ const el=$(id); if(el) el.innerHTML=html; });
+function openEditModal(id){
+  const r=SALON.find(x=>x.id===id); if(!r) return;
+  // メニュー候補を埋める（サロン予約のメニュー一覧を流用）
+  const sel=$('ef_menu');
+  sel.innerHTML='<option value="">選択してください</option>';
+  SALON_MENUS.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; if(String(m.id)===String(r.menu_id))o.selected=true; sel.appendChild(o); });
+  // 希望時間の選択肢を直接作る（30分刻み 10:00〜20:00）。元の時間があれば含める。
+  const tsel=$('ef_time');
+  let topts='<option value="">選択</option>';
+  const times=[];
+  for(let hh=10;hh<=20;hh++){ for(const mm of ['00','30']){ if(hh===20&&mm==='30')break; times.push(`${hh}:${mm}`); } }
+  // 元の時間が候補に無い場合（例：16:00 が 16:00 として一致しない、独自の時刻）も選べるように含める
+  const cur=(r.desired_time||'').trim();
+  if(cur && !times.includes(cur)) times.unshift(cur);
+  times.forEach(t=>{ topts+=`<option value="${t}"${t===cur?' selected':''}>${t}</option>`; });
+  tsel.innerHTML=topts;
+  $('ef_id').value=r.id;
+  $('ef_date').value=r.desired_date||'';
+  $('ef_time').value=cur;
+  $('ef_name').value=r.name||'';
+  $('ef_phone').value=r.phone||'';
+  $('ef_email').value=r.email||'';
+  $('ef_notes').value=r.notes||'';
+  $('efErr').textContent='';
+  $('editModal').classList.remove('hide');
+}
+window.openEditModal=openEditModal;
 }
 async function loadSalon(){
   $('salonList').innerHTML='<div class="empty">読み込み中…</div>';
