@@ -453,12 +453,13 @@
     <div id="viewMembers" class="hide">
       <div class="toolbar" style="margin-bottom:14px;">
         <div></div>
-        <button class="btn btn-primary btn-sm" onclick="$('memberForm').classList.toggle('hide')">＋ 会員を追加</button>
+        <button class="btn btn-primary btn-sm" onclick="openMemberForm(null)">＋ 会員を追加</button>
       </div>
 
-      <!-- 追加フォーム -->
+      <!-- 追加・編集フォーム -->
       <div class="form-panel hide" id="memberForm" style="margin-bottom:16px;">
-        <h3 style="margin:0 0 12px;font-size:15px;">会員を追加</h3>
+        <h3 id="memberFormTitle" style="margin:0 0 12px;font-size:15px;">会員を追加</h3>
+        <input type="hidden" id="mf_editing" value="" />
         <div class="frow">
           <div class="fg">
             <label>サロン名・会社名</label>
@@ -472,10 +473,14 @@
             <label>メールアドレス <span style="color:#a04a3a;font-size:11px;">必須</span></label>
             <input id="mf_email" type="email" placeholder="info@salon.com" />
           </div>
+          <div class="fg">
+            <label>電話番号（任意）</label>
+            <input id="mf_phone" type="tel" placeholder="090-1234-5678" />
+          </div>
         </div>
         <div style="margin-top:10px;display:flex;gap:8px;">
-          <button class="btn btn-primary btn-sm" onclick="addMember()">追加する</button>
-          <button class="btn btn-sm" style="background:var(--bg);" onclick="$('memberForm').classList.add('hide')">キャンセル</button>
+          <button class="btn btn-primary btn-sm" id="mf_submitBtn" onclick="saveMember()">追加する</button>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="closeMemberForm()">キャンセル</button>
         </div>
       </div>
 
@@ -1064,7 +1069,8 @@ function renderMembers(){
       <td style="padding:10px 12px;">${esc(m.contact_name||'—')}</td>
       <td style="padding:10px 12px;font-family:monospace;font-size:13px;">${esc(m.email)}</td>
       <td style="padding:10px 12px;font-size:13px;">${esc(m.phone||'—')}</td>
-      <td style="padding:10px 12px;text-align:right;">
+      <td style="padding:10px 12px;text-align:right;white-space:nowrap;">
+        <button class="btn btn-sm" style="background:var(--bg);margin-right:6px;" onclick="openMemberForm('${esc(m.email)}')">編集</button>
         <button class="btn btn-sm btn-del" onclick="deleteMember('${esc(m.id||m.email)}','${esc(m.email)}')">削除</button>
       </td>
     </tr>`;
@@ -1073,16 +1079,49 @@ function renderMembers(){
   h+=`<div style="margin-top:10px;font-size:13px;color:var(--muted);">合計 ${MEMBERS.length} 名</div>`;
   $('mbrList').innerHTML=h;
 }
-async function addMember(){
+/* 会員フォームを開く：editEmail=null なら追加モード、メールアドレス指定で編集モード */
+function openMemberForm(editEmail){
+  const form=$('memberForm');
+  if(editEmail){
+    const m=MEMBERS.find(x=>x.email===editEmail);
+    if(!m){ toast('会員が見つかりません'); return; }
+    $('mf_editing').value=m.email;
+    $('mf_salon').value=m.salon_name||'';
+    $('mf_contact').value=m.contact_name||'';
+    $('mf_email').value=m.email||'';
+    $('mf_phone').value=m.phone||'';
+    $('memberFormTitle').textContent='会員を編集';
+    $('mf_submitBtn').textContent='保存する';
+  }else{
+    $('mf_editing').value='';
+    $('mf_salon').value=''; $('mf_contact').value=''; $('mf_email').value=''; $('mf_phone').value='';
+    $('memberFormTitle').textContent='会員を追加';
+    $('mf_submitBtn').textContent='追加する';
+  }
+  form.classList.remove('hide');
+  form.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeMemberForm(){
+  $('memberForm').classList.add('hide');
+  $('mf_editing').value='';
+}
+async function saveMember(){
   const salon=$('mf_salon').value.trim();
   const contact=$('mf_contact').value.trim();
-  const email=$('mf_email').value.trim();
+  const email=$('mf_email').value.trim().toLowerCase();
+  const phone=$('mf_phone').value.trim();
+  const editing=$('mf_editing').value;
   if(!email){ toast('メールアドレスを入力してください'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('メールアドレスの形式が正しくありません'); return; }
   try{
-    await call('addMember',{salon,contact,email});
-    toast('会員を追加しました');
-    $('mf_salon').value=''; $('mf_contact').value=''; $('mf_email').value='';
-    $('memberForm').classList.add('hide');
+    if(editing){
+      await call('updateMember',{originalEmail:editing,salon,contact,email,phone});
+      toast('会員情報を更新しました');
+    }else{
+      await call('addMember',{salon,contact,email,phone});
+      toast('会員を追加しました');
+    }
+    closeMemberForm();
     await loadMembers();
   }catch(e){ toast(e.message); }
 }
