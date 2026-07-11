@@ -252,7 +252,8 @@
       const info=SERIES_INFO[name]||{display:name,desc:''};
       const cs=bySeries[name];
       const next=cs.slice(0,3).map(c=>{
-        return scEsc(jstDateLabel(c._ymd))+(c._time?' '+scEsc(c._time):'')+'　'+scEsc(c.title);
+        return scEsc(jstDateLabel(c._ymd))+(c._time?' '+scEsc(c._time):'')+'　'+scEsc(c.title)
+          +(c.is_full?' <span style="color:#a04a3a;font-size:.72rem;">（満席）</span>':'');
       }).join('<br>');
       const c0=cs[0];
       const pm=Number(c0.price_member||0), pn=Number(c0.price_normal||0);
@@ -314,11 +315,17 @@
       byDay[ymd].forEach(c=>{
         const pm=Number(c.price_member||0), pn=Number(c.price_normal||0);
         const price=(pm===0&&pn===0)?'無料':('会員 ¥'+pm.toLocaleString()+' ・ 一般 ¥'+pn.toLocaleString());
-        h+='<a class="sc-card" href="'+applyCourseUrl(c._series,c.id)+'">'
-          +'<div class="sc-title">'+scEsc(c.title)+(c.session?'（'+scEsc(c.session)+'）':'')+'</div>'
-          +'<div class="sc-meta">'+(c._time?scEsc(c._time)+' ／ ':'')+scEsc(c.place||'対面')+'<br>'+price+'</div>'
-          +'<div class="sc-go">お申し込みへ →</div>'
-          +'</a>';
+        const inner='<div class="sc-title">'+scEsc(c.title)+(c.session?'（'+scEsc(c.session)+'）':'')+'</div>'
+          +'<div class="sc-meta">'+(c._time?scEsc(c._time)+' ／ ':'')+scEsc(c.place||'対面')+'<br>'+price+'</div>';
+        if(c.is_full){
+          h+='<div class="sc-card" style="opacity:.75;">'+inner
+            +'<div class="sc-go" style="color:#a04a3a;">満席となりました</div>'
+            +'</div>';
+        }else{
+          h+='<a class="sc-card" href="'+applyCourseUrl(c._series,c.id)+'">'+inner
+            +'<div class="sc-go">お申し込みへ →</div>'
+            +'</a>';
+        }
       });
     });
     list.innerHTML=h;
