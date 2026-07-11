@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スカルプ・ハーブゴマージュ | THE HERBS プロフェッショナル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:      #f5f0e8;
+    --warm-white: #faf8f4;
+    --deep-green: #1a2e1a;
+    --forest:     #2d4a2d;
+    --sage:       #6b8f5e;
+    --sage-light: #9ab88a;
+    --moss:       #b8c9a8;
+    --gold:       #c9a96e;
+    --gold-light: #e8d5a8;
+    --charcoal:   #2a2a2a;
+    --warm-gray:  #7a7060;
+    --border:     rgba(107,143,94,0.25);
+    --content-max:  1400px;
+    --section-px:   clamp(1.2rem, 3vw, 2.5rem);
+    --section-py:   clamp(3.5rem, 7vw, 8rem);
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--warm-white);
+    color: var(--charcoal);
+    font-family: 'Noto Sans JP', serif;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+  .inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    width: 100%;
+    padding-inline: var(--section-px);
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    background: rgba(26,46,26,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(107,143,94,0.15);
+    transition: transform 0.4s ease;
+  }
+  .nav-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    width: 100%;
+    padding: 1.2rem var(--section-px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.28em;
+    color: var(--cream);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    color: rgba(245,240,232,0.6);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--sage-light); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    background: #2c3d28;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 6rem;
+    padding-bottom: 3rem;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://herbspro2020.bcart.jp/uploads/main_image/freepage/man_gommage.JPG');
+    background-size: cover;
+    background-position: center 30%;
+    opacity: 0.52;
+    z-index: 0;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 72% 50%, rgba(107,143,94,0.10) 0%, transparent 65%),
+      radial-gradient(ellipse at 18% 85%, rgba(201,169,110,0.12) 0%, transparent 50%);
+    z-index: 0;
+  }
+  .hero-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    width: 100%;
+    padding-inline: var(--section-px);
+    position: relative;
+    z-index: 1;
+  }
+  .hero-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
+    color: var(--gold-light);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    margin-bottom: 1.1rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.3s forwards;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(5rem, 7.5vw, 9rem);
+    color: var(--cream);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.5s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--sage-light); }
+  .hero-subtitle {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.6rem, 2.8vw, 3.2rem);
+    color: rgba(245,240,232,0.65);
+    margin-top: 1.2rem;
+    letter-spacing: 0.12em;
+    font-weight: 400;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.7s forwards;
+  }
+  .hero-divider {
+    width: 80px; height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    margin: 2.2rem 0;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.9s forwards;
+  }
+  .hero-lead {
+    max-width: 550px;
+    font-size: clamp(1.0rem, 1.6vw, 1.3rem);
+    color: rgba(245,240,232,0.6);
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.9s 1.1s forwards;
+  }
+  .hero-summer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(201,169,110,0.15);
+    border: 1px solid rgba(201,169,110,0.45);
+    color: var(--gold-light);
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+    padding: 0.45rem 1.1rem;
+    margin-bottom: 1.4rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.1s forwards;
+  }
+  .hero-summer-badge span { font-size: 0.75rem; opacity: 0.7; }
+  .hero-metrics {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.8rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid rgba(107,143,94,0.2);
+    opacity: 0;
+    animation: fadeUp 0.9s 1.4s forwards;
+    flex-wrap: wrap;
+  }
+  .hero-metric-item { display: flex; flex-direction: column; gap: 0.3rem; }
+  .hero-metric-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3vw, 3rem);
+    font-weight: 300;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+  .hero-metric-label {
+    font-size: 0.78rem;
+    color: rgba(245,240,232,0.5);
+    letter-spacing: 0.12em;
+  }
+  .hero-metric-divider {
+    width: 1px;
+    background: rgba(107,143,94,0.25);
+    align-self: stretch;
+  }
+  .hero-cta-group {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    margin-top: 2.8rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 1.3s forwards;
+  }
+  .hero-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.1rem 2.6rem;
+    background: var(--gold);
+    color: var(--deep-green);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .hero-btn-outline-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.1rem 2.4rem;
+    background: transparent;
+    color: var(--cream);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    border: 1px solid rgba(245,240,232,0.35);
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s, background 0.3s;
+  }
+  .hero-btn-outline-hero:hover {
+    border-color: var(--sage-light);
+    color: var(--sage-light);
+  }
+
+  /* ── URGENCY BANNER ── */
+  .urgency-banner {
+    background: linear-gradient(135deg, var(--forest), var(--deep-green));
+    border-top: 1px solid rgba(201,169,110,0.3);
+    border-bottom: 1px solid rgba(201,169,110,0.3);
+    padding: 1rem var(--section-px);
+    text-align: center;
+  }
+  .urgency-banner p {
+    font-size: 0.85rem;
+    color: var(--gold-light);
+    letter-spacing: 0.12em;
+  }
+  .urgency-banner strong { color: #fff; }
+
+  /* ── SECTIONS ── */
+  section { padding: var(--section-py) 0; }
+  .section-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+    font-size: clamp(2rem, 2.6vw, 2.8rem);
+    line-height: 1.3;
+    color: var(--deep-green);
+  }
+  .section-title em { font-style: italic; color: var(--sage); }
+
+  /* ── CONCEPT ── */
+  .concept { background: var(--cream); }
+  .concept-grid {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2.5rem, 6vw, 7rem);
+    align-items: center;
+  }
+  .concept-text p {
+    margin-top: 1.8rem;
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    line-height: 2;
+    color: var(--warm-gray);
+    letter-spacing: 0.04em;
+  }
+  .concept-card {
+    background: var(--deep-green);
+    padding: clamp(2rem, 3.5vw, 3.5rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    top: -30%; right: -20%;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(107,143,94,0.22), transparent);
+  }
+  .concept-card-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.32em;
+    color: var(--gold-light);
+    margin-bottom: 1.4rem;
+  }
+  .concept-card-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.6rem, 2.5vw, 2.4rem);
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--cream);
+    margin-bottom: 1.8rem;
+  }
+  .concept-card-title em { font-style: italic; color: var(--sage-light); }
+  .concept-card-body {
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 2;
+    color: rgba(245,240,232,0.65);
+  }
+
+  /* ── SUMMER PROBLEM ── */
+  .summer-problem {
+    background: var(--warm-white);
+    border-top: 1px solid var(--border);
+  }
+  .summer-problem-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+  }
+  .summer-problem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .problem-card {
+    background: var(--cream);
+    padding: 2rem;
+    border-left: 3px solid var(--sage);
+  }
+  .problem-card-icon {
+    width: 48px; height: 48px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(107,143,94,0.12);
+    border-radius: 50%;
+  }
+  .problem-card h3 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--deep-green);
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+  }
+  .problem-card p { font-size: 0.88rem; color: var(--warm-gray); line-height: 1.9; }
+  .problem-arrow {
+    text-align: center;
+    padding: 2.5rem 0 1rem;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.1rem;
+    color: var(--sage);
+    letter-spacing: 0.1em;
+  }
+  .problem-solution {
+    background: var(--deep-green);
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .problem-solution p {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    color: var(--cream);
+    line-height: 1.8;
+    letter-spacing: 0.06em;
+  }
+  .problem-solution em { color: var(--gold-light); font-style: normal; }
+
+  /* ── HERBS ── */
+  .herbs { background: var(--warm-white); }
+  .herbs-header {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    margin-bottom: 4rem;
+  }
+  .herbs-grid {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .herb-card {
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .herb-card-img {
+    width: 75%; height: 220px;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    padding-top: 1.5rem;
+    transition: transform 0.5s ease;
+  }
+  .herb-card:hover .herb-card-img { transform: scale(1.04); }
+  .herb-card-body {
+    padding: clamp(1.6rem, 2vw, 2.4rem);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .herb-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 60px rgba(26,46,26,0.12);
+    z-index: 2;
+  }
+  .herb-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.32em;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+  .herb-name-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.4rem, 2vw, 1.8rem);
+    font-weight: 400;
+    color: var(--deep-green);
+    margin-bottom: 0.2rem;
+  }
+  .herb-name-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--sage);
+    letter-spacing: 0.1em;
+    margin-bottom: 1.2rem;
+  }
+  .herb-divider { width: 40px; height: 1px; background: var(--moss); margin-bottom: 1.2rem; }
+  .herb-effects { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.2rem; }
+  .herb-tag {
+    font-size: 0.78rem;
+    padding: 0.32rem 0.75rem;
+    background: rgba(107,143,94,0.11);
+    color: var(--forest);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .herb-detail {
+    font-size: clamp(0.88rem, 1.05vw, 1rem);
+    line-height: 2;
+    color: var(--warm-gray);
+    border-top: 1px solid var(--border);
+    padding-top: 1.2rem;
+  }
+  .herb-data {
+    margin-top: 1.2rem;
+    padding: 1rem 1.2rem;
+    background: rgba(26,46,26,0.05);
+    border-left: 2px solid var(--sage);
+  }
+  .herb-data-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--sage);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .herb-data p { font-size: 0.85rem; color: var(--warm-gray); line-height: 1.85; }
+
+  /* ── BENEFITS ── */
+  .benefits { background: var(--deep-green); color: var(--cream); }
+  .benefits-header {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 4vw, 5rem);
+    align-items: end;
+    margin-bottom: 4rem;
+  }
+  .benefits-header .section-title { color: var(--cream); }
+  .benefits-header .section-title em { color: var(--sage-light); }
+  .benefits-intro {
+    font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+    line-height: 2;
+    color: rgba(245,240,232,0.6);
+    align-self: end;
+  }
+  .benefits-list {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: rgba(107,143,94,0.15);
+  }
+  .benefit-item {
+    background: var(--deep-green);
+    padding: clamp(2rem, 2.5vw, 3rem) clamp(1.8rem, 3vw, 3.5rem);
+    border-top: 1px solid rgba(107,143,94,0.18);
+    transition: background 0.3s ease;
+    display: flex;
+    gap: 1.6rem;
+    align-items: flex-start;
+  }
+  .benefit-item:hover { background: rgba(107,143,94,0.07); }
+  .benefit-icon-wrap {
+    width: 48px; height: 48px;
+    border: 1px solid rgba(107,143,94,0.35);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+  }
+  .benefit-num {
+    font-family: 'Noto Serif JP', serif;
+    font-style: italic;
+    font-size: 2.2rem;
+    color: rgba(107,143,94,0.28);
+    line-height: 1;
+    margin-bottom: 0.8rem;
+  }
+  .benefit-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.04em;
+  }
+  .benefit-body {
+    font-size: clamp(0.88rem, 1.1vw, 1rem);
+    line-height: 2;
+    color: rgba(245,240,232,0.58);
+  }
+
+  /* ── RESULT ── */
+  .result { background: var(--cream); }
+  .result-grid {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(3rem, 6vw, 8rem);
+    align-items: center;
+  }
+  .result-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .result-photo {
+    aspect-ratio: 3/4;
+    background: var(--forest);
+    position: relative;
+    overflow: hidden;
+  }
+  .result-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .result-photo.before { margin-top: 2rem; }
+  .result-photo-label {
+    position: absolute;
+    bottom: 1rem; left: 50%; transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.68rem;
+    letter-spacing: 0.26em;
+    color: rgba(245,240,232,0.55);
+    white-space: nowrap;
+    background: rgba(26,46,26,0.5);
+    padding: 0.2rem 0.6rem;
+  }
+  .result-text p {
+    margin-top: 1.8rem;
+    font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+    line-height: 2;
+    color: var(--warm-gray);
+  }
+  .result-stat {
+    margin-top: 2.5rem;
+    padding: 2rem;
+    background: var(--deep-green);
+    color: var(--cream);
+  }
+  .result-stat-num {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(2.2rem, 3vw, 3.5rem);
+    font-weight: 300;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+  .result-stat-label {
+    font-size: 0.85rem;
+    color: rgba(245,240,232,0.6);
+    margin-top: 0.5rem;
+    letter-spacing: 0.06em;
+  }
+  .result-note {
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    color: rgba(122,112,96,0.7);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── VOICE ── */
+  .voice { background: var(--warm-white); }
+  .voice-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+  }
+  .voice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .voice-card {
+    background: var(--cream);
+    padding: 2rem;
+    position: relative;
+    border-top: 3px solid var(--sage);
+  }
+  .voice-card::before {
+    content: '"';
+    position: absolute;
+    top: 1.2rem; right: 1.5rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    color: rgba(107,143,94,0.15);
+    line-height: 1;
+  }
+  .voice-text { font-size: 0.92rem; line-height: 2; color: var(--warm-gray); margin-bottom: 1.5rem; }
+  .voice-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .voice-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--forest);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .voice-name { font-family: 'Noto Serif JP', serif; font-size: 0.88rem; color: var(--deep-green); font-weight: 400; }
+  .voice-salon { font-size: 0.78rem; color: var(--warm-gray); margin-top: 0.15rem; }
+  .voice-stars { margin-left: auto; color: var(--gold); font-size: 0.85rem; letter-spacing: 0.1em; }
+
+  /* ── HOW TO USE ── */
+  .howto { background: var(--warm-white); }
+  .howto-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+  }
+  .flow-steps-new {
+    margin-top: 3.5rem;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    background: #f5f2eb;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(26,46,26,0.10);
+    border: 1px solid var(--border);
+    padding: 2.5rem 1.5rem 2rem;
+    position: relative;
+  }
+  .flow-steps-new::before {
+    content: '';
+    position: absolute;
+    top: calc(2.5rem + 75px);
+    left: calc(10% + 75px);
+    right: calc(10% + 75px);
+    height: 2px;
+    background: var(--sage);
+    opacity: 0.4;
+    z-index: 0;
+  }
+  .flow-step-new {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .flow-step-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .flow-step-circle {
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--sage);
+    box-shadow: 0 4px 16px rgba(26,46,26,0.15);
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+  }
+  .flow-step-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .flow-step-divider {
+    width: 100%; height: 3px;
+    background: var(--sage);
+    opacity: 0.5;
+    margin-bottom: 1.2rem;
+    border-radius: 2px;
+  }
+  .flow-step-num-new {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .flow-step-title-new {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+  .flow-step-body-new { font-size: 0.78rem; color: var(--warm-gray); line-height: 1.6; }
+  .flow-image-wrap, .flow-steps { display: none; }
+
+  /* ── PRODUCT ── */
+  .product { background: var(--deep-green); }
+  .product-grid {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: clamp(3rem, 6vw, 8rem);
+    align-items: center;
+  }
+  .product-img-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .product-img-label {
+    position: absolute;
+    bottom: -1rem; left: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.28em;
+    color: var(--gold-light);
+    opacity: 0.6;
+  }
+  .product-img {
+    width: 100%;
+    max-width: 380px;
+    display: block;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.4));
+  }
+  .product-info .section-label { color: var(--sage-light); }
+  .product-info .section-title { color: var(--cream); }
+  .product-info .section-title em { color: var(--sage-light); }
+  .product-price-box {
+    margin-top: 2rem;
+    padding: 1.5rem 2rem;
+    background: rgba(107,143,94,0.12);
+    border: 1px solid rgba(107,143,94,0.25);
+  }
+  .product-price-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    letter-spacing: 0.28em;
+    color: var(--gold-light);
+    margin-bottom: 0.5rem;
+  }
+  .product-price-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    color: var(--cream);
+    line-height: 1.6;
+  }
+  .product-price-note { font-size: 0.8rem; color: rgba(245,240,232,0.5); margin-top: 0.5rem; }
+  .product-specs {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(107,143,94,0.15);
+  }
+  .spec-item { background: rgba(26,46,26,0.5); padding: 1rem 1.4rem; }
+  .spec-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--sage-light);
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .spec-value { font-size: 0.9rem; color: rgba(245,240,232,0.75); line-height: 1.5; }
+  .product-btn-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.1rem 2.6rem;
+    background: var(--gold);
+    color: var(--deep-green);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  .cta-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .product-line-hint { font-size: 0.82rem; color: var(--warm-gray); margin-top: 0.5rem; letter-spacing: 0.04em; }
+
+  /* ── SPECIAL OFFER ── */
+  .special-offer { background: var(--cream); }
+  .special-offer-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    text-align: center;
+  }
+  .offer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 3.5rem;
+    text-align: left;
+  }
+  .offer-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    position: relative;
+  }
+  .offer-card-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--border);
+    color: var(--sage);
+    margin-bottom: 1.2rem;
+  }
+  .offer-card h3 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.2rem, 1.6vw, 1.5rem);
+    font-weight: 400;
+    color: var(--deep-green);
+    margin-bottom: 0.5rem;
+  }
+  .offer-card-sub { font-size: 0.85rem; color: var(--warm-gray); margin-bottom: 1.8rem; }
+  .offer-list { list-style: none; margin-bottom: 2rem; }
+  .offer-list li {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--charcoal);
+    line-height: 1.7;
+  }
+  .offer-list li:last-child { border-bottom: none; }
+  .offer-check {
+    width: 18px; height: 18px;
+    background: var(--sage);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+  .offer-highlight {
+    background: var(--deep-green);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .offer-highlight-title { font-size: 0.78rem; letter-spacing: 0.18em; color: var(--gold-light); margin-bottom: 0.5rem; }
+  .offer-highlight-body { font-size: 0.92rem; color: var(--cream); line-height: 1.7; }
+  .offer-cta {
+    display: block;
+    width: 100%;
+    padding: 1.1rem;
+    background: var(--deep-green);
+    color: var(--cream);
+    text-align: center;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  .offer-cta:hover { background: var(--forest); }
+  .offer-cta-gold { background: var(--gold); color: var(--deep-green); font-weight: 500; }
+  .offer-cta-gold:hover { background: var(--gold-light); }
+  .offer-line-hint { font-size: 0.78rem; color: rgba(245,240,232,0.6); margin-top: 0.5rem; text-align: center; }
+  .offer-note { margin-top: 2rem; font-size: 0.78rem; color: rgba(122,112,96,0.7); text-align: center; letter-spacing: 0.04em; }
+
+  /* ── FAQ ── */
+  .faq { background: var(--warm-white); }
+  .faq-inner { max-width: 860px; margin-inline: auto; padding-inline: var(--section-px); }
+  .faq-list { margin-top: 3rem; }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.6rem 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.3s;
+  }
+  .faq-question:hover .faq-q-text { color: var(--sage); }
+  .faq-q-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--sage);
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+  }
+  .faq-q-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+    font-weight: 400;
+    color: var(--deep-green);
+    line-height: 1.5;
+    flex: 1;
+    transition: color 0.3s;
+  }
+  .faq-icon {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.3s, background 0.3s;
+  }
+  .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--sage); border-color: var(--sage); }
+  .faq-item.open .faq-icon svg { stroke: #fff; }
+  .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; }
+  .faq-item.open .faq-answer { max-height: 600px; }
+  .faq-answer-inner {
+    padding: 0 0 1.8rem 2rem;
+    font-size: clamp(0.88rem, 1.1vw, 1rem);
+    line-height: 2;
+    color: var(--warm-gray);
+    border-left: 2px solid var(--moss);
+    margin-left: 0.5rem;
+    padding-left: 1.5rem;
+  }
+  .faq-answer-inner strong { color: var(--deep-green); font-weight: 500; }
+
+  /* ── SEMINAR CTA ── */
+  .seminar { background: var(--deep-green); }
+  .seminar-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 6vw, 8rem);
+    align-items: center;
+  }
+  .seminar-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(2rem, 3vw, 3.5rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+  }
+  .seminar-title em { font-style: italic; color: var(--sage-light); }
+  .seminar-body {
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    color: rgba(245,240,232,0.6);
+    line-height: 2;
+    margin-top: 1.5rem;
+  }
+  .seminar-cta-group { display: flex; flex-direction: column; gap: 1rem; }
+  .seminar-cta-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1.4rem 2.5rem;
+    background: var(--gold);
+    color: var(--deep-green);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .seminar-cta-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .seminar-cta-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1.2rem 2.5rem;
+    background: rgba(107,143,94,0.15);
+    color: var(--sage-light);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.92rem;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    border: 1px solid rgba(154,184,138,0.35);
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .seminar-cta-secondary:hover { background: rgba(107,143,94,0.25); border-color: var(--sage-light); }
+  .seminar-cta-tel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1rem;
+    color: rgba(245,240,232,0.5);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.92rem;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    border: 1px solid rgba(245,240,232,0.12);
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .seminar-cta-tel:hover { color: var(--cream); border-color: rgba(245,240,232,0.3); }
+  .seminar-line-hint {
+    font-size: 0.82rem;
+    color: rgba(245,240,232,0.55);
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    text-align: center;
+  }
+  .hero-line-hint {
+    margin: 0.6rem 0 0;
+    font-size: 0.82rem;
+    color: rgba(245,240,232,0.65);
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #111a11;
+    padding: 3rem 0;
+    border-top: 1px solid rgba(107,143,94,0.15);
+  }
+  .footer-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.28em;
+    color: var(--cream);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+  .footer-info { font-size: 0.78rem; color: rgba(245,240,232,0.35); line-height: 1.9; letter-spacing: 0.04em; }
+  .footer-copy { font-size: 0.72rem; color: rgba(245,240,232,0.25); letter-spacing: 0.06em; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE 900px ── */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .concept-grid, .result-grid, .product-grid, .seminar-inner, .benefits-header { grid-template-columns: 1fr; }
+    .herbs-grid, .summer-problem-grid, .voice-grid { grid-template-columns: 1fr; }
+    .offer-grid, .benefits-list { grid-template-columns: 1fr; }
+    .flow-steps-new { grid-template-columns: repeat(3, 1fr); gap: 2rem 1rem; }
+    .flow-steps-new::before { display: none; }
+    .flow-step-circle { width: 120px; height: 120px; }
+    .hero-metric-divider { display: none; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ── RESPONSIVE 480px ── */
+  @media (max-width: 480px) {
+    .hero-summer-badge { font-size: 0.72rem; letter-spacing: 0.08em; padding: 0.4rem 0.8rem; }
+    .hero-title { font-size: clamp(3.2rem, 13vw, 5rem); }
+    .hero-subtitle { font-size: clamp(1.2rem, 5vw, 1.8rem); }
+    .hero-lead { font-size: 0.9rem; }
+    .hero-metrics { gap: 1.2rem; flex-wrap: wrap; }
+    .hero-metric-num { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+    .hero-cta-group { flex-direction: column; gap: 0.8rem; }
+    .hero-btn-primary, .hero-btn-outline-hero { width: 100%; justify-content: center; padding: 1rem 1.5rem; font-size: 0.88rem; }
+    section { padding: clamp(2.5rem, 8vw, 4rem) 0; }
+    .section-title { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+    .concept-grid { gap: 2rem; }
+    .concept-card { padding: 1.8rem; }
+    .concept-text p { font-size: 0.9rem; }
+    .summer-problem-grid { gap: 1rem; }
+    .problem-card { padding: 1.4rem; }
+    .problem-solution { padding: 1.8rem 1.4rem; }
+    .herbs-grid { gap: 1rem; }
+    .herb-card-img { width: 60%; height: 180px; }
+    .herb-card-body { padding: 1.4rem; }
+    .herb-name-jp { font-size: clamp(1.2rem, 5vw, 1.6rem); }
+    .benefits-header { gap: 1.5rem; margin-bottom: 2rem; }
+    .benefit-item { padding: 1.4rem; gap: 1rem; }
+    .result-grid { gap: 2rem; }
+    .result-photos { gap: 0.6rem; }
+    .voice-grid { gap: 1rem; }
+    .voice-card { padding: 1.4rem; }
+    .flow-steps-new { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.8rem 1.2rem; }
+    .flow-step-new { flex-direction: row; text-align: left; align-items: flex-start; gap: 1.2rem; }
+    .flow-step-circle { width: 80px; height: 80px; flex-shrink: 0; margin-bottom: 0; }
+    .flow-step-divider { display: none; }
+    .flow-step-content { flex: 1; padding-top: 0.2rem; align-items: flex-start; text-align: left; }
+    .product-grid { gap: 2rem; }
+    .product-img { max-width: 280px; }
+    .product-specs { grid-template-columns: 1fr; }
+    .product-btn-group { flex-direction: column; }
+    .cta-btn { width: 100%; justify-content: center; padding: 1rem 1.5rem; }
+    .offer-grid { gap: 1.2rem; }
+    .offer-card { padding: 1.6rem; }
+    .faq-q-text { font-size: 0.88rem; }
+    .seminar-inner { gap: 2rem; }
+    .seminar-title { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+    .seminar-cta-primary, .seminar-cta-secondary, .seminar-cta-tel { padding: 1rem 1.5rem; font-size: 0.88rem; }
+    .footer-inner { gap: 1.2rem; }
+    .footer-info { font-size: 0.72rem; }
+  }
+
+  @media (max-width: 600px) {
+    .flow-steps-new { grid-template-columns: 1fr 1fr; gap: 1.5rem 1rem; }
+    .flow-step-circle { width: 100px; height: 100px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://www.the-herbs.co.jp/school" target="_blank" rel="noopener" class="nav-brand">THE HERBS</a>
+    <ul class="nav-links">
+      <li><a href="#herbs">3種のハーブ</a></li>
+      <li><a href="#benefits">美容師へのメリット</a></li>
+      <li><a href="#howto">施術フロー</a></li>
+      <li><a href="#product">製品情報</a></li>
+      <li><a href="https://lin.ee/WPbdXE5" target="_blank" rel="noopener" style="color:#06C755;font-weight:600;">LINE登録</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-summer-badge">
+      ☀ <strong>2026 SUMMER LAUNCH</strong>
+      <span>— 夏の頭皮ケアに、新しい答えを。</span>
+    </div>
+    <p class="hero-tag">For Professional Hair Stylists</p>
+    <h1 class="hero-title">Scalp<br><em>Herb Gommage</em></h1>
+    <p class="hero-subtitle">植物療法に基づく、<br>新発想の頭皮ケア</p>
+    <div class="hero-divider"></div>
+    <p class="hero-lead">
+      夏の頭皮トラブル（べたつき・ニオイ・紫外線ダメージ）に対応する、<br>
+      美容業界初の頭皮用ゴマージュ。<br>
+      美容師が提供できるケアの次元を、根本から引き上げます。
+    </p>
+    <div class="hero-cta-group">
+      <a href="https://lin.ee/WPbdXE5" target="_blank" rel="noopener" class="hero-btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        LINE公式に登録する
+      </a>
+      <a href="https://booking.scalp-labo.jp/apply.html?s=th" target="_blank" rel="noopener" class="hero-btn-outline-hero">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        講習会に申し込む
+      </a>
+         </div>
+    <div class="hero-metrics">
+      <div class="hero-metric-item">
+        <span class="hero-metric-num">3ヶ月</span>
+        <span class="hero-metric-label">継続施術の実感変化目安</span>
+      </div>
+      <div class="hero-metric-divider"></div>
+      <div class="hero-metric-item">
+        <span class="hero-metric-num">弱酸性</span>
+        <span class="hero-metric-label">植物由来のpH設計</span>
+      </div>
+      <div class="hero-metric-divider"></div>
+      <div class="hero-metric-item">
+        <span class="hero-metric-num">3種</span>
+        <span class="hero-metric-label">厳選ハーブ配合</span>
+      </div>
+      <div class="hero-metric-divider"></div>
+      <div class="hero-metric-item">
+        <span class="hero-metric-num">無添加</span>
+        <span class="hero-metric-label">合成成分不使用</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── URGENCY BANNER ── -->
+<div class="urgency-banner">
+  <p>☀ <strong>夏の本格販売に向けた先行導入サロン募集中</strong> — LINE公式に登録して資料・特典を受け取る</p>
+</div>
+
+<!-- ── SUMMER PROBLEM ── -->
+<section class="summer-problem" id="summer">
+  <div class="summer-problem-inner">
+    <div class="reveal">
+      <p class="section-label">Summer Scalp Issues</p>
+      <h2 class="section-title">夏、頭皮は<em>最も過酷な</em>季節を迎える</h2>
+    </div>
+    <div class="summer-problem-grid">
+      <div class="problem-card reveal">
+        <div class="problem-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b8f5e" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>皮脂・べたつきの増加</h3>
+        <p>気温上昇と発汗で皮脂分泌が増加。毛穴詰まりが進み、通常のシャンプーでは除去しきれない酸化皮脂が蓄積します。</p>
+      </div>
+      <div class="problem-card reveal">
+        <div class="problem-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b8f5e" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <h3>紫外線による頭皮ダメージ</h3>
+        <p>紫外線は頭皮の酸化を促進し、毛包環境を悪化させます。AGEs（終末糖化産物）の生成も加速し、頭皮の老化が進みます。</p>
+      </div>
+      <div class="problem-card reveal">
+        <div class="problem-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b8f5e" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>頭皮環境の乱れ</h3>
+        <p>高温多湿による雑菌繁殖、冷房による乾燥など、夏は頭皮の弱酸性バランスが崩れやすい季節です。</p>
+      </div>
+    </div>
+    <div class="problem-arrow reveal">↓ スカルプ・ハーブゴマージュで解決</div>
+    <div class="problem-solution reveal">
+      <p>古い角質・酸化皮脂を<em>植物の力で優しく除去</em>し、<br>弱酸性の健やかな頭皮環境へ。<br>夏こそ、深層からのスカルプケアが必要です。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONCEPT ── -->
+<section class="concept" id="concept">
+  <div class="concept-grid">
+    <div class="concept-text reveal">
+      <p class="section-label">Concept</p>
+      <h2 class="section-title">"洗う"から、<br><em>"整える"</em>へ。</h2>
+      <p>ゴマージュはフランスの伝統的なエステティックの手法です。植物美容科学®︎の視点から、THE HERBSでは、育毛に良いとされる厳選された3種のハーブを自社で均一に粉砕。</p>
+      <p>古い角質や毛穴汚れを優しく除去し、水分・油分のバランスを整え、弱酸性の健やかな頭皮へと導き、従来のシャンプー施術では届かなかった、深層からのスカルプケアを可能にします。</p>
+    </div>
+    <div class="concept-card reveal">
+      <p class="concept-card-label">Philosophy</p>
+      <h3 class="concept-card-title">植物の効果を<br><em>最大限に</em></h3>
+      <p class="concept-card-body">合成成分に頼らず、植物そのものの有効成分が持つ多面的な効果を最大限に活かす。それがTHE HERBSの植物美容科学®︎の哲学です。</p>
+      <p class="concept-card-body" style="margin-top:1.2rem;">1986年の創業以来、神戸の地でハーブと頭皮の関係を研究し続けてきた独自メソッドが、このゴマージュに凝縮されています。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── HERBS ── -->
+<section class="herbs" id="herbs">
+  <div class="herbs-header reveal">
+    <p class="section-label">Three Herbs</p>
+    <h2 class="section-title">厳選された<br>3種の<em>植物の力</em></h2>
+  </div>
+  <div class="herbs-grid">
+    <div class="herb-card reveal">
+      <img class="herb-card-img" src="https://static.wixstatic.com/media/a3e22d_260046c6436b4730b1f1581b51c1aa02~mv2.jpeg" alt="ペパーミント">
+      <div class="herb-card-body">
+        <p class="herb-num">01 / 03</p>
+        <h3 class="herb-name-jp">ペパーミント</h3>
+        <p class="herb-name-en">Mentha piperita</p>
+        <div class="herb-divider"></div>
+        <div class="herb-effects">
+          <span class="herb-tag">育毛促進</span><span class="herb-tag">テストステロン抑制</span><span class="herb-tag">抗炎症</span><span class="herb-tag">抗菌</span><span class="herb-tag">血行促進</span>
+        </div>
+        <p class="herb-detail">ペパーミントに含まれるメントールは毛細血管を拡張し、毛乳頭への血流を改善します。また、IGF-1（インスリン様成長因子）の発現を促進することが研究で示されており、ミノキシジルに匹敵する育毛効果が報告されています。</p>
+        <div class="herb-data">
+          <p class="herb-data-title">Scientific Data</p>
+          <p>韓国の研究では、3%ペパーミントオイルの塗布が4週間後にミノキシジル3%と同等の発毛効果を示した（2014, Evidence-Based Complementary and Alternative Medicine）</p>
+        </div>
+      </div>
+    </div>
+    <div class="herb-card reveal">
+      <img class="herb-card-img" src="https://static.wixstatic.com/media/a3e22d_1fa52d42b97142518df0806e865de88f~mv2.jpeg" alt="ローマカミツレ">
+      <div class="herb-card-body">
+        <p class="herb-num">02 / 03</p>
+        <h3 class="herb-name-jp">ローマカミツレ</h3>
+        <p class="herb-name-en">Chamaemelum nobile</p>
+        <div class="herb-divider"></div>
+        <div class="herb-effects">
+          <span class="herb-tag">保湿</span><span class="herb-tag">鎮静</span><span class="herb-tag">AGEs生成抑制</span><span class="herb-tag">男性ホルモン調整</span><span class="herb-tag">抗糖化</span>
+        </div>
+        <p class="herb-detail">アピゲニンを代表とするフラボノイドを豊富に含有し、頭皮の炎症を鎮静させる強力な抗酸化作用を発揮します。AGEs（終末糖化産物）の生成を抑制することで、頭皮の老化・硬化・酸化を防ぎ、毛包環境の弱酸性化、頭皮環境を清潔に保ちます。</p>
+        <div class="herb-data">
+          <p class="herb-data-title">Scientific Data</p>
+          <p>カミツレのアピゲニンは5アルファ-リダクターゼを阻害し、DHT（薄毛の主原因ホルモン）の産生を抑制する作用が確認されています。AGEs抑制効果は頭皮の弾力維持にも貢献。</p>
+        </div>
+      </div>
+    </div>
+    <div class="herb-card reveal">
+      <img class="herb-card-img" src="https://static.wixstatic.com/media/a3e22d_88ea12ce3fc149b491e484a8aea92333~mv2.jpg" alt="ローズマリー">
+      <div class="herb-card-body">
+        <p class="herb-num">03 / 03</p>
+        <h3 class="herb-name-jp">ローズマリー</h3>
+        <p class="herb-name-en">Rosmarinus officinalis</p>
+        <div class="herb-divider"></div>
+        <div class="herb-effects">
+          <span class="herb-tag">育毛</span><span class="herb-tag">血行促進</span><span class="herb-tag">収れん</span><span class="herb-tag">フケ防止</span><span class="herb-tag">防臭</span>
+        </div>
+        <p class="herb-detail">ロズマリン酸とカルノシン酸が持つ強力な抗酸化・抗炎症作用が頭皮環境を整えます。皮脂分泌のバランスを改善し、毛穴の詰まりを予防。ミノキシジルと同等の育毛効果が複数の臨床試験で証明されています。</p>
+        <div class="herb-data">
+          <p class="herb-data-title">Scientific Data</p>
+          <p>2015年のランダム化比較試験（Skinmed誌）でローズマリーオイルが6か月後にミノキシジル2%と同等の毛髪増加効果を示し、頭皮のかゆみ軽減では優れた結果を示した。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BENEFITS ── -->
+<section class="benefits" id="benefits">
+  <div class="benefits-header reveal">
+    <div>
+      <p class="section-label" style="color:var(--sage-light)">For Professionals</p>
+      <h2 class="section-title">美容師にとっての<br><em>6つのメリット</em></h2>
+    </div>
+    <p class="benefits-intro">スカルプ・ハーブゴマージュは、サロンワークを変える新しいサービスメニューです。客単価の向上から施術者自身の手肌ケアまで、現場に直結したメリットをご紹介します。</p>
+  </div>
+  <div class="benefits-list">
+    <div class="benefit-item reveal"><div class="benefit-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div><div><div class="benefit-num">01</div><h3 class="benefit-title">頭皮ケアオプションで差別化</h3><p class="benefit-body">従来のトリートメントとは差別化された「スカルプハーブゴマージュ」は付加価値が高く、差別化が可能。頭皮ケアへの専門性が、単価アップにもつながります。</p></div></div>
+    <div class="benefit-item reveal"><div class="benefit-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg></div><div><div class="benefit-num">02</div><h3 class="benefit-title">リピート率の向上</h3><p class="benefit-body">頭皮のターンオーバーに合わせたケアサイクルを提案できます。「4〜6週ごとの頭皮メンテナンス」という明確な来店動機を作ることで、顧客定着率が向上します。</p></div></div>
+    <div class="benefit-item reveal"><div class="benefit-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div><div><div class="benefit-num">03</div><h3 class="benefit-title">カラー・パーマの持ちが向上</h3><p class="benefit-body">毛穴の残留カラー剤や酸化物を除去し、次回施術の薬剤浸透率が改善。発色・パーマの均一性が上がり、褪色しにくいなど、施術クオリティの向上につながります。</p></div></div>
+    <div class="benefit-item reveal"><div class="benefit-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div><div><div class="benefit-num">04</div><h3 class="benefit-title">薄毛・頭皮トラブルに対応</h3><p class="benefit-body">薄毛が気になるお客様への具体的な提案が可能。医薬品ではないため強い作用もなく、「育毛に取り組む美容室」には差別化ポジションを確立できます。</p></div></div>
+    <div class="benefit-item reveal"><div class="benefit-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg></div><div><div class="benefit-num">05</div><h3 class="benefit-title">施術者の手を植物成分が保護</h3><p class="benefit-body">毎日の薬剤による手荒れは職業病とも言える悩みです。植物由来成分が施術中に手肌に作用し、荒れを軽減。美容師自身のQOL向上にも貢献します。</p></div></div>
+    <div class="benefit-item reveal"><div class="benefit-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><div><div class="benefit-num">06</div><h3 class="benefit-title">技術の質を高める</h3><p class="benefit-body">頭皮環境が整うと根元のボリュームが出やすくなり、スタイルの持ちが改善。お客様のセルフスタイリングもしやすくなり、カットやセットの満足度が向上します。</p></div></div>
+  </div>
+</section>
+
+<!-- ── REAL RESULT ── -->
+<section class="result" id="result">
+  <div class="result-grid">
+    <div class="result-photos reveal">
+      <div class="result-photo before">
+        <img src="https://static.wixstatic.com/media/a3e22d_2ca8d70aa6bd496da4abbaee7b9fa1b3~mv2.jpeg" alt="上から" onerror="this.style.display='none'">
+        <span class="result-photo-label">TOP AFTER 3months</span>
+      </div>
+      <div class="result-photo after">
+        <img src="https://static.wixstatic.com/media/a3e22d_37b04f274da449138c073a06e5c77536~mv2.jpeg" alt="横から" onerror="this.style.display='none'">
+        <span class="result-photo-label">SIDE AFTER 3months</span>
+      </div>
+    </div>
+    <div class="result-text reveal">
+      <p class="section-label">Real Result</p>
+      <h2 class="section-title">57歳男性、<br><em>3か月後の変化。</em></h2>
+      <p>定期的なゴマージュ施術により、頭皮のべたつきが改善し毛根周辺のハリが戻りました。薄毛が気になっていた頭頂部に、産毛の増加が確認されています。</p>
+      <div class="result-stat">
+        <div class="result-stat-num">3ヶ月</div>
+        <div class="result-stat-label">継続施術による実感変化の目安期間</div>
+      </div>
+      <p class="result-note">※効果には個人差があります。医薬品ではございません。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── VOICE ── -->
+<section class="voice" id="voice">
+  <div class="voice-inner">
+    <div class="reveal">
+      <p class="section-label">Salon Voice</p>
+      <h2 class="section-title">導入サロンの<em>声</em></h2>
+    </div>
+    <div class="voice-grid">
+      <div class="voice-card reveal">
+        <p class="voice-text">「お客様から『頭皮がスッキリした』という声が増え、夏場のリピート率が明らかに上がりました。カラーの発色も良くなったと喜ばれています。」</p>
+        <div class="voice-meta"><div class="voice-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><div><div class="voice-name">K.M. オーナー</div><div class="voice-salon">大阪府・ヘアサロン（導入6ヶ月）</div></div><div class="voice-stars">★★★★★</div></div>
+      </div>
+      <div class="voice-card reveal">
+        <p class="voice-text">「薄毛が気になるお客様への提案に困っていましたが、ゴマージュを導入してから自信を持って頭皮ケアメニューをご案内できるようになりました。」</p>
+        <div class="voice-meta"><div class="voice-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><div><div class="voice-name">T.Y. スタイリスト</div><div class="voice-salon">神戸市・美容室（導入3ヶ月）</div></div><div class="voice-stars">★★★★★</div></div>
+      </div>
+      <div class="voice-card reveal">
+        <p class="voice-text">「施術が簡単で既存メニューに組み込みやすく、スタッフ全員が自信を持って提案できます。植物成分なので手荒れが気になるスタッフにも好評です。」</p>
+        <div class="voice-meta"><div class="voice-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ab88a" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><div><div class="voice-name">A.N. 店長</div><div class="voice-salon">京都市・ヘアサロン（導入4ヶ月）</div></div><div class="voice-stars">★★★★★</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW TO USE ── -->
+<section class="howto" id="howto">
+  <div class="howto-inner">
+    <div class="reveal">
+      <p class="section-label">How to Use</p>
+      <h2 class="section-title">施術<em>フロー</em></h2>
+    </div>
+    <div class="flow-steps-new reveal">
+      <div class="flow-step-new">
+        <div class="flow-step-circle"><img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663471357598/eUiDufiFlGlRAozz.jpg" alt="頭皮チェック" loading="eager"></div>
+        <div class="flow-step-content"><div class="flow-step-divider"></div><p class="flow-step-num-new">1</p><p class="flow-step-title-new">頭皮チェック</p><p class="flow-step-body-new">頭皮の状態（皮脂量・炎症・毛穴詰まり）を確認する</p></div>
+      </div>
+      <div class="flow-step-new">
+        <div class="flow-step-circle"><img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663471357598/MqPWyZiwMBpEXxkk.jpg" alt="ゴマージュ調合" loading="eager"></div>
+        <div class="flow-step-content"><div class="flow-step-divider"></div><p class="flow-step-num-new">2</p><p class="flow-step-title-new">ゴマージュ調合</p><p class="flow-step-body-new">ゴマージュ約0.8gにリキッドアルモニクエキストラ2.5cc加えてペースト状に調整</p></div>
+      </div>
+      <div class="flow-step-new">
+        <div class="flow-step-circle"><img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663471357598/zSlOICHXLrDmIoij.jpg" alt="塗布・マッサージ" loading="eager"></div>
+        <div class="flow-step-content"><div class="flow-step-divider"></div><p class="flow-step-num-new">3</p><p class="flow-step-title-new">塗布・マッサージ</p><p class="flow-step-body-new">頭皮全体に均一塗布し指の腹で優しくすり込む（3～5分）</p></div>
+      </div>
+      <div class="flow-step-new">
+        <div class="flow-step-circle"><img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663471357598/tSxIsKAfJFnOwRqM.jpg" alt="シャンプー" loading="eager"></div>
+        <div class="flow-step-content"><div class="flow-step-divider"></div><p class="flow-step-num-new">4</p><p class="flow-step-title-new">シャンプー</p><p class="flow-step-body-new">ぬるま湯で丁寧に洗い流し、シャンプーラヴェまたはルミエで洗髪します</p></div>
+      </div>
+      <div class="flow-step-new">
+        <div class="flow-step-circle"><img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663471357598/FnGIEpHeXhTkHiPA.jpg" alt="ブロー" loading="eager"></div>
+        <div class="flow-step-content"><div class="flow-step-divider"></div><p class="flow-step-num-new">5</p><p class="flow-step-title-new">ブロー</p><p class="flow-step-body-new">トリートメント不要。洗髪後はドライヤーで丁寧に乾かします</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRODUCT ── -->
+<section class="product" id="product">
+  <div class="product-grid">
+    <div class="product-img-wrap reveal">
+      <img class="product-img" src="https://static.wixstatic.com/media/a3e22d_ad71e503efd641c9bff72dd240162116~mv2.jpg" alt="スカルプ・ハーブゴマージュ" onerror="this.src='https://via.placeholder.com/380x380/1a2e1a/9ab88a?text=HERB+GOMMAGE'">
+      <span class="product-img-label">Natural &amp; Botanical</span>
+    </div>
+    <div class="product-info reveal">
+      <p class="section-label">Product</p>
+      <h2 class="section-title">ハーブ<em>ゴマージュ</em></h2>
+      <div class="product-price-box">
+        <p class="product-price-label">Salon Price</p>
+        <p class="product-price-text">価格は専用サイト登録後に確認できます</p>
+        <p class="product-price-note">専用のリキッドと混合して使用します。どこにもないプレミアムスカルプケアを提供。</p>
+      </div>
+      <div class="product-specs">
+        <div class="spec-item"><p class="spec-label">内容量</p><p class="spec-value">10g</p></div>
+        <div class="spec-item"><p class="spec-label">使用回数</p><p class="spec-value">約12回分</p></div>
+        <div class="spec-item"><p class="spec-label">配合全成分</p><p class="spec-value">ペパーミント・ローマカミツレ・ローズマリー</p></div>
+        <div class="spec-item"><p class="spec-label">pH設定</p><p class="spec-value">弱酸性（植物自体が弱酸性）</p></div>
+        <div class="spec-item"><p class="spec-label">保存方法</p><p class="spec-value">直射日光・高温多湿を避けて保管</p></div>
+        <div class="spec-item"><p class="spec-label">製品サイズ</p><p class="spec-value">現在お試しサイズのみ</p></div>
+      </div>
+      <div class="product-btn-group">
+               </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SPECIAL OFFER ── -->
+<section class="special-offer" id="sample">
+  <div class="special-offer-inner">
+    <div class="reveal">
+      <p class="section-label">Special Offer</p>
+      <h2 class="section-title">本企画 <em>申し込み特典</em></h2>
+      <p style="margin-top:1rem; font-size:0.95rem; color:var(--warm-gray); line-height:2;">説明会にご参加・お申し込みいただいたサロン様へ、<br>ご利用状況に合わせた特別なスターターセットをご用意しています。</p>
+    </div>
+    <div class="offer-grid">
+      <div class="offer-card reveal">
+        <span class="offer-card-badge">EXISTING SALON</span>
+        <h3>既存ご利用サロン様</h3>
+        <p class="offer-card-sub">すでにTHE HERBSをご利用のサロン向け特典</p>
+        <ul class="offer-list">
+          <li><div class="offer-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span><strong>スターターキット お得なセット</strong><br>ハーブゴマージュ＋専用リキッドが特別セット価格でご購入いただけます。</span></li>
+          <li><div class="offer-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span><strong>優先サポート対応</strong><br>施術方法・メニュー設計のご相談を優先的にサポートします。</span></li>
+        </ul>
+        <div class="offer-highlight">
+          <p class="offer-highlight-title">STARTER KIT</p>
+          <p class="offer-highlight-body">スターターキット 特別価格でご提供<br>LINE公式登録サロン限定の優待セット。</p>
+        </div>
+      </div>
+      <div class="offer-card reveal">
+        <span class="offer-card-badge">NEW SALON</span>
+        <h3>新規ご利用サロン様</h3>
+        <p class="offer-card-sub">THE HERBSを初めてご利用になるサロン向け特典</p>
+        <ul class="offer-list">
+          <li><div class="offer-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span><strong>スターターキット お得なセット</strong><br>ハーブゴマージュ＋専用リキッドの導入セットを特別価格でご提供。</span></li>
+          <li><div class="offer-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span><strong>シャンプー 100mL プレゼント</strong><br>新規サロン限定で、THE HERBSシャンプー 100mLを無料でお付けします。</span></li>
+          <li><div class="offer-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span><strong>導入サポート付き</strong><br>初回施術のやり方からメニュー設定まで、丁寧にフォローします。</span></li>
+        </ul>
+        <div class="offer-highlight">
+          <p class="offer-highlight-title">FREE GIFT</p>
+          <p class="offer-highlight-body">シャンプー 100mL 無料プレゼント<br>新規導入サロン様だけの限定特典。</p>
+        </div>
+      </div>
+    </div>
+    <p class="offer-note">※特典はLINE公式登録サロン様が対象です。数に限りがある場合ございます。お早めにご登録ください。</p>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq" id="faq">
+  <div class="faq-inner">
+    <div class="reveal">
+      <p class="section-label">FAQ</p>
+      <h2 class="section-title">よくある<em>ご質問</em></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)"><span class="faq-q-label">Q</span><span class="faq-q-text">どんな客層に向いていますか？</span><div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></button>
+        <div class="faq-answer"><div class="faq-answer-inner">薄毛・抜け毛が気になる方、頭皮のべたつきやニオイが気になる方、カラー・パーマを繰り返している方など幅広い客層に提案できます。男女問わず<strong>40歳以降のエイジングトラブル</strong>を抱えるお客様への訴求力を高めます。また、夏場は特に皮脂分泌が増える20〜30代の方にも季節ケアとして提案しやすいメニューです。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)"><span class="faq-q-label">Q</span><span class="faq-q-text">カラーやパーマと同日に施術できますか？</span><div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></button>
+        <div class="faq-answer"><div class="faq-answer-inner">アルカリカラー・パーマ・縮毛矯正を行う場合は、<strong>施術当日のゴマージュはお控えください</strong>。ヘアカラーの数日後からゴマージュを実施することで、残留薬剤の除去と頭皮環境の回復を促進できます。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)"><span class="faq-q-label">Q</span><span class="faq-q-text">敏感肌・頭皮炎症のある方への使用は？</span><div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></button>
+        <div class="faq-answer"><div class="faq-answer-inner">頭皮に<strong>炎症・傷・湿疹がある場合は使用をお控えください</strong>。敏感肌の方には、まずパッチテストを実施することを推奨します。植物由来成分のみで構成されており、合成成分は不使用ですが、ハーブアレルギーをお持ちの方は事前にご確認ください。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)"><span class="faq-q-label">Q</span><span class="faq-q-text">サロンメニューへの組み込み方のアドバイスは？</span><div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></button>
+        <div class="faq-answer"><div class="faq-answer-inner">最も導入しやすいのは<strong>「シャンプー前のオプションメニュー」</strong>としての展開です。施術時間は約10〜15分の追加で対応でき、既存のカット・カラーメニューに組み込みやすい設計になっています。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)"><span class="faq-q-label">Q</span><span class="faq-q-text">サンプル・トライアルはありますか？</span><div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></button>
+        <div class="faq-answer"><div class="faq-answer-inner">LINE公式登録サロン様には<strong>スターターキット（特別価格）</strong>をご用意しています。無料サンプルについては、数量限定でご提供している場合ございます。詳細はLINE公式からお問い合わせください。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)"><span class="faq-q-label">Q</span><span class="faq-q-text">施術の研修・技術講習はありますか？</span><div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></button>
+        <div class="faq-answer"><div class="faq-answer-inner">はい、<strong>導入サポートとして技術講習会を実施</strong>しています。神戸市灘区の植物美容学校にて対面での講習、またはオンラインでのサポートも対応可能です。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SEMINAR CTA ── -->
+<section class="seminar" id="seminar">
+  <div class="seminar-inner">
+    <div class="reveal">
+      <p class="section-label" style="color:var(--sage-light)">Contact &amp; Seminar</p>
+      <h2 class="seminar-title">頭皮ケアの<br><em>新章</em>を<br>始めましょう。</h2>
+      <p class="seminar-body">資料のダウンロードやサロン導入のご相談はLINE公式から。説明会では実際の施術デモと導入事例をご紹介します。</p>
+    </div>
+    <div class="seminar-cta-group reveal" id="contact">
+      <!-- ボタン① LINE登録 -->
+      <a href="https://lin.ee/WPbdXE5" target="_blank" rel="noopener" class="seminar-cta-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        LINE公式に登録する
+      </a>
+      <!-- ボタン② 説明会申し込み -->
+      <a href="https://booking.scalp-labo.jp/apply.html?s=th" target="_blank" rel="noopener" class="seminar-cta-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        講習会に申し込む
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <a href="#" class="footer-brand">THE HERBS</a>
+    <div class="footer-info">
+      株式会社THE HERBS<br>
+      〒659-0024 兵庫県芦屋市南宮町3-10<br>
+      植物美容学校：兵庫県神戸市灘区大内通1−7−17 1F<br>
+      THE HERBS神戸阪急店：神戸阪急本館6階 モーニングフロー内
+    </div>
+    <p class="footer-copy">©2024 THE HERBS. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+  let lastY = 0;
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    const y = window.scrollY;
+    if (y > lastY && y > 80) { nav.style.transform = 'translateY(-100%)'; }
+    else { nav.style.transform = 'translateY(0)'; }
+    lastY = y;
+  });
+</script>
+</body>
+</html>
