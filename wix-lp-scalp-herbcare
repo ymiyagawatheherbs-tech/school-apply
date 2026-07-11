@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE HERBS — Botanical Professional Care</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+JP:wght@200;300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F6FAF5;
+    --sage: #ABBAA9;
+    --sage-light: #c8d4c6;
+    --sage-dark: #5a7257;
+    --earth: #8c7355;
+    --earth-light: #c4a882;
+    --charcoal: #2C2319;
+    --stone: #5a5246;
+    --mist: #e2eae1;
+    --white: #fdfcfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--charcoal);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 400;
+    font-size: 16px;
+    overflow-x: hidden;
+    line-height: 1.9;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 80% 50%, rgba(171,186,169,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 70%, rgba(196,168,130,0.10) 0%, transparent 60%);
+  }
+
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle cx='40' cy='40' r='1' fill='%23ABBAA9' fill-opacity='0.10'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .hero-image-overlay {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 48%;
+    height: 100%;
+    background: url('https://static.wixstatic.com/media/a3e22d_b998cf0d14ce493a9c375a055702e0e4~mv2.jpg') center/cover no-repeat;
+    opacity: 0.72;
+    mask-image: linear-gradient(to left, rgba(0,0,0,0.95) 30%, rgba(0,0,0,0.3) 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.95) 30%, rgba(0,0,0,0.3) 80%, transparent 100%);
+    pointer-events: none;
+  }
+
+  nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    border-bottom: 1px solid rgba(171,186,169,0.3);
+  }
+
+  .logo img { height: 22px; width: auto; }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--stone);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--sage-dark); }
+
+  .hero-content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    gap: 1.5rem;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    color: var(--sage-dark);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 7.8vw, 5rem);
+    font-weight: 400;
+    line-height: 1.0;
+    letter-spacing: 0.06em;
+    color: var(--charcoal);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero-title em { font-style: italic; color: var(--sage-dark); }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    line-height: 2.0;
+    color: var(--stone);
+    max-width: 520px;
+    font-weight: 400;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--sage), transparent);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.7s forwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .btn {
+    padding: 0.85rem 2rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    transition: all 0.35s;
+    cursor: pointer;
+    border: none;
+    display: inline-block;
+  }
+
+  .btn-primary { background: var(--sage-dark); color: var(--white); }
+  .btn-primary:hover { background: var(--charcoal); transform: translateY(-2px); }
+  .btn-outline { background: transparent; color: var(--sage-dark); border: 1px solid var(--sage); }
+  .btn-outline:hover { background: var(--sage-dark); color: var(--white); transform: translateY(-2px); }
+
+  .hero-footer {
+    position: relative;
+    z-index: 5;
+    padding: 1.5rem 4rem;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    border-top: 1px solid rgba(171,186,169,0.2);
+  }
+
+  .hero-stat { text-align: center; }
+
+  .hero-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: var(--sage-dark);
+  }
+
+  .hero-stat-label {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--stone);
+    margin-top: 0.2rem;
+  }
+
+  /* ── SECTION COMMONS ── */
+  section { position: relative; }
+
+  .section-header {
+    text-align: center;
+    padding: 5rem 2rem 2.5rem;
+  }
+
+  .section-tag {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    color: var(--sage-dark);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--charcoal);
+    line-height: 1.25;
+  }
+
+  .section-title em { font-style: italic; color: var(--sage-dark); }
+
+  .section-desc {
+    margin-top: 1.2rem;
+    font-size: 0.95rem;
+    line-height: 2.0;
+    color: var(--stone);
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 400;
+  }
+
+  .section-line {
+    width: 40px;
+    height: 1px;
+    background: var(--sage);
+    margin: 1.4rem auto 0;
+  }
+
+  /* ── WHAT IS HERB CARE ── */
+  .what-section {
+    background: var(--white);
+    padding: 5rem 4vw 5.5rem;
+    border-top: 1px solid var(--mist);
+  }
+
+  .what-inner { max-width: 960px; margin: 0 auto; }
+
+  .what-lead-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    margin-bottom: 4rem;
+  }
+
+  .what-lead-text .section-tag { text-align: left; }
+
+  .what-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.25;
+    margin-bottom: 1.4rem;
+  }
+
+  .what-headline em { font-style: italic; color: var(--sage-dark); }
+
+  .what-body {
+    font-size: 1rem;
+    line-height: 2.1;
+    color: var(--stone);
+    font-weight: 400;
+  }
+
+  .what-body strong { color: var(--charcoal); font-weight: 500; }
+
+  .what-visual {
+    background: var(--cream);
+    border: 1px solid var(--mist);
+    overflow: hidden;
+    aspect-ratio: 4/3;
+  }
+
+  .what-visual img { width: 100%; height: 100%; object-fit: cover; }
+
+  .what-points {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 3.5rem;
+    background: var(--mist);
+    border: 1px solid var(--mist);
+  }
+
+  .what-point { background: var(--white); padding: 2rem 1.8rem; }
+
+  .what-point-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: var(--sage);
+    line-height: 1;
+    margin-bottom: 0.8rem;
+  }
+
+  .what-point-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 0.7rem;
+    line-height: 1.6;
+  }
+
+  .what-point-body {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    line-height: 2.0;
+    color: var(--stone);
+    font-weight: 400;
+  }
+
+  .what-diff {
+    background: var(--cream);
+    border: 1px solid var(--mist);
+    padding: 2rem 2.4rem;
+    margin-bottom: 3rem;
+  }
+
+  .what-diff-label {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--sage-dark);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--mist);
+  }
+
+  .diff-table { width: 100%; border-collapse: collapse; }
+
+  .diff-table th {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--sage-dark);
+    padding: 0.6rem 1rem 0.6rem 0;
+    text-align: left;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--mist);
+    width: 28%;
+  }
+
+  .diff-table th:last-child { color: var(--charcoal); }
+
+  .diff-table td {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    color: var(--stone);
+    padding: 0.9rem 1rem 0.9rem 0;
+    border-bottom: 1px solid rgba(226,234,225,0.6);
+    vertical-align: top;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  .diff-table td:first-child { color: var(--charcoal); font-weight: 500; white-space: nowrap; }
+  .diff-table td.good { color: var(--sage-dark); font-weight: 500; }
+
+  .what-cycle {
+    background: var(--sage-dark);
+    color: var(--white);
+    padding: 2rem 2.4rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .what-cycle-icon {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--sage-light);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .what-cycle-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 0.4rem;
+  }
+
+  .what-cycle-desc {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: rgba(246,250,245,0.75);
+    font-weight: 400;
+  }
+
+  /* ── TAB NAVIGATION ── */
+  .tab-section { background: var(--white); }
+
+  .tab-nav {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid var(--mist);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--white);
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 1.1rem 2rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--stone);
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+    white-space: nowrap;
+  }
+
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--sage-dark);
+    transform: scaleX(0);
+    transition: transform 0.35s;
+  }
+
+  .tab-btn.active { color: var(--sage-dark); }
+  .tab-btn.active::after { transform: scaleX(1); }
+
+  .tab-content {
+    display: none;
+    padding: 3rem 4vw 5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .tab-content.active { display: block; }
+
+  /* ── PRODUCT GRID ── */
+  .product-intro {
+    background: var(--cream);
+    border-left: 4px solid var(--sage);
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+    line-height: 2.0;
+    color: var(--stone);
+    max-width: 740px;
+    font-weight: 400;
+  }
+
+  .product-intro strong { color: var(--sage-dark); font-weight: 500; }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+  }
+
+  .product-card {
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: default;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(44,35,25,0.10);
+    z-index: 2;
+  }
+
+  .product-card-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--mist);
+    overflow: hidden;
+  }
+
+  .product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .product-card:hover .product-card-image img { transform: scale(1.04); }
+
+  .product-card-body {
+    padding: 1.6rem 1.8rem;
+    border-top: 1px solid var(--mist);
+  }
+
+  .product-name-fr {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--charcoal);
+  }
+
+  .product-name-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--sage-dark);
+    margin-top: 0.2rem;
+    display: block;
+  }
+
+  .product-tagline {
+    margin-top: 0.8rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--earth);
+    letter-spacing: 0.03em;
+  }
+
+  .product-concerns {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .concern-tag {
+    padding: 0.3rem 0.7rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--stone);
+    background: var(--cream);
+    border: 1px solid var(--mist);
+  }
+
+  .product-herbs {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--mist);
+  }
+
+  .herbs-label {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--sage-dark);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .herb-list { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+  .herb-item {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--stone);
+  }
+
+  .herb-item::after { content: '·'; margin-left: 0.4rem; color: var(--sage); }
+  .herb-item:last-child::after { content: ''; }
+
+  /* ── HOW TO USE ── */
+  .howto-section {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 5rem 4vw;
+  }
+
+  .howto-grid {
+    max-width: 900px;
+    margin: 2.5rem auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+  }
+
+  .howto-card {
+    background: rgba(246,250,245,0.05);
+    padding: 2rem;
+    border: 1px solid rgba(171,186,169,0.2);
+    transition: background 0.3s;
+  }
+
+  .howto-card:hover { background: rgba(246,250,245,0.09); }
+
+  .howto-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: rgba(171,186,169,0.3);
+    line-height: 1;
+    margin-bottom: 0.8rem;
+  }
+
+  .howto-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--cream);
+    margin-bottom: 0.8rem;
+  }
+
+  .howto-desc {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    line-height: 2.0;
+    color: rgba(246,250,245,0.65);
+    font-weight: 400;
+  }
+
+  .howto-note {
+    margin: 2rem auto 0;
+    max-width: 900px;
+    background: rgba(171,186,169,0.1);
+    border-left: 2px solid var(--sage);
+    padding: 1rem 1.4rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    line-height: 1.9;
+    color: rgba(246,250,245,0.6);
+  }
+
+  /* ── CONCEPT ── */
+  .concept-section { padding: 6rem 4vw; background: var(--white); }
+
+  .concept-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+
+  .concept-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.8;
+    color: var(--charcoal);
+    margin-bottom: 2rem;
+  }
+
+  .concept-body {
+    font-size: 0.95rem;
+    line-height: 2.1;
+    color: var(--stone);
+    max-width: 580px;
+    margin: 0 auto;
+    font-weight: 400;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    color: rgba(246,250,245,0.5);
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--cream);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .stagger .reveal:nth-child(1) { transition-delay: 0.05s; }
+  .stagger .reveal:nth-child(2) { transition-delay: 0.12s; }
+  .stagger .reveal:nth-child(3) { transition-delay: 0.19s; }
+  .stagger .reveal:nth-child(4) { transition-delay: 0.26s; }
+  .stagger .reveal:nth-child(5) { transition-delay: 0.33s; }
+  .stagger .reveal:nth-child(6) { transition-delay: 0.40s; }
+  .stagger .reveal:nth-child(7) { transition-delay: 0.47s; }
+
+  /* ── CORAIL FEATURED ── */
+  .corail-featured { margin-bottom: 3.5rem; }
+
+  .category-label {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .category-label-text {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--sage-dark);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .category-label-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--sage), transparent);
+  }
+
+  .corail-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--charcoal);
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+  }
+
+  .corail-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 90% 50%, rgba(176,90,74,0.15) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(171,186,169,0.08) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .corail-image { position: relative; overflow: hidden; }
+  .corail-image img { width: 100%; height: 100%; object-fit: cover; }
+
+  .corail-body {
+    padding: 2.5rem 2.5rem 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .corail-badge {
+    display: inline-block;
+    padding: 0.28rem 0.8rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: #b05a4a;
+    border: 1px solid rgba(176,90,74,0.5);
+    margin-bottom: 1.2rem;
+    width: fit-content;
+  }
+
+  .corail-name-fr {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--cream);
+    line-height: 1.0;
+  }
+
+  .corail-name-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    color: rgba(246,250,245,0.45);
+    margin-top: 0.4rem;
+    display: block;
+  }
+
+  .corail-tagline {
+    margin-top: 1.2rem;
+    font-size: 0.9rem;
+    line-height: 2.0;
+    color: rgba(246,250,245,0.75);
+    font-weight: 400;
+    border-left: 2px solid rgba(176,90,74,0.6);
+    padding-left: 1rem;
+  }
+
+  .corail-herbs { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .corail-herbs .herbs-label { color: rgba(246,250,245,0.35); margin-bottom: 0.5rem; }
+  .corail-herbs .herb-item { color: rgba(246,250,245,0.6); font-size: 0.75rem; }
+  .corail-herbs .herb-item::after { color: rgba(176,90,74,0.5); }
+
+  .scalp-sub-label { margin-bottom: 1.2rem; }
+
+  .card-CORAIL .product-name-fr { color: #b05a4a; }
+  .card-VERT .product-name-fr { color: #4a7a4a; }
+  .card-TILLEUL .product-name-fr { color: #8a7a3a; }
+  .card-RUNON .product-name-fr { color: #c4903a; }
+  .card-LILAS .product-name-fr { color: #7a5a8a; }
+  .card-FEU .product-name-fr { color: #5a7a6a; }
+  .card-GRISE .product-name-fr { color: #606060; }
+  .card-Sante .product-name-fr { color: #6a8a7a; }
+  .card-Seche .product-name-fr { color: #7a7a9a; }
+  .card-Vieillir .product-name-fr { color: #8a6a5a; }
+  .card-Rosse .product-name-fr { color: #9a6a6a; }
+  .card-Grasse .product-name-fr { color: #5a7a5a; }
+  .card-Blanc .product-name-fr { color: #7a8a9a; }
+
+  /* ── STEAMER ── */
+  .steamer-section { background: var(--cream); padding: 6rem 4vw; border-top: 1px solid var(--mist); }
+
+  .steamer-gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3px;
+    margin-bottom: 3.5rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .steamer-gallery-item { overflow: hidden; }
+  .steamer-gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; display: block; }
+  .steamer-gallery-item:hover img { transform: scale(1.04); }
+  .gallery-large { aspect-ratio: 4/3; grid-row: 1/3; }
+  .gallery-small { aspect-ratio: 4/3; }
+  .gallery-wide { aspect-ratio: 16/5; grid-column: 2/4; }
+
+  .steamer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .steamer-image-col { position: sticky; top: 80px; }
+  .steamer-badge-wrap { margin-bottom: 1rem; }
+
+  .steamer-badge {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    color: var(--white);
+    background: var(--charcoal);
+    padding: 0.38rem 0.9rem;
+    display: inline-block;
+  }
+
+  .steamer-img-frame {
+    background: var(--white);
+    border: 1px solid var(--mist);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    aspect-ratio: 1 / 1.1;
+  }
+
+  .steamer-img-frame img { width: 88%; object-fit: contain; transition: transform 0.6s ease; }
+  .steamer-img-frame:hover img { transform: scale(1.03); }
+
+  .steamer-spec { margin-top: 1.5rem; border: 1px solid var(--mist); padding: 1.2rem 1.4rem; background: var(--white); }
+
+  .spec-title {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--sage-dark);
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--mist);
+  }
+
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--stone);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(226,234,225,0.6);
+  }
+
+  .spec-row span:first-child { color: var(--charcoal); font-weight: 500; }
+  .spec-note { font-family: 'Noto Sans JP', sans-serif; font-size: 0.72rem; color: var(--sage-dark); margin-top: 0.5rem; }
+
+  .steamer-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 4.5vw, 4.2rem);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--charcoal);
+    line-height: 1.1;
+    margin: 0.5rem 0 1.2rem;
+  }
+
+  .steamer-title em { font-style: italic; color: var(--sage-dark); }
+
+  .steamer-lead {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.05rem;
+    line-height: 2.0;
+    color: var(--charcoal);
+    font-weight: 500;
+    margin-bottom: 1.4rem;
+  }
+
+  .steamer-sub {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.92rem;
+    line-height: 2.0;
+    color: var(--stone);
+    font-weight: 400;
+    margin-bottom: 2rem;
+  }
+
+  .steamer-sub strong { color: var(--sage-dark); font-weight: 500; }
+
+  .steamer-4way { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+
+  .way-item {
+    padding: 0.5rem 1rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    background: var(--sage-dark);
+  }
+
+  .way-sep { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--sage); }
+
+  .steamer-4way-note {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--stone);
+    margin-bottom: 2rem;
+    letter-spacing: 0.05em;
+  }
+
+  .steamer-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--mist);
+    border: 1px solid var(--mist);
+    margin-bottom: 1.8rem;
+  }
+
+  .sf-card {
+    background: var(--white);
+    padding: 1.3rem 1.4rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    transition: background 0.25s;
+  }
+
+  .sf-card:hover { background: #f8faf7; }
+  .sf-icon { color: var(--sage); font-size: 0.7rem; margin-top: 0.3rem; flex-shrink: 0; }
+
+  .sf-ttl {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+    line-height: 1.6;
+  }
+
+  .sf-desc {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    line-height: 2.0;
+    color: var(--stone);
+    font-weight: 400;
+  }
+
+  .steamer-herbs-note { background: var(--cream); border-left: 3px solid var(--sage); padding: 1.1rem 1.4rem; }
+
+  .shn-label {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--sage-dark);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+  }
+
+  .shn-body {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.88rem;
+    line-height: 2.0;
+    color: var(--stone);
+    font-weight: 400;
+  }
+
+  /* ── CTA BUTTONS SECTION ── */
+  .cta-section {
+    background: var(--white);
+    padding: 5rem 4vw;
+    border-top: 1px solid var(--mist);
+  }
+
+  .cta-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta-lead {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    line-height: 2.0;
+    color: var(--stone);
+    margin-top: 1.2rem;
+    margin-bottom: 3rem;
+    font-weight: 400;
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .cta-card {
+    flex: 1;
+    border: 1px solid var(--mist);
+    padding: 2.5rem 2rem;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: box-shadow 0.3s, transform 0.3s;
+    text-align: center;
+  }
+
+  .cta-card:hover {
+    box-shadow: 0 12px 40px rgba(44,35,25,0.08);
+    transform: translateY(-3px);
+  }
+
+  .cta-card-tag {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    color: var(--sage-dark);
+    text-transform: uppercase;
+    display: block;
+  }
+
+  .cta-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: var(--charcoal);
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+
+  .cta-card-desc {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.85rem;
+    line-height: 2.0;
+    color: var(--stone);
+    font-weight: 400;
+  }
+
+  .cta-card-line {
+    width: 24px;
+    height: 1px;
+    background: var(--sage);
+    flex-shrink: 0;
+  }
+
+  .btn-cta-primary {
+    display: block;
+    width: 100%;
+    background: var(--sage-dark);
+    color: var(--white);
+    padding: 0.9rem 1.5rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.3s, transform 0.3s;
+    margin-top: auto;
+  }
+
+  .btn-cta-primary:hover {
+    background: var(--charcoal);
+    transform: translateY(-2px);
+  }
+
+  .btn-cta-outline {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: var(--sage-dark);
+    border: 1px solid var(--sage-dark);
+    padding: 0.9rem 1.5rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s;
+    margin-top: auto;
+  }
+
+  .btn-cta-outline:hover {
+    background: var(--sage-dark);
+    color: var(--white);
+    transform: translateY(-2px);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .logo img { height: 24px; }
+    .nav-links { display: none; }
+    .hero-content { padding: 2.5rem 1.5rem; gap: 1.2rem; }
+    .hero-footer { padding: 1.2rem 1.5rem; gap: 1.5rem; }
+    .hero-stat-num { font-size: 1.8rem; }
+    .section-header { padding: 3.5rem 1.5rem 2rem; }
+    .tab-btn { padding: 0.9rem 1rem; font-size: 0.75rem; }
+    .tab-content { padding: 2rem 1.5rem 3.5rem; }
+    .products-grid { grid-template-columns: 1fr; }
+    .corail-card { grid-template-columns: 1fr; }
+    .corail-image { min-height: 220px; }
+    .corail-body { padding: 1.8rem 1.5rem; }
+    .howto-grid { grid-template-columns: 1fr; }
+    .what-lead-block { grid-template-columns: 1fr; gap: 2rem; }
+    .what-points { grid-template-columns: 1fr; }
+    .what-diff { padding: 1.5rem; }
+    .diff-table th, .diff-table td { font-size: 0.82rem; }
+    .steamer-gallery { grid-template-columns: 1fr 1fr; margin-bottom: 2rem; }
+    .gallery-large { grid-column: 1/3; grid-row: auto; aspect-ratio: 16/9; }
+    .gallery-wide { grid-column: 1/3; aspect-ratio: 16/6; }
+    .steamer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .steamer-image-col { position: static; }
+    .steamer-features { grid-template-columns: 1fr; }
+    .steamer-section { padding: 3.5rem 1.5rem; }
+    .howto-section { padding: 3.5rem 1.5rem; }
+    .concept-section { padding: 4rem 1.5rem; }
+    .what-section { padding: 3.5rem 1.5rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.5rem; }
+    .cta-buttons { flex-direction: column; gap: 1.2rem; }
+    .cta-section { padding: 3.5rem 1.5rem; }
+  }
+
+  @media (max-width: 480px) {
+    .steamer-4way { gap: 0.4rem; }
+    .way-item { font-size: 0.72rem; padding: 0.4rem 0.7rem; }
+    .what-cycle { gap: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-image-overlay"></div>
+
+  <nav>
+    <div class="logo">
+      <a href="https://www.the-herbs.co.jp/school" target="_blank" rel="noopener" style="display:inline-block;">
+        <img src="https://herbspro2020.bcart.jp/uploads/logo/logo.png" alt="THE HERBS">
+      </a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#what">ハーブケアとは</a></li>
+      <li><a href="#products">製品ラインナップ</a></li>
+      <li><a href="#steamer">ハーブスチーマー</a></li>
+      <li><a href="#howto">使用方法</a></li>
+      <li><a href="#concept">コンセプト</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero-content">
+    <span class="hero-eyebrow">ー　植物美容科学 ® ー<br> Ashiya, Japan</span>
+    <h1 class="hero-title">BOTANIC<br><em>PRO CARE</em></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-subtitle">
+      植物美容成分を、プロの技術で。<br>
+      お客様の頭皮や髪、肌を健やかに整えます。
+    </p>
+    <div class="hero-cta">
+      <a href="#what" class="btn btn-primary">ハーブケアとは</a>
+      <a href="#products" class="btn btn-outline">製品を見る</a>
+      <!-- ① 追加ボタン -->
+      <a href="#cta" class="btn btn-outline">講習会に申し込む</a>
+    </div>
+  </div>
+
+  <div class="hero-footer">
+    <div class="hero-stat">
+      <div class="hero-stat-num">7</div>
+      <div class="hero-stat-label">頭皮ケア<br>ブレンド</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">6</div>
+      <div class="hero-stat-label">スキンケア<br>ブレンド</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">20<span style="font-size:0.9rem">+</span></div>
+      <div class="hero-stat-label">ボタニカル<br>アイテム</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- WHAT IS HERB CARE -->
+<section class="what-section" id="what">
+  <div class="what-inner">
+
+    <div class="what-lead-block reveal">
+      <div class="what-lead-text">
+        <span class="section-tag">What is Herb Care</span>
+        <h2 class="what-headline">ハーブケアとは？</h2>
+        <p class="what-body">
+          美容室でのシャンプー・スチーマー施術に、<strong>フィトケミカル（植物化学成分）</strong>を豊富に含むハーブを組み合わせることで、頭皮環境を根本からケアする施術が可能になります。<br><br>
+          カラーやパーマなどの施術後に残留する薬剤を取り除き、うねり・頭皮の乾燥・皮脂の過剰分泌・ニオイなど、<strong>髪の「根本」の悩みの元である「頭皮」に直接アプローチします。</strong><br><br>
+          THE HERBSのハーブは、化粧品として登録・品質検査済みのものを自社工場で製造。食品用とは品質管理のレベルが異なります。
+        </p>
+      </div>
+      <div class="what-visual">
+        <img src="https://static.wixstatic.com/media/a3e22d_7d3f30be49654fadace9122520c3bae5~mv2.jpg" alt="ハーブケアイメージ">
+      </div>
+    </div>
+
+    <div class="what-points stagger">
+      <div class="what-point reveal">
+        <div class="what-point-num">01</div>
+        <div class="what-point-title">ヘッドスパと<br>何が違うの？</div>
+        <div class="what-point-body">ヘッドスパは主に「リラクゼーション」が目的です。ハーブケアはのフィトケミカル（植物成分）が毛根・毛包に働きかけて、頭皮の常在菌バランスを整えながら環境そのものを整えます。</div>
+      </div>
+      <div class="what-point reveal">
+        <div class="what-point-num">02</div>
+        <div class="what-point-title">どんなお悩みに<br>対応できますか？</div>
+        <div class="what-point-body">うねり・広がり・頭皮の脂っぽさ・カラー後の頭皮ダメージ・ニオイ・エイジングによる毛量の変化など。根本原因への植物アプローチです。</div>
+      </div>
+      <div class="what-point reveal">
+        <div class="what-point-num">03</div>
+        <div class="what-point-title">ホームケアとの<br>組み合わせは？</div>
+        <div class="what-point-body">サロン施術で頭皮環境の基礎をつくり、fillisラインのホームケアで日常的に維持します。サロンとホームケアの連携が継続的な効果につながります。</div>
+      </div>
+    </div>
+
+    <div class="what-diff reveal">
+      <div class="what-diff-label">一般ヘアケアとの比較</div>
+      <table class="diff-table">
+        <thead>
+          <tr>
+            <th>比較項目</th>
+            <th>一般ヘアケア</th>
+            <th>THE HERBS ハーブケア</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>アプローチ</td>
+            <td>髪の表面・ダメージ緩和</td>
+            <td class="good">頭皮環境の根本改善</td>
+          </tr>
+          <tr>
+            <td>原料品質</td>
+            <td>一般化粧品グレード</td>
+            <td class="good">化粧品登録済・自社工場製造</td>
+          </tr>
+          <tr>
+            <td>対応悩み</td>
+            <td>髪のダメージ・パサつき</td>
+            <td class="good">うねり・皮脂・エイジング毛・臭い</td>
+          </tr>
+          <tr>
+            <td>継続効果</td>
+            <td>施術直後のみ</td>
+            <td class="good">3ヶ月継続で根本から変化</td>
+          </tr>
+          <tr>
+            <td>薬剤との相性</td>
+            <td>施術とは別に考える</td>
+            <td class="good">カラー・パーマ後の薬剤処理に対応</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="what-cycle reveal">
+      <div class="what-cycle-icon">3</div>
+      <div class="what-cycle-body">
+        <div class="what-cycle-title">3ヶ月の継続が、根本を変える</div>
+        <div class="what-cycle-desc">ハーブケアの効果は、毎来店での施術＋ホームケアの継続によって積み上がります。3ヶ月を目安にお客様の頭皮・髪質の変化を実感いただけます。<br>※効果の速度には個人差があります</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- PRODUCTS TAB SECTION -->
+<section class="tab-section" id="products">
+  <div class="section-header">
+    <span class="section-tag reveal">Professional Line</span>
+    <h2 class="section-title reveal">プロフェッショナル<br><em>セレクト</em></h2>
+    <p class="section-desc reveal">お客様の状態に合わせて、<br>最適なブレンドをお選びください。<br>化粧品登録された安心の製品です。</p>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="scalp" onclick="switchTab(this.dataset.tab, this)">
+      頭皮ケア &nbsp; THE HERBS scalp &amp; hair
+    </button>
+    <button class="tab-btn" data-tab="skincare" onclick="switchTab(this.dataset.tab, this)">
+      スキンケア &nbsp; THE HERBS Skin Care
+    </button>
+  </div>
+
+  <!-- SCALP TAB -->
+  <div class="tab-content active" id="tab-scalp">
+    <div class="product-intro reveal">
+      <strong>THE HERBS scalp &amp; hair</strong> は、スキンケアの視点から頭皮をケアする植物美容科学 ® から生まれたシリーズです。
+      うねり・抜け毛・膨らむクセ・頭皮の痒みなど、薬剤刺激によるお悩みに、新たな視点からアプローチします。<br>
+      重要視するのは、<strong>頭皮の状態、根元の生え方</strong>です。
+    </div>
+
+    <div class="corail-featured reveal">
+      <div class="category-label">
+        <span class="category-label-text">Special Item — アルカリケア専用</span>
+        <span class="category-label-line"></span>
+      </div>
+      <div class="corail-card">
+        <div class="corail-image">
+          <img src="https://static.wixstatic.com/media/a3e22d_047fecbb09694141b1aec0c6219f3d26~mv2.png" alt="CORAIL">
+        </div>
+        <div class="corail-body">
+          <span class="corail-badge">SPECIAL ITEM</span>
+          <div class="corail-name-fr">CORAIL</div>
+          <span class="corail-name-jp">コライユ</span>
+          <div class="corail-tagline">
+            アルカリ処理後に使用<br>
+            ヘアカラー・パーマ・縮毛矯正の仕上げに使用、唯一のアルカリケア専用ブレンドです。
+          </div>
+          <div class="corail-herbs">
+            <div class="herb-list">
+              <span class="herb-item">バラ</span>
+              <span class="herb-item">エリカ</span>
+              <span class="herb-item">セントジョンズワートなど</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scalp-sub-label category-label reveal">
+      <span class="category-label-text">Daily Care — スカルプケアブレンド</span>
+      <span class="category-label-line"></span>
+    </div>
+
+    <div class="products-grid stagger" id="scalp-grid">
+      <div class="product-card card-VERT reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/VERT.jpg" alt="VERT"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">VERT</div>
+          <span class="product-name-jp">ヴェール</span>
+          <div class="product-tagline">くせ毛のケア</div>
+          <div class="product-concerns">
+            <span class="concern-tag">うねり</span><span class="concern-tag">湿度で広がる</span>
+            <span class="concern-tag">乾燥しやすい硬毛</span><span class="concern-tag">毛量多い</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主なハーブ</div>
+            <div class="herb-list">
+              <span class="herb-item">西洋イラクサ</span><span class="herb-item">西洋ノコギリソウ</span>
+              <span class="herb-item">メリッサなど</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-TILLEUL reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/TILLEUL.jpg" alt="TILLEUL"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">TILLEUL</div>
+          <span class="product-name-jp">ティユール</span>
+          <div class="product-tagline">皮脂バランスのケア</div>
+          <div class="product-concerns">
+            <span class="concern-tag">直毛 / 皮脂過多</span><span class="concern-tag">フケ</span>
+            <span class="concern-tag">細くなった髪</span><span class="concern-tag">パーマが当たりにくい</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主なハーブ</div>
+            <div class="herb-list">
+              <span class="herb-item">ローマンカモミール</span><span class="herb-item">セルピルム</span>
+              <span class="herb-item">タイムなど</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-RUNON reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/RENON.jpg" alt="RUNON"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">RUNON</div>
+          <span class="product-name-jp">ルノン</span>
+          <div class="product-tagline">内部ダメージのケア</div>
+          <div class="product-concerns">
+            <span class="concern-tag">髪の内部ダメージ</span><span class="concern-tag">乾燥しやすい柔らかい髪</span>
+            <span class="concern-tag">細い髪質 / 乾燥期のケア</span><span class="concern-tag">薬剤によるダメージ</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主なハーブ</div>
+            <div class="herb-list">
+              <span class="herb-item">カレンデュラ</span><span class="herb-item">ローマンカモミール</span>
+              <span class="herb-item">ジャーマンカモミールなど</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-LILAS reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/LILAS.jpg" alt="LILAS"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">LILAS</div>
+          <span class="product-name-jp">リラ</span>
+          <div class="product-tagline">ダメージ保護のケア</div>
+          <div class="product-concerns">
+            <span class="concern-tag">髪のダメージ保護</span><span class="concern-tag">紫外線ケア</span>
+            <span class="concern-tag">赤くなりやすい肌</span><span class="concern-tag">頭皮トラブル</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主なハーブ</div>
+            <div class="herb-list">
+              <span class="herb-item">ウスベニアオイ</span><span class="herb-item">エルダーフラワー</span>
+              <span class="herb-item">ローズマリー</span>など
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-FEU reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/FEU.jpg" alt="FEU"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">FEU</div>
+          <span class="product-name-jp">フー</span>
+          <div class="product-tagline">エイジングケア</div>
+          <div class="product-concerns">
+            <span class="concern-tag">加齢によるうねり</span><span class="concern-tag">ボリューム</span>
+            <span class="concern-tag">皮脂・ニオイ</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主なハーブ</div>
+            <div class="herb-list">
+              <span class="herb-item">サルビア</span><span class="herb-item">ローズマリー</span>
+              <span class="herb-item">ホップ</span>など
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-GRISE reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/GRISE.jpg" alt="GRISE"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">GRISE</div>
+          <span class="product-name-jp">グリーゼ</span>
+          <div class="product-tagline">頭皮改善のケア</div>
+          <div class="product-concerns">
+            <span class="concern-tag">弱った頭皮と髪</span><span class="concern-tag">細くなった髪</span>
+            <span class="concern-tag">うねり</span><span class="concern-tag">薬剤使用後の頭皮ケア</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主なハーブ</div>
+            <div class="herb-list">
+              <span class="herb-item">ローズマリー</span><span class="herb-item">タイム</span>
+              <span class="herb-item">サルビアなど</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;background:rgba(171,186,169,0.1);border:1px solid rgba(171,186,169,0.3);padding:1.6rem 1.8rem;max-width:700px;">
+      <div style="font-family:'Noto Sans JP',sans-serif;font-size:0.72rem;font-weight:500;letter-spacing:0.22em;color:var(--sage-dark);margin-bottom:0.8rem;">PROFESSIONAL TIP</div>
+      <p style="font-size:0.9rem;line-height:2.0;color:var(--stone);font-weight:400;">① 3ヶ月の継続が効果につながる　② 専用シャンプーでホームケア　③ 来店毎に髪質向上<br>※効果の速度には個人差があります</p>
+    </div>
+
+    <!-- ② 製品ページ内 申し込みボタン -->
+    <div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.6rem;align-items:flex-start;">
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <a href="#cta" class="btn btn-primary">導入講習に申し込む</a>
+        <a href="#cta" class="btn btn-outline">フォローアップ講習に申し込む</a>
+      </div>
+      <span style="font-family:'Noto Sans JP',sans-serif;font-size:0.72rem;font-weight:400;letter-spacing:0.1em;color:var(--sage-dark);">※ ただいま日程調整中です。近日公開予定です。</span>
+    </div>
+
+  </div>
+
+  <!-- SKINCARE TAB -->
+  <div class="tab-content" id="tab-skincare">
+    <div class="product-intro reveal">
+      <strong>THE HERBS スキンケアライン</strong> は、植物美容科学 ® から生まれた６種類の肌質別スキンケアハーブ。
+      抽出したばかりの植物エキスには美容成分が豊富に含まれ、肌を弱酸性に保ち、潤いのある肌へと導きます。化粧品登録された製品です。
+    </div>
+
+    <div class="products-grid stagger" id="skin-grid">
+      <div class="product-card card-Sante reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/sante.jpg" alt="Santé"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">Santé</div>
+          <span class="product-name-jp">サンテ</span>
+          <div class="product-tagline">水分と油分を整え、肌を保護します</div>
+          <div class="product-concerns">
+            <span class="concern-tag">乾燥によるシワ</span><span class="concern-tag">ゆらぎ肌</span><span class="concern-tag">混合肌</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主な植物成分</div>
+            <div class="herb-list">
+              <span class="herb-item">セージ（ハリのある肌）</span><span class="herb-item">カモミール（肌の柔軟性）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-Seche reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/seche.jpg" alt="Seche"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">Seche</div>
+          <span class="product-name-jp">セシュ</span>
+          <div class="product-tagline">肌の乾燥を防いで潤いを与えます</div>
+          <div class="product-concerns">
+            <span class="concern-tag">肌荒れ</span><span class="concern-tag">日焼け直後</span><span class="concern-tag">水分不足</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主な植物成分</div>
+            <div class="herb-list">
+              <span class="herb-item">ラベンダー（荒れ肌に潤い）</span><span class="herb-item">タイム（引き締め）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-Vieillir reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/vieillir.jpg" alt="Vieillir"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">Vieillir</div>
+          <span class="product-name-jp">ヴィエール</span>
+          <div class="product-tagline">肌をひきしめてハリを与えます</div>
+          <div class="product-concerns">
+            <span class="concern-tag">弾力のない肌</span><span class="concern-tag">柔軟性のない肌</span><span class="concern-tag">疲れやすい肌</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主な植物成分</div>
+            <div class="herb-list">
+              <span class="herb-item">セージ（ハリのある肌）</span><span class="herb-item">ローズマリー（滑らかな肌）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-Rosse reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/rosse.jpg" alt="Rosse"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">Rosse</div>
+          <span class="product-name-jp">ロゼ</span>
+          <div class="product-tagline">肌荒れを防いで肌を滑らかにします</div>
+          <div class="product-concerns">
+            <span class="concern-tag">ゆらぎ肌</span><span class="concern-tag">肌荒れ</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主な植物成分</div>
+            <div class="herb-list">
+              <span class="herb-item">ラベンダー（荒れ肌に潤い）</span><span class="herb-item">カモミール（肌の柔軟性）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-Grasse reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/grasse.jpg" alt="Grasse"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">Grasse</div>
+          <span class="product-name-jp">グラース</span>
+          <div class="product-tagline">肌を清浄にし、肌を健やかに整えます</div>
+          <div class="product-concerns">
+            <span class="concern-tag">ハリ不足</span><span class="concern-tag">乾燥肌</span><span class="concern-tag">化粧のり悪い</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主な植物成分</div>
+            <div class="herb-list">
+              <span class="herb-item">セージ（ハリのある肌）</span><span class="herb-item">タイム（引き締め）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card card-Blanc reveal">
+        <div class="product-card-image"><img src="https://herbspro2020.bcart.jp/uploads/sample/products/blanc.jpg" alt="Blanc"></div>
+        <div class="product-card-body">
+          <div class="product-name-fr">Blanc</div>
+          <span class="product-name-jp">ブラン</span>
+          <div class="product-tagline">肌の乾燥を防いで肌を滑らかにします</div>
+          <div class="product-concerns">
+            <span class="concern-tag">柔軟性のない肌</span><span class="concern-tag">乾燥肌</span>
+          </div>
+          <div class="product-herbs">
+            <div class="herbs-label">主な植物成分</div>
+            <div class="herb-list">
+              <span class="herb-item">ローズマリー（滑らかな肌）</span><span class="herb-item">カモミール（肌の柔軟性）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- HERB STEAMER -->
+<section class="steamer-section" id="steamer">
+  <div class="steamer-gallery">
+    <div class="steamer-gallery-item gallery-large">
+      <img src="https://static.wixstatic.com/media/a3e22d_7d3f30be49654fadace9122520c3bae5~mv2.jpg" alt="ハーブディスプレイ">
+    </div>
+    <div class="steamer-gallery-item gallery-small">
+      <img src="https://herbspro2020.bcart.jp/uploads/sample/products/steamer/094A5769.jpg" alt="ハーブセット">
+    </div>
+    <div class="steamer-gallery-item gallery-small">
+      <img src="https://herbspro2020.bcart.jp/uploads/sample/products/steamer/094A5846.jpg" alt="ヘアケアミスト">
+    </div>
+    <div class="steamer-gallery-item gallery-wide">
+      <img src="https://herbspro2020.bcart.jp/uploads/sample/products/steamer/094A5987.jpg" alt="ハーブ各種" style="object-position:center 40%;">
+    </div>
+  </div>
+
+  <div class="steamer-inner">
+    <div class="steamer-image-col">
+      <div class="steamer-badge-wrap">
+        <span class="steamer-badge">THE HERBS PROFESSIONAL</span>
+      </div>
+      <div class="steamer-img-frame">
+        <img src="https://herbspro2020.bcart.jp/uploads/sample/products/steamer/herbsteamer_product.png" alt="ハーブスチーマー">
+      </div>
+      <div class="steamer-spec">
+        <div class="spec-title">製品仕様</div>
+        <div class="spec-row"><span>高さ</span><span>85 cm</span></div>
+        <div class="spec-row"><span>幅</span><span>30 cm</span></div>
+        <div class="spec-row"><span>奥行き</span><span>32 cm</span></div>
+        <div class="spec-row"><span>重量</span><span>7.5 kg</span></div>
+        <div class="spec-row"><span>電源</span><span>AC 100〜120V  50/60Hz</span></div>
+        <div class="spec-row"><span>消費電力</span><span>650W</span></div>
+        <div class="spec-note">脚部は組み立て式</div>
+      </div>
+    </div>
+
+    <div class="steamer-content-col">
+      <span class="section-tag" style="text-align:left;display:block;">Flagship Product</span>
+      <h2 class="steamer-title">Herb<em> Steamer</em></h2>
+      <p class="steamer-lead">
+        たった10分でできる出来立てのミスト化粧水。<br>
+        肌も髪も、まったく初めての手触りへ。
+      </p>
+      <p class="steamer-sub">
+        使用するのはエコサート認証（フランス）・NASAA認証（オーストラリア）を取得した、品質を徹底管理した世界初のコスメドライハーブ。噴霧されるハーブミストは<strong>蒸気状の化粧品（日本初）</strong>です。
+      </p>
+      <div class="steamer-4way">
+        <div class="way-item">スキンケア</div><div class="way-sep">×</div>
+        <div class="way-item">頭皮ケア</div><div class="way-sep">×</div>
+        <div class="way-item">ヘアケア</div><div class="way-sep">×</div>
+        <div class="way-item">リラックス</div>
+      </div>
+      <p class="steamer-4way-note">ハーブのブレンドを変えるだけで、様々なメニューを展開できます。</p>
+      <div class="steamer-features">
+        <div class="sf-card"><div class="sf-icon">✦</div><div class="sf-body"><div class="sf-ttl">ヘアカラー・パーマを長持ちさせる</div><div class="sf-desc">作りたての植物エキスがキューティクルのダメージに潤いを与え、トリートメントのように剥がれません。</div></div></div>
+        <div class="sf-card"><div class="sf-icon">✦</div><div class="sf-body"><div class="sf-ttl">毛穴・皮溝の汚れを浮かせて保湿</div><div class="sf-desc">皮膚に不要な物質を取り除き、必要な成分を与えます。敏感肌・乾燥・皮脂過多のお悩みにアプローチ。</div></div></div>
+        <div class="sf-card"><div class="sf-icon">✦</div><div class="sf-body"><div class="sf-ttl">エイジング毛の悩みを解消</div><div class="sf-desc">2010年からの実績。うねり・つむじ割れ・広がり・ハチの張り・薄毛対策に対応します。</div></div></div>
+        <div class="sf-card"><div class="sf-icon">✦</div><div class="sf-body"><div class="sf-ttl">施術中の刺激を緩和</div><div class="sf-desc">植物の鎮静作用が働き、施術時の赤み・かゆみ・ひりつきを緩和しながら安定的な皮膚状態を保ちます。</div></div></div>
+        <div class="sf-card"><div class="sf-icon">✦</div><div class="sf-body"><div class="sf-ttl">カットラインをより鮮明に</div><div class="sf-desc">根元のうねりが解消され、髪のまとまりが向上。ご自宅でのスタイル再現性を高め、顧客満足度がアップします。</div></div></div>
+        <div class="sf-card"><div class="sf-icon">✦</div><div class="sf-body"><div class="sf-ttl">植物の芳香によるリラクゼーション</div><div class="sf-desc">アロマとは異なる植物本来の自然な香りが約40分間持続。深呼吸を誘い、施術効果も倍増します。</div></div></div>
+      </div>
+      <div class="steamer-herbs-note">
+        <div class="shn-label">対応ハーブ</div>
+        <div class="shn-body">頭皮ケア6種（VERT / TILLEUL / RUNON / LILAS / FEU / GRISE）、スキンケア6種（Santé / Seche / Vieillir / Rosse / Grasse / Blanc）の計12ブレンドに対応。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- HOW TO USE -->
+<section class="howto-section" id="howto">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="section-header" style="padding-top:0;">
+      <span class="section-tag" style="color:var(--sage-light);">How to Use</span>
+      <h2 class="section-title" style="color:var(--cream);">ハーブの使用<em>方法</em></h2>
+      <p class="section-desc" style="color:rgba(246,250,245,0.6);">頭皮ケア、スキンケアともに２通りの抽出方法で使用します。</p>
+      <div class="section-line"></div>
+    </div>
+    <div class="howto-grid">
+      <div class="howto-card">
+        <div class="howto-num">01</div>
+        <div class="howto-title">専用ハーブスチーマー</div>
+        <p class="howto-desc">ハーブ１袋を専用スチーマーにセットします。30〜60分間のボタニカルミストを蒸気抽出し、を肌や髪に当てていきます。</p>
+      </div>
+      <div class="howto-card">
+        <div class="howto-num">02</div>
+        <div class="howto-title">熱湯抽出</div>
+        <p class="howto-desc">ハーブ１袋を抽出してボタニカルエキスを作ります。アプリケータ等を用い、頭皮と髪に揉み込みます。</p>
+      </div>
+    </div>
+    <div class="howto-note">
+      ※ 一袋で１回分です　／　※ 抽出したハーブエキスは3時間以内にお使い下さい
+    </div>
+  </div>
+</section>
+
+
+<!-- CONCEPT -->
+<section class="concept-section" id="concept" style="background-image:url('https://herbspro2020.bcart.jp/userimg/094A5987.jpg');background-size:cover;background-position:center;position:relative;">
+  <div style="position:absolute;inset:0;background:rgba(246,250,245,0.92);"></div>
+  <div class="concept-inner" style="position:relative;z-index:1;">
+    <span class="section-tag reveal">Our Philosophy</span>
+    <blockquote class="concept-quote reveal">
+      "植物美容科学 ® から生まれた、<br>まったく新しいメソッド"
+    </blockquote>
+    <div class="section-line" style="margin-bottom:2rem;"></div>
+    <p class="concept-body reveal">
+      スキンケアの視点から頭皮をケアするという考え方は、THE HERBSの植物美容科学 ® から生まれました。
+      ヘアケアはダメージ緩和のケアであり、近年増加するうねり・抜け毛・膨らむクセ・頭皮の痒みなどは、
+      頭皮ケアを必要とします。エイジング毛というお悩み向けたアプローチです。
+      <br><br>
+      どこにもない、THE HERBSだけのボタニカルスキンケアは、
+      植物が本来持つ美容成分をそのまま活かし、清潔で潤いのある、健やかな肌と髪へと導きます。
+    </p>
+  </div>
+</section>
+
+
+<!-- ③ CTA SECTION -->
+<section class="cta-section" id="cta">
+  <div class="cta-inner">
+    <span class="section-tag reveal">Workshop &amp; Training</span>
+    <h2 class="section-title reveal">講習会への<em>お申し込み</em></h2>
+    <p class="cta-lead reveal">
+      THE HERBSの植物美容科学 ® を、サロンに導入しませんか。<br>
+      導入講習・フォローアップ講習の２種類をご用意しています。
+    </p>
+
+    <div class="cta-buttons">
+
+      <div class="cta-card reveal">
+        <span class="cta-card-tag">Introduction</span>
+        <div class="cta-card-title">導入講習申し込み</div>
+        <div class="cta-card-line"></div>
+        <p class="cta-card-desc">
+          はじめてTHE HERBSをサロンに導入される方向けの講習会です。製品知識・施術方法・カウンセリング技術を習得できます。
+        </p>
+        <a href="【導入講習申し込みURL】" class="btn-cta-primary">導入講習に申し込む</a>
+        <span style="font-family:'Noto Sans JP',sans-serif;font-size:0.68rem;font-weight:400;letter-spacing:0.1em;color:var(--sage-dark);">ただいま日程調整中です</span>
+      </div>
+
+      <div class="cta-card reveal">
+        <span class="cta-card-tag">Follow-up</span>
+        <div class="cta-card-title">フォローアップ講習会</div>
+        <div class="cta-card-line"></div>
+        <p class="cta-card-desc">
+          導入済みサロン向けの継続サポート講習です。最新情報・事例共有・技術のブラッシュアップを行います。
+        </p>
+        <a href="https://booking.scalp-labo.jp/apply.html?s=hb" target="_blank" rel="noopener" class="btn-cta-outline">フォローアップに申し込む</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">THE HERBS</div>
+  <div>
+    <div>製造販売元　株式会社 THE HERBS</div>
+    <div style="margin-top:0.3rem;">兵庫県芦屋市南宮町 3-10　 ｜  Tel. 0797-23-0364</div>
+  </div>
+</footer>
+
+<script>
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+    setTimeout(initReveal, 50);
+  }
+
+  function initReveal() {
+    const els = document.querySelectorAll('.reveal:not(.visible)');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    els.forEach(el => observer.observe(el));
+  }
+
+  document.addEventListener('DOMContentLoaded', initReveal);
+</script>
+</body>
+</html>
