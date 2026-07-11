@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+</style>
+<title>ハーブスチーマー | THE HERBS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+JP:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-deep: #2C3E2D;
+  --green-mid: #4A6B4E;
+  --green-sage: #8FA68E;
+  --green-light: #C5D4C0;
+  --green-mist: #E8EFE5;
+  --gold: #B8965A;
+  --gold-light: #D4B87A;
+  --cream: #FAF7F2;
+  --cream-dark: #F0EBE1;
+  --text-dark: #2A2A25;
+  --text-mid: #5A5A52;
+  --text-light: #8A8A80;
+  --white: #FEFEFE;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 17px;
+}
+
+body {
+  font-family: 'Noto Serif JP', serif;
+  color: var(--text-dark);
+  background: var(--cream);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  max-width: 100vw;
+  margin: 0 auto;
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--green-deep);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  filter: brightness(0.95);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(44,62,45,0.15) 0%,
+    rgba(44,62,45,0.05) 30%,
+    rgba(44,62,45,0.2) 70%,
+    rgba(44,62,45,0.55) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: var(--white);
+  padding: 0 24px;
+  max-width: 800px;
+  animation: fadeUp 1.2s ease-out;
+  /* 追加 */
+text-shadow: 0 2px 20px rgba(44,62,45,0.5);
+}
+
+.hero-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: 1.2rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 32px;
+  opacity: 0.9;
+}
+
+.hero-title {
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+}
+
+.hero-title em {
+  font-style: normal;
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.hero-sub {
+  font-weight: 400;
+  font-size: clamp(0.92rem, 1.8vw, 1.15rem);
+  line-height: 2;
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 0.06em;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--gold-light);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.hero-scroll::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--gold-light), transparent);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ===== SECTION COMMON ===== */
+section {
+  padding: 100px 24px;
+}
+
+.section-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: 0.85rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.section-heading {
+  font-weight: 500;
+  font-size: clamp(1.3rem, 3.1vw, 2rem);
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  margin-bottom: 24px;
+  color: var(--green-deep);
+}
+
+.section-body {
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-mid);
+  letter-spacing: 0.04em;
+}
+
+/* ===== CATCH COPY SECTION ===== */
+.catch {
+  background: var(--green-deep);
+  color: var(--white);
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.catch-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.catch-text {
+  font-weight: 400;
+  font-size: clamp(1.4rem, 3.1vw, 2rem);
+  line-height: 1.8;
+  letter-spacing: 0.1em;
+}
+
+.catch-text em {
+  font-style: normal;
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.catch-divider {
+  width: 60px;
+  height: 1px;
+  background: var(--gold);
+  margin: 40px auto;
+  opacity: 0.6;
+}
+
+.catch-sub {
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 2;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.04em;
+}
+
+/* ===== CONCEPT ===== */
+.concept {
+  background: var(--cream);
+}
+
+.concept-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.concept-image {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.concept-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.concept-image:hover img {
+  transform: scale(1.03);
+}
+
+.concept-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(184,150,90,0.2);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* ===== FEATURES ===== */
+.features {
+  background: var(--white);
+}
+
+.features-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.feature-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.feature-card {
+  padding: 40px 28px;
+  background: var(--cream);
+  border-radius: 6px;
+  border: 1px solid rgba(184,150,90,0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(44,62,45,0.08);
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--green-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--white);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.feature-card h3 {
+  font-weight: 500;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  color: var(--green-deep);
+  margin-bottom: 16px;
+}
+
+.feature-card p {
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 2;
+  color: var(--text-mid);
+  letter-spacing: 0.03em;
+}
+
+/* ===== GALLERY / USE CASES ===== */
+.gallery {
+  background: var(--green-deep);
+  color: var(--white);
+  padding: 100px 24px;
+}
+
+.gallery-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.gallery-header .section-label {
+  color: var(--gold-light);
+}
+
+.gallery-header .section-heading {
+  color: var(--white);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px 24px 24px;
+  background: linear-gradient(to top, rgba(44,62,45,0.9), transparent);
+}
+
+.gallery-caption h4 {
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  color: var(--gold-light);
+  margin-bottom: 6px;
+}
+
+.gallery-caption p {
+  font-weight: 400;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ===== 4WAY ===== */
+.fourway {
+  background: var(--cream);
+  text-align: center;
+}
+
+.fourway-header {
+  margin-bottom: 60px;
+}
+
+.fourway-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.fourway-item {
+  padding: 36px 20px;
+  background: var(--white);
+  border-radius: 6px;
+  border-bottom: 3px solid var(--gold);
+  transition: transform 0.3s ease;
+}
+
+.fourway-item:hover {
+  transform: translateY(-3px);
+}
+
+.fourway-num {
+  display: none;
+}
+
+.fourway-item h4 {
+  font-weight: 600;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  color: var(--green-deep);
+  margin-bottom: 12px;
+}
+
+.fourway-item p {
+  font-weight: 400;
+  font-size: 0.92rem;
+  line-height: 1.9;
+  color: var(--text-mid);
+}
+
+/* ===== BENEFITS (for salon owners) ===== */
+.benefits {
+  background: var(--white);
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.benefit-list {
+  list-style: none;
+}
+
+.benefit-list li {
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(184,150,90,0.15);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.benefit-list li:last-child {
+  border-bottom: none;
+}
+
+.benefit-check {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--green-mist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green-mid);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.benefit-text h4 {
+  font-weight: 500;
+  font-size: 1.08rem;
+  letter-spacing: 0.04em;
+  color: var(--green-deep);
+  margin-bottom: 4px;
+}
+
+.benefit-text p {
+  font-weight: 400;
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: var(--text-mid);
+}
+
+/* ===== PRODUCT SPEC ===== */
+.spec {
+  background: var(--green-mist);
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.spec-image { 
+  display: flex; align-items: center; justify-content: center; min-height: 500px; 
+  }
+  
+.spec-image img { 
+  width: 100%; max-width: 260px; height: auto; object-fit: contain; filter: drop-shadow(...); 
+  }
+
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+}
+
+.spec-table tr {
+  border-bottom: 1px solid rgba(44,62,45,0.1);
+}
+
+.spec-table th {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--green-deep);
+  text-align: left;
+  padding: 14px 0;
+  width: 120px;
+  letter-spacing: 0.04em;
+}
+
+.spec-table td {
+  font-weight: 400;
+  font-size: 0.95rem;
+  color: var(--text-mid);
+  padding: 14px 0;
+}
+
+/* ===== HERB QUALITY ===== */
+.quality {
+  background: var(--cream);
+}
+
+.quality-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.quality-badges {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.quality-badge {
+  padding: 12px 20px;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.quality-badge span {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.quality-badge small {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+/* ===== CTA ===== */
+.cta {
+  background: var(--green-deep);
+  color: var(--white);
+  text-align: center;
+  padding: 100px 24px;
+}
+
+.cta-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cta .section-heading {
+  color: var(--white);
+  margin-bottom: 16px;
+}
+
+.cta-body {
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 2;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 40px;
+}
+
+.cta-btn {
+  display: inline-block;
+  padding: 18px 56px;
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.4s ease;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cta-btn:hover {
+  background: var(--gold);
+  color: var(--green-deep);
+}
+
+.cta-sub {
+  margin-top: 20px;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: #1a2a1b;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+}
+
+footer a {
+  color: var(--gold-light);
+  text-decoration: none;
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+.spec-grid { grid-template-columns: 1fr; justify-items: center; }
+.spec-image { min-height: auto; }
+.spec-image img { max-width: 200px; }
+  
+  @media (max-width: 900px) {
+  .concept-grid,
+  .benefits-grid,
+  .spec-grid,
+  .quality-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .feature-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .fourway-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  section {
+    padding: 72px 20px;
+  }
+
+  .hero {
+    min-height: 600px;
+  }
+
+  .quality-badges {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .fourway-grid {
+    grid-template-columns: 1fr;
+  }
+  /* ===== スマホ全体のフォント・行間調整 ===== */
+  html {
+    font-size: 17px;
+  }
+
+  .section-heading {
+    font-size: 1.3rem;
+    line-height: 1.6;
+  }
+
+  .section-body {
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+
+  .catch-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+  }
+
+  .catch-sub {
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  .feature-card h3 {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .feature-card p {
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+
+  .fourway-item h4 {
+    font-size: 1.1rem;
+  }
+
+  .fourway-item p {
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+
+  .benefit-text h4 {
+    font-size: 0.95rem;
+  }
+
+  .benefit-text p {
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+
+  .gallery-caption h4 {
+    font-size: 0.9rem;
+  }
+
+  .gallery-caption p {
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+
+  .cta-body {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .hero-title {
+    font-size: 1.7rem;
+    line-height: 1.6;
+  }
+
+  .hero-sub {
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .hero-sub br {
+    display: none;
+  }
+
+  .hero-brand {
+    font-size: 0.9rem;
+    letter-spacing: 0.4em;
+    margin-bottom: 24px;
+  }
+  .hero-content {
+    padding: 0 16px;
+    max-width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="https://static.wixstatic.com/media/a3e22d_0d0f93d7446441febc98bc7b2c30e0ce~mv2.png" alt="ハーブスチーマー施術風景">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-brand">Botanical Mist Extractor</p>
+    <h1 class="hero-title">
+      蒸気で届ける、<em>植物の力</em>。<br>
+      サロンの価値が、変わる。
+    </h1>
+    <p class="hero-sub">
+      たった10分で、できたてのミスト化粧水。<br>
+      肌・髪・頭皮 ── すべてに応える<em>ボタニカルミスト抽出機</em>
+    </p>
+  </div>
+  <div class="hero-scroll">Scroll<br></div>
+</section>
+
+<!-- ===== CATCH COPY ===== -->
+<section class="catch">
+  <div class="catch-inner">
+    <p class="catch-text">
+      噴霧されるミストは、<br><em>化粧品</em>です。<br>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+      蒸気状の化粧品は<em>世界初</em>。<br>
+      香り、温度、その効果<br>
+      すべてがはじめての感覚。
+    </p>
+    <div class="catch-divider"></div>
+    <p class="catch-sub">
+      世界初のコスメドライハーブから抽出する植物成分ミスト。<br>
+      エコサート認証（フランス）・NASAA認証（オーストラリア）取得のオーガニックハーブ使用。
+    </p>
+    <a href="https://www.the-herbs.co.jp/school/herb-care" target="_blank" style="display:inline-block; margin-top:24px; color:var(--gold-light); font-size:1.05rem; font-weight:500; letter-spacing:0.04em; text-decoration:none; border-bottom:1px solid var(--gold-light); padding-bottom:2px;">使用するハーブについて →</a>
+  </div>
+</section>
+
+<!-- ===== CONCEPT ===== -->
+<section class="concept">
+  <div class="section-inner">
+    <div class="concept-grid">
+      <div class="concept-image reveal">
+        <img src="https://static.wixstatic.com/media/a3e22d_85e24ff355d44adf9efbe7b65fae4a9b~mv2.jpg" alt="ハーブスチーマーとドライハーブパック">
+      </div>
+      <div class="reveal">
+        <p class="section-label">Concept</p>
+        <h2 class="section-heading">
+          ドライハーブから<br>植物成分を蒸気で抽出、<br>
+          直接肌と髪に届ける。
+        </h2>
+        <p class="section-body">
+          ハーブスチーマーは、化粧品として製造・品質管理されたドライハーブを蒸気で抽出し、
+          できたての植物エキスをミスト状にして肌・髪・頭皮に届けるボタニカルミスト抽出機です。<br><br>
+          トリートメントのように「塗って剥がれる」のではなく、
+          蒸気として浸透するまったく新しいアプローチ。
+          2010年の発売以来、全国のサロンで採用されています。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="features">
+  <div class="section-inner">
+    <div class="features-header reveal">
+      <p class="section-label">Features</p>
+      <h2 class="section-heading">美容のプロに選ばれる、<br>9つの理由</h2>
+    </div>
+    <div class="feature-cards">
+      <div class="feature-card reveal">
+         <div class="feature-icon">01</div>
+        <h3>蒸気状の化粧品は<br>世界初</h3>
+        <p>噴霧されるハーブミストそのものが化粧品。香りも温度も効果も、すべてがはじめての感覚です。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">02</div>
+        <h3>ヘアカラー・パーマを<br>長持ちさせる</h3>
+        <p>キューティクル内部に潤いを届ける植物エキスは、剥がれ落ちないケア。カラーやパーマ、縮毛矯正を上質な仕上がりに。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">03</div>
+        <h3>エイジングの<br>お悩みに対応</h3>
+        <p>髪ならうねり・つむじ割れ・広がり・ハチの張り・薄毛。肌なら乾燥・敏感・インナードライ。2010年からの実績で、あらゆるエイジングケアを実現します。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">04</div>
+        <h3>施術中の刺激を<br>緩和する</h3>
+        <p>植物の鎮静作用で、カラー・パーマ施術時の赤み・かゆみ・ひりつきを緩和。安定的な皮膚状態を保ちます。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">05</div>
+        <h3>毛穴・皮溝の汚れを<br>浮かせて保湿</h3>
+        <p>不要な物質を除去し、必要な成分を補給。敏感肌・乾燥肌・皮脂過多など、幅広い肌悩みにアプローチ。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">06</div>
+        <h3>カットラインを<br>鮮明に長持ち</h3>
+        <p>根元のうねりを解消し、髪のまとまりが向上。ご自宅でのスタイル再現性を高め、お客様の満足度を高めます。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">07</div>
+        <h3>植物の芳香による<br>リラクゼーション</h3>
+        <p>アロマとは異なる植物の自然な香りが約40分間持続。深呼吸を誘い、施術効果も高まります。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">08</div>
+        <h3>何よりも結果<br>翌日の化粧のりの違いでわかる</h3>
+        <p>自ら保湿できる肌は、どんな高級クリームにも勝るうるおいとハリツヤをもたらします。</p>
+      </div>
+      <div class="feature-card reveal">
+         <div class="feature-icon">09</div>
+        <h3>スキン・スカルプ・ヘア・ボディ・リラックスの5WAY</h3>
+        <p>ハーブのブレンドを変えるだけで、多彩なメニュー展開が可能。美容室でもスキンケア、エステでも頭皮ケアが展開可能。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5WAY ===== -->
+<section class="fourway">
+  <div class="section-inner">
+    <div class="fourway-header reveal">
+      <p class="section-label">5WAY Menu</p>
+      <h2 class="section-heading">ハーブのセレクトで広がる、メニュー展開の可能性</h2>
+    </div>
+    <div class="fourway-grid">
+      <div class="fourway-item reveal">
+        <div class="fourway-num">01</div>
+        <h4>スキンケア</h4>
+        <p>毛穴を清潔に保ち、肌のキメを整える。弱酸性を保ちながら、バランスの取れた素肌へ。</p>
+      </div>
+      <div class="fourway-item reveal">
+        <div class="fourway-num">02</div>
+        <h4>頭皮ケア</h4>
+        <p>頭皮環境を整え、適度なボリューム感とハリ・ツヤを取り戻す。残留化学成分の除去にも。</p>
+      </div>
+      <div class="fourway-item reveal">
+        <div class="fourway-num">03</div>
+        <h4>ヘアケア</h4>
+        <p>キューティクル内部を清浄にし、毛髪の水分を保持。ミネラル効果でカラーやパーマを長持ちさせます。</p>
+      </div>
+      <div class="fourway-item reveal">
+        <div class="fourway-num">04</div>
+        <h4>ボディケア</h4>
+        <p>エステサロンのボディケアでも大活躍。背面の施術時に当てるボタニカルミストは、身体を芯から温めます。</p>
+      </div>
+      <div class="fourway-item reveal">
+        <div class="fourway-num">05</div>
+        <h4>リラックス</h4>
+        <p>植物の自然な芳香が深呼吸を促し、心身にリラクゼーションをもたらします。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALLERY ===== -->
+<section class="gallery">
+  <div class="gallery-header reveal">
+    <p class="section-label">Salon Scene</p>
+    <h2 class="section-heading">サロンでの活用シーン</h2>
+  </div>
+  <div class="gallery-grid">
+    <div class="gallery-item reveal">
+      <img src="https://static.wixstatic.com/media/a3e22d_0d86fa7e35344f7aa42fc84c932ee229~mv2.jpg" alt="フェイシャルケア施術">
+      <div class="gallery-caption">
+        <h4>フェイシャルケア</h4>
+        <p>カラーやパーマの待ち時間に、ハーブフェイシャルで特別な体験を。</p>
+      </div>
+    </div>
+    <div class="gallery-item reveal">
+      <img src="https://static.wixstatic.com/media/a3e22d_e2af6d540cfd4c28b6572b4071eb1793~mv2.jpg" alt="ヘアケア施術">
+      <div class="gallery-caption">
+        <h4>ヘアケア</h4>
+        <p>蒸気が髪全体を包み、植物エキスが内部まで浸透します。</p>
+      </div>
+    </div>
+    <div class="gallery-item reveal">
+      <img src="https://static.wixstatic.com/media/a3e22d_2e2a6cc2f8594d52adc246ef5f505e58~mv2.jpg" alt="ドライハーブ">
+      <div class="gallery-caption">
+        <h4>化粧品登録されたハーブ</h4>
+        <p>プロの目線でハーブを選ぶ。オーガニックハーブで効果的な施術が可能。</p>
+      </div>
+    </div>
+    <div class="gallery-item reveal">
+      <img src="https://static.wixstatic.com/media/a3e22d_06754a1ae7254cdd9691a9128c6f53fd~mv2.jpg" alt="THE HERBS サロン内装">
+      <div class="gallery-caption">
+        <h4>サロン空間</h4>
+        <p>植物の香りに満ちた特別な空間が、お客様の満足度を高めます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BENEFITS ===== -->
+<section class="benefits">
+  <div class="section-inner">
+    <div class="benefits-grid">
+      <div class="reveal">
+        <p class="section-label">For Salon Owners</p>
+        <h2 class="section-heading">導入サロンの声</h2>
+        <ul class="benefit-list">
+          <li>
+            <div class="benefit-check">✓</div>
+            <div class="benefit-text">
+              <h4>客単価アップ</h4>
+              <p>カット＋ハーブスチームの新メニューで、客単価¥2,000〜¥5,000の向上が見込めます。</p>
+            </div>
+          </li>
+          <li>
+            <div class="benefit-check">✓</div>
+            <div class="benefit-text">
+              <h4>リピート率の向上</h4>
+              <p>「手触りが違う」とお客様が実感。施術後の変化が明確で、次回予約につながります。</p>
+            </div>
+          </li>
+          <li>
+            <div class="benefit-check">✓</div>
+            <div class="benefit-text">
+              <h4>他店との差別化</h4>
+              <p>蒸気状の化粧品は日本初。他にはないオリジナルメニューで、サロンのブランド力を強化。</p>
+            </div>
+          </li>
+          <li>
+            <div class="benefit-check">✓</div>
+            <div class="benefit-text">
+              <h4>施術の付加価値</h4>
+              <p>カラー・パーマの待ち時間を活用。新たな時間を生まず、付加価値だけを提供できます。</p>
+            </div>
+          </li>
+          <li>
+            <div class="benefit-check">✓</div>
+            <div class="benefit-text">
+              <h4>簡単オペレーション</h4>
+              <p>ハーブパックを投入してスイッチを入れるだけ。たった10分で出来立てのミスト化粧水。</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="concept-image reveal">
+        <img src="https://static.wixstatic.com/media/a3e22d_b998cf0d14ce493a9c375a055702e0e4~mv2.jpg" alt="施術風景">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HERB QUALITY ===== -->
+<section class="quality">
+  <div class="section-inner">
+    <div class="quality-grid">
+      <div class="concept-image reveal">
+        <img src="https://static.wixstatic.com/media/a3e22d_43db881ae7f74aa2888e9826dd247263~mv2.jpg" alt="ハーブジャーコレクション">
+      </div>
+      <div class="reveal">
+        <p class="section-label">Herb Quality</p>
+        <h2 class="section-heading">世界初、<br>コスメドライハーブ</h2>
+        <p class="section-body">
+          使用するドライハーブは、化粧品として製造・品質管理された世界初の「コスメドライハーブ」。
+          フランスのエコサート認証、オーストラリアのNASAA認証を取得したオーガニック原料のみを使用しています。<br><br>
+          ブレンドの種類を変えるだけで、スキンケア・頭皮ケア・ヘアケア・リラクゼーションと、
+          多彩なメニュー展開が可能です。
+        </p>
+        <a href="https://www.the-herbs.co.jp/school/herb-care" target="_blank" style="display:inline-block; margin-top:20px; color:var(--gold); font-size:1.05rem; font-weight:500; letter-spacing:0.04em; text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:2px;">ハーブについて詳しく見る →</a>
+        <div class="quality-badges">
+          <div class="quality-badge">
+            <span>ECOCERT</span>
+            <small>フランス</small>
+          </div>
+          <div class="quality-badge">
+            <span>NASAA</span>
+            <small>オーストラリア</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SPEC ===== -->
+<section class="spec">
+  <div class="section-inner">
+    <div class="spec-grid">
+      <div class="spec-image reveal">
+        <img src="https://static.wixstatic.com/media/a3e22d_a51dc45eafea4d8fb7d4516c6591c6c4~mv2.png" alt="ハーブスチーマー">
+      </div>
+      <div class="reveal">
+        <p class="section-label">Product</p>
+        <h2 class="section-heading">ハーブスチーマー 製品仕様</h2>
+        <table class="spec-table">
+          <tr><th>製品名</th><td>ハーブスチーマー VB-001</td></tr>
+          <tr><th>サイズ</th><td>高さ 85cm × 幅 30cm × 奥行き 32cm</td></tr>
+          <tr><th>重量</th><td>7.5 kg（脚部は組み立て式）</td></tr>
+          <tr><th>電源</th><td>AC 100〜120V 50Hz / 60Hz</td></tr>
+          <tr><th>消費電力</th><td>650W</td></tr>
+          <tr><th>機能</th><td>OZONE / ENERGY / VAPOR / TIMER 搭載</td></tr>
+          <tr><th>用途</th><td>スキンケア・頭皮ケア・ヘアケア・リラクゼーション</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta">
+  <div class="cta-inner reveal">
+    <p class="section-label" style="color: var(--gold-light);">Contact</p>
+    <h2 class="section-heading">導入のご相談・体験会</h2>
+    <p class="cta-body">
+      ハーブスチーマーの導入について、<br>
+      体験会・説明会も行っております。<br>お気軽にお問い合わせください。
+    </p>
+    <a href="https://www.the-herbs.co.jp/ask" class="cta-btn">お問い合わせ</a>
+    <p class="cta-sub">株式会社THE HERBS ─ 芦屋, 兵庫</p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>© 2026 THE HERBS Inc.<br> 化粧品製造業・化粧品製造販売業<br>兵庫県芦屋市</p>
+  <p style="margin-top: 8px;"><a href="https://www.the-herbs.co.jp">www.the-herbs.co.jp</a></p>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
