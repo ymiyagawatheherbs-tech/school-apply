@@ -1861,9 +1861,9 @@ function renderCourses(){
       <div class="course-row${past?' is-past':''}" style="border-left:5px solid ${col}">
         <div class="ctop">
           <div>
-            <div class="ctitle">${esc(c.title)}${past?' <span class="past-tag">終了</span>':''}${c.is_confirmed?' <span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#B5483A;border-radius:8px;padding:1px 8px;margin-left:4px;">開催確定・サロン枠停止</span>':''}</div>
+            <div class="ctitle">${esc(c.title)} ${statusBadge(c)}${past?' <span class="past-tag">終了</span>':''}${c.is_confirmed?' <span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#B5483A;border-radius:8px;padding:1px 8px;margin-left:4px;">開催確定・サロン枠停止</span>':''}</div>
             <div class="cmeta">${fmtDate(c.course_date)} ／ ${esc(c.place||'—')} ／ 定員${c.capacity??'—'}　予約${c.booking_count}件</div>
-            <div class="cmeta">会員¥${Number(c.price_member||0).toLocaleString()} ／ 通常¥${Number(c.price_normal||0).toLocaleString()} ／ ${statusBadge(c)}${c.zoom_url?' ／ Zoom設定あり':''}</div>
+            <div class="cmeta">会員¥${Number(c.price_member||0).toLocaleString()} ／ 通常¥${Number(c.price_normal||0).toLocaleString()}${c.zoom_url?' ／ Zoom設定あり':''}</div>
             <div class="cmeta" style="color:#b9b1a3;">${esc(c.id)}</div>
           </div>
           <div><div class="cactions">
@@ -1927,7 +1927,7 @@ window.adminCalDay=(y,mo,d)=>{
     const pn = c.price_normal  != null ? `¥${Number(c.price_normal ).toLocaleString()}` : '—';
     return `<div class="course-row" style="border-left:5px solid ${col};margin-bottom:10px;">
       <div class="ctop"><div style="flex:1;">
-        <div class="ctitle">${esc(c.title)}</div>
+        <div class="ctitle">${esc(c.title)} ${statusBadge(c)}</div>
         <table style="margin-top:6px;font-size:12px;color:var(--muted);border-collapse:collapse;line-height:1.9;">
           <tr><td style="padding-right:12px;white-space:nowrap;">🆔 講座ID</td><td style="font-family:monospace;color:var(--ink);font-weight:600;">${esc(c.id)}</td></tr>
           <tr><td style="padding-right:12px;white-space:nowrap;">🕐 時間</td><td style="color:var(--ink);">${timeRange}</td></tr>
@@ -2151,9 +2151,9 @@ window.toggleConfirm=async(id,cur)=>{
 /* ステータスをバッジで表示（未設定・募集中→募集中／終了→募集終了／その他はそのまま） */
 function statusBadge(c){
   const s=c.status||'募集中';
-  if(s==='終了') return '<span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#8a8a80;border-radius:8px;padding:1px 8px;">募集終了</span>';
-  if(s==='募集中') return '<span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#6E8E7B;border-radius:8px;padding:1px 8px;">募集中</span>';
-  return '<span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#B5483A;border-radius:8px;padding:1px 8px;">'+esc(s)+'</span>';
+  if(s==='終了') return '<span style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#8a8a80;border-radius:9px;padding:2px 12px;vertical-align:2px;">募集終了</span>';
+  if(s==='募集中') return '<span style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#6E8E7B;border-radius:9px;padding:2px 12px;vertical-align:2px;">募集中</span>';
+  return '<span style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#B5483A;border-radius:9px;padding:2px 12px;vertical-align:2px;">'+esc(s)+'</span>';
 }
 /* 募集終了 ⇔ 募集中 の切り替え */
 window.toggleRecruit=async(id,isClosed)=>{
