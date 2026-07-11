@@ -34,7 +34,7 @@
   /* ヘッダー見出し */
   .hero{text-align:center;margin-bottom:2rem;}
   .hero .brand{font-size:.78rem;letter-spacing:.35em;color:var(--sage);margin-bottom:.7rem;font-weight:600;}
-  .hero h1{font-family:'Shippori Mincho B1',serif;font-size:2rem;font-weight:700;color:var(--greenDark);margin-bottom:.4rem;letter-spacing:.08em;}
+  .hero h1{font-family:'Shippori Mincho B1',serif;font-size:1.7rem;font-weight:600;color:var(--greenDark);margin-bottom:.4rem;letter-spacing:.1em;}
   .hero p{font-size:.85rem;color:var(--textSub);}
 
   /* ステップインジケーター */
@@ -181,7 +181,7 @@
 <div class="wrap" id="app">
   <div class="hero" id="hero">
     <div class="brand">RESERVATION</div>
-    <h1>ご予約・お申し込み</h1>
+    <h1>ご予約</h1>
   </div>
   <div id="content"><div class="loading">読み込み中…</div></div>
   <div id="mypage_link" style="text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);">
@@ -192,15 +192,13 @@
   <!-- 講習会カレンダー（植物美容学校） -->
   <div class="school" id="school_section">
     <div class="sc-label">SCHOOL</div>
-    <h2>講習会のご案内</h2>
+    <h2>講座のご案内</h2>
     <p class="sc-intro">植物美容と体質を、より深く学びたい方のために。<br>初めての方にも、開かれた学びの場です。</p>
-    <div class="sc-nav">
-      <button type="button" id="sc_prev" aria-label="前の月">&#8249;</button>
-      <span class="sc-month" id="sc_month"></span>
-      <button type="button" id="sc_next" aria-label="次の月">&#8250;</button>
+    <!-- 講座スケジュールページ（school.html）公開時に、以下のコメントを外してください
+    <div style="text-align:center;">
+      <a href="school.html" style="display:inline-block;background:#2c3626;color:#eef0e8;font-size:.84rem;letter-spacing:.08em;padding:.85rem 2.4rem;border-radius:8px;text-decoration:none;">講座スケジュールを見る →</a>
     </div>
-    <div class="sc-grid" id="sc_grid"></div>
-    <div class="sc-list" id="sc_list"><div class="sc-note">読み込み中…</div></div>
+    -->
   </div>
 </div>
 
@@ -210,7 +208,9 @@
   <div class="mincho" style="color:#fff;font-size:1.15rem;letter-spacing:.18em;font-weight:600;margin-bottom:1.1rem;">THE HERBS</div>
   <div style="color:rgba(255,255,255,.8);font-size:.74rem;line-height:2;margin-bottom:1.1rem;">
     株式会社THE HERBS<br>
-    兵庫県神戸市灘区大内通1-7-17 1F<br>
+    本社工場：兵庫県芦屋市南宮町3−10<br>
+    直営店舗：兵庫県神戸市中央区小野柄通８丁目１−８神戸阪急本館６階<br>
+    植物美容学校・サロン：兵庫県神戸市灘区大内通1-7-17 1F<br>
     <a href="https://the-herbs.co.jp" style="color:rgba(255,255,255,.8);text-decoration:underline;">the-herbs.co.jp</a>
   </div>
   <div class="copy">© 2026 THE HERBS. All rights reserved.</div>
@@ -462,7 +462,7 @@ function renderForm(){
       <div class="field-group">
         <label class="field">ご希望時間<span class="req">*</span></label>
         <div id="time_wrap">${timeSelectHtml(slots)}</div>
-        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">講習会・他のご予約と重なる時間は選べません</div>`:''}
+        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">講座・他のご予約と重なる時間は選べません</div>`:''}
         <div id="time_err">${errors.time?`<div class="err-msg">${errors.time}</div>`:''}</div>
       </div>
     </div>
@@ -631,108 +631,5 @@ window.submitBooking=submitBooking;
 })();
 </script>
 
-<script>
-/* ===== 講習会カレンダー（植物美容学校） =====
-   講座データはherbs-booking-apiから取得。失敗時はSupabase RESTに切り替える。 */
-(function(){
-  const COURSES_API='https://herbs-booking-api.vercel.app/api/courses';
-  const SC_SB_URL='https://gwggolaxwglziadgwyje.supabase.co';
-  const SC_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3Z2dvbGF4d2dsemlhZGd3eWplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MjA1OTEsImV4cCI6MjA5NjM5NjU5MX0.jAPDv_WQlXcbiD1EbiiYQGlInkFrFqltFmk4nREJsqo';
-  let SC_COURSES=[]; let scY=0, scM=0;
-  const scEsc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-  function jstYMD(iso){
-    try{ return new Date(iso).toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}); }catch(e){ return ''; }
-  }
-  function jstHM(iso){
-    try{ return new Date(iso).toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; }
-  }
-  function extractCourses(d){
-    if(Array.isArray(d)) return d;
-    if(d&&Array.isArray(d.courses)) return d.courses;
-    if(d&&Array.isArray(d.series)){
-      let all=[]; d.series.forEach(s=>{ if(Array.isArray(s.courses)) all=all.concat(s.courses); }); return all;
-    }
-    return [];
-  }
-  async function scFetch(){
-    try{
-      const r=await fetch(COURSES_API);
-      if(r.ok){ const d=await r.json(); const list=extractCourses(d); if(list.length) return list; }
-    }catch(e){}
-    try{
-      const r=await fetch(SC_SB_URL+'/rest/v1/courses?select=*&order=course_date.asc',
-        {headers:{apikey:SC_SB_KEY,Authorization:'Bearer '+SC_SB_KEY}});
-      if(r.ok){ const d=await r.json(); if(Array.isArray(d)) return d; }
-    }catch(e){}
-    return null;
-  }
-  function scRender(){
-    const grid=document.getElementById('sc_grid');
-    const list=document.getElementById('sc_list');
-    const mLabel=document.getElementById('sc_month');
-    if(!grid||!list||!mLabel) return;
-    mLabel.textContent=scY+'年'+(scM+1)+'月';
-    const mKey=scY+'-'+String(scM+1).padStart(2,'0');
-    const inMonth=SC_COURSES.filter(c=>c._ymd&&c._ymd.startsWith(mKey));
-    const byDay={};
-    inMonth.forEach(c=>{ (byDay[c._ymd]=byDay[c._ymd]||[]).push(c); });
-
-    let g='';
-    ['日','月','火','水','木','金','土'].forEach(d=>{ g+='<div class="sc-dow">'+d+'</div>'; });
-    const first=new Date(scY,scM,1).getDay();
-    const days=new Date(scY,scM+1,0).getDate();
-    for(let i=0;i<first;i++) g+='<div class="sc-day sc-empty"></div>';
-    for(let d=1;d<=days;d++){
-      const ymd=mKey+'-'+String(d).padStart(2,'0');
-      if(byDay[ymd]){
-        g+='<div class="sc-day sc-has" data-d="'+ymd+'"><span>'+d+'</span><span class="sc-dot"></span></div>';
-      }else{
-        g+='<div class="sc-day">'+d+'</div>';
-      }
-    }
-    grid.innerHTML=g;
-    grid.querySelectorAll('.sc-has').forEach(el=>{
-      el.onclick=()=>{ const t=document.getElementById('sc-day-'+el.dataset.d); if(t) t.scrollIntoView({behavior:'smooth',block:'center'}); };
-    });
-
-    const dayKeys=Object.keys(byDay).sort();
-    if(!dayKeys.length){ list.innerHTML='<div class="sc-note">この月の開催予定はありません</div>'; return; }
-    let h='';
-    dayKeys.forEach(ymd=>{
-      const dt=new Date(ymd+'T00:00:00+09:00');
-      const label=dt.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
-      h+='<div class="sc-datehead" id="sc-day-'+ymd+'">'+label+'</div>';
-      byDay[ymd].forEach(c=>{
-        const time=jstHM(c.course_date)+(c.course_end?' − '+jstHM(c.course_end):'');
-        const mode=c.zoom_url?'Zoom開催':(c.place?scEsc(c.place):'対面');
-        const pm=Number(c.price_member||0).toLocaleString();
-        const pn=Number(c.price_normal||0).toLocaleString();
-        const url='apply.html?'+(c.series_id?('series='+encodeURIComponent(c.series_id)+'&'):'')+'course='+encodeURIComponent(c.id);
-        h+='<a class="sc-card" href="'+url+'">'
-          +'<div class="sc-title">'+scEsc(c.title)+(c.session?'（'+scEsc(c.session)+'）':'')+'</div>'
-          +'<div class="sc-meta">'+time+' ／ '+mode+'<br>会員 ¥'+pm+' ・ 一般 ¥'+pn+'</div>'
-          +'<div class="sc-go">お申し込みへ →</div>'
-          +'</a>';
-      });
-    });
-    list.innerHTML=h;
-  }
-  async function scInit(){
-    const list=document.getElementById('sc_list');
-    const raw=await scFetch();
-    if(raw===null){ if(list) list.innerHTML='<div class="sc-note">講習会情報を読み込めませんでした</div>'; return; }
-    SC_COURSES=raw
-      .filter(c=>c&&c.course_date&&(!c.status||c.status==='公開'))
-      .map(c=>({...c,_ymd:jstYMD(c.course_date)}));
-    const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Tokyo'}));
-    scY=now.getFullYear(); scM=now.getMonth();
-    document.getElementById('sc_prev').onclick=()=>{ scM--; if(scM<0){scM=11;scY--;} scRender(); };
-    document.getElementById('sc_next').onclick=()=>{ scM++; if(scM>11){scM=0;scY++;} scRender(); };
-    scRender();
-  }
-  scInit();
-})();
-</script>
 </body>
 </html>
