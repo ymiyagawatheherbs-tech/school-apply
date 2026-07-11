@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>エステの基礎を学ぶ、フェイスケア講習会 | 1年間プログラム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Zen+Old+Mincho:wght@400;700&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ivory: #FAF6F0;
+    --cream: #F2EAE0;
+    --warm-brown: #8C6D5A;
+    --dark-brown: #3D2B1F;
+    --gold: #C4A265;
+    --light-gold: #E8D5B0;
+    --sage: #7A8C72;
+    --blush: #D4A49A;
+    --text: #2C1F17;
+    --text-light: #6B5248;
+
+    /* スケール基準：PC 16px / スマホ 14px */
+    --base: clamp(15px, 1.2vw, 20px);
+    --section-pad: 96px;
+    --container-max: 1200px;
+    --container-px: 80px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { font-size: var(--base); }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--ivory);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  /* CMS breakout */
+  #lp-wrapper {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 55% 45%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    background: var(--dark-brown);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 72px 80px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-left::after {
+    content: '';
+    position: absolute;
+    right: -60px;
+    top: 0;
+    bottom: 0;
+    width: 120px;
+    background: var(--dark-brown);
+    clip-path: polygon(0 0, 0 100%, 100% 100%);
+    z-index: 2;
+  }
+
+  .hero-right {
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-right-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 70% 30%, rgba(196,162,101,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse at 20% 80%, rgba(212,164,154,0.2) 0%, transparent 50%);
+  }
+
+  .hero-right-content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 60px;
+  }
+
+  .hero-eyebrow {
+    font-size: clamp(11px, 0.85vw, 14px);
+    font-weight: 500;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+
+  .hero-title {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(30px, 3.6vw, 58px);
+    font-weight: 400;
+    color: var(--ivory);
+    line-height: 1.6;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.5s;
+  }
+
+  .hero-title span { color: var(--gold); }
+
+  .hero-subtitle {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(14px, 1.1vw, 18px);
+    color: rgba(250,246,240,0.6);
+    line-height: 2.1;
+    margin-top: 20px;
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.9s;
+  }
+
+  .badge {
+    background: rgba(196,162,101,0.12);
+    border: 1px solid rgba(196,162,101,0.4);
+    color: var(--light-gold);
+    font-size: clamp(11px, 0.85vw, 14px);
+    letter-spacing: 1px;
+    padding: clamp(5px,0.4vw,8px) clamp(14px,1.1vw,20px);
+    border-radius: 2px;
+  }
+
+  .hero-visual {
+    opacity: 0;
+    animation: fadeIn 1.2s ease forwards 0.4s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-circle {
+    width: clamp(240px, 22vw, 360px);
+    height: clamp(240px, 22vw, 360px);
+    border-radius: 50%;
+    border: 1px solid rgba(196,162,101,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .hero-circle::before {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(196,162,101,0.2);
+  }
+
+  .hero-circle-inner { text-align: center; }
+
+  .hero-circle-num {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(56px, 5.5vw, 90px);
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+
+  .hero-circle-label {
+    font-size: clamp(11px, 0.85vw, 14px);
+    color: var(--text-light);
+    letter-spacing: 2px;
+    margin-top: 8px;
+    display: block;
+  }
+
+  .hero-price-info {
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  .hero-price-label {
+    font-size: clamp(11px, 0.85vw, 14px);
+    letter-spacing: 2px;
+    color: var(--text-light);
+    margin-bottom: 6px;
+  }
+
+  .hero-price {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(28px, 2.6vw, 44px);
+    color: var(--dark-brown);
+  }
+
+  .hero-price sub {
+    font-size: clamp(13px, 1vw, 16px);
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  /* ── CONCEPT ── */
+  .concept {
+    padding: var(--section-pad) 0;
+    background: var(--ivory);
+    position: relative;
+  }
+
+  .concept::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-px);
+  }
+
+  .section-label {
+    font-size: clamp(10px, 0.75vw, 13px);
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(26px, 3.0vw, 48px);
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--dark-brown);
+    margin-bottom: 0;
+  }
+
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    align-items: start;
+    margin-top: 56px;
+  }
+
+  .concept-text {
+    font-size: clamp(14px, 1.1vw, 17px);
+    line-height: 2.2;
+    color: var(--text-light);
+  }
+
+  .concept-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .concept-card {
+    background: var(--cream);
+    padding: 24px 28px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .concept-card-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(14px, 1.1vw, 17px);
+    font-weight: 600;
+    color: var(--dark-brown);
+    margin-bottom: 7px;
+  }
+
+  .concept-card-text {
+    font-size: clamp(13px, 1vw, 16px);
+    line-height: 1.9;
+    color: var(--text-light);
+  }
+
+  /* ── FOR WHO ── */
+  .for-who {
+    background: var(--dark-brown);
+    padding: var(--section-pad) 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .for-who::before {
+    content: 'FOR';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 160px;
+    color: rgba(255,255,255,0.03);
+    letter-spacing: 20px;
+    white-space: nowrap;
+  }
+
+  .for-who .section-title { color: var(--ivory); }
+  .for-who .section-label { color: var(--gold); }
+
+  .for-who-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .for-who-item {
+    background: rgba(255,255,255,0.04);
+    padding: 36px 28px;
+    border-top: 1px solid rgba(196,162,101,0.2);
+    transition: background 0.3s;
+  }
+
+  .for-who-item:hover { background: rgba(196,162,101,0.08); }
+
+  .for-who-num {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(28px, 2.8vw, 48px);
+    color: var(--gold);
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .for-who-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(15px, 1.15vw, 19px);
+    color: var(--ivory);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .for-who-desc {
+    font-size: clamp(13px, 1vw, 16px);
+    color: rgba(250,246,240,0.5);
+    line-height: 2;
+  }
+
+  /* ── CURRICULUM ── */
+  .curriculum {
+    padding: var(--section-pad) 0;
+    background: var(--ivory);
+  }
+
+  .curriculum-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    margin-bottom: 64px;
+    align-items: end;
+  }
+
+  .curriculum-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--cream);
+  }
+
+  .meta-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .meta-label {
+    font-size: clamp(10px, 0.75vw, 13px);
+    letter-spacing: 2px;
+    color: var(--text-light);
+    margin-bottom: 3px;
+  }
+
+  .meta-value {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(14px, 1.1vw, 17px);
+    color: var(--dark-brown);
+  }
+
+  /* Sessions */
+  .sessions { display: grid; gap: 0; }
+
+  .session {
+    display: grid;
+    grid-template-columns: clamp(80px, 7vw, 120px) 1fr;
+    border-top: 1px solid rgba(139,109,90,0.15);
+    overflow: hidden;
+    transition: background 0.25s ease;
+  }
+
+  .session:last-child { border-bottom: 1px solid rgba(139,109,90,0.15); }
+  .session:hover { background: var(--cream); }
+
+  .session-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 16px;
+    background: var(--cream);
+    border-right: 1px solid rgba(139,109,90,0.15);
+    flex-direction: column;
+    gap: 4px;
+    transition: background 0.25s;
+  }
+
+  .session:hover .session-num { background: var(--gold); }
+
+  .session-num-text {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(18px, 1.6vw, 28px);
+    color: var(--dark-brown);
+    transition: color 0.25s;
+  }
+
+  .session:hover .session-num-text { color: var(--ivory); }
+
+  .session-num-label {
+    font-size: clamp(9px, 0.65vw, 12px);
+    letter-spacing: 2px;
+    color: var(--text-light);
+    transition: color 0.25s;
+  }
+
+  .session:hover .session-num-label { color: rgba(250,246,240,0.7); }
+
+  .session-body { padding: 24px 36px; }
+
+  .session-date {
+    font-size: clamp(11px, 0.85vw, 14px);
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 7px;
+  }
+
+  .session-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(15px, 1.3vw, 20px);
+    color: var(--dark-brown);
+    font-weight: 600;
+    margin-bottom: 5px;
+    line-height: 1.6;
+  }
+
+  .session-subtitle {
+    font-size: clamp(12px, 0.9vw, 15px);
+    color: var(--warm-brown);
+    margin-bottom: 10px;
+  }
+
+  .session-desc {
+    font-size: clamp(13px, 1vw, 16px);
+    line-height: 2;
+    color: var(--text-light);
+  }
+
+  .session-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .tag {
+    background: rgba(122,140,114,0.12);
+    color: var(--sage);
+    font-size: clamp(10px, 0.75vw, 13px);
+    padding: clamp(3px,0.3vw,5px) clamp(10px,0.85vw,14px);
+    letter-spacing: 1px;
+  }
+
+  .tag.brown {
+    background: rgba(139,109,90,0.12);
+    color: var(--warm-brown);
+  }
+
+  .session-note {
+    font-size: clamp(11px, 0.85vw, 14px);
+    color: var(--blush);
+    margin-top: 8px;
+    padding-left: 12px;
+    border-left: 2px solid var(--blush);
+  }
+
+  .session-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* 共通 */
+  .session-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: clamp(11px, 0.85vw, 13px);
+    letter-spacing: 1.5px;
+    padding: clamp(8px,0.65vw,11px) clamp(14px,1.2vw,20px);
+    border: 1px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+
+  /* 本講座ボタン：ダークブラウン塗り */
+  .session-btn-main {
+    background: var(--dark-brown);
+    color: var(--ivory);
+    border-color: var(--dark-brown);
+  }
+
+  .session-btn-main:hover {
+    background: var(--gold);
+    color: var(--dark-brown);
+    border-color: var(--gold);
+  }
+
+  /* フォローアップボタン：アウトライン */
+  .session-btn-followup {
+    background: transparent;
+    color: var(--warm-brown);
+    border-color: rgba(139,109,90,0.45);
+  }
+
+  .session-btn-followup:hover {
+    background: rgba(139,109,90,0.1);
+    color: var(--dark-brown);
+    border-color: var(--warm-brown);
+  }
+
+  .session-btn svg { flex-shrink: 0; }
+
+  /* ── PRICE ── */
+  .price {
+    background: var(--cream);
+    padding: var(--section-pad) 0;
+    position: relative;
+  }
+
+  .price::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    margin-top: 56px;
+  }
+
+  .price-card {
+    background: var(--ivory);
+    padding: 44px 40px;
+    border-top: 3px solid var(--gold);
+  }
+
+  .price-card-label {
+    font-size: clamp(10px, 0.75vw, 13px);
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .price-card-title {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(18px, 1.6vw, 26px);
+    color: var(--dark-brown);
+    margin-bottom: 20px;
+  }
+
+  .price-amount {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(38px, 3.8vw, 62px);
+    color: var(--dark-brown);
+    line-height: 1;
+  }
+
+  .price-amount sub {
+    font-size: clamp(13px, 1vw, 17px);
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--text-light);
+  }
+
+  .price-amount small {
+    font-size: clamp(13px, 1vw, 16px);
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--text-light);
+    display: block;
+    margin-top: 6px;
+  }
+
+  .price-divider {
+    height: 1px;
+    background: rgba(139,109,90,0.2);
+    margin: 24px 0;
+  }
+
+  .price-detail {
+    font-size: clamp(14px, 1.1vw, 17px);
+    line-height: 2.1;
+    color: var(--text-light);
+  }
+
+  /* ── FORM ── */
+  .form-section {
+    background: var(--dark-brown);
+    padding: var(--section-pad) 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-section::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; right: -100px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(196,162,101,0.1);
+  }
+
+  .form-section .section-title { color: var(--ivory); }
+  .form-section .section-label { color: var(--gold); }
+
+  .form-wrapper {
+    max-width: 660px;
+    margin: 52px auto 0;
+  }
+
+  .form-row { margin-bottom: 24px; }
+
+  .form-label {
+    display: block;
+    font-size: clamp(11px, 0.85vw, 14px);
+    letter-spacing: 2px;
+    color: rgba(250,246,240,0.6);
+    margin-bottom: 9px;
+  }
+
+  .form-label .required {
+    color: var(--blush);
+    margin-left: 6px;
+  }
+
+  .form-input, .form-select, .form-textarea, .form-checkbox-group {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(196,162,101,0.25);
+    color: var(--ivory);
+    padding: clamp(12px,1vw,16px) clamp(14px,1.2vw,20px);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: clamp(14px, 1.1vw, 17px);
+    outline: none;
+    transition: border-color 0.3s;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--gold);
+  }
+
+  .form-input::placeholder, .form-textarea::placeholder {
+    color: rgba(250,246,240,0.25);
+  }
+
+  .form-select option {
+    background: var(--dark-brown);
+    color: var(--ivory);
+  }
+
+  .form-textarea { height: 130px; resize: vertical; }
+
+  .checkbox-list { display: flex; flex-direction: column; gap: 0; }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 4px;
+    border-bottom: 1px solid rgba(196,162,101,0.1);
+    transition: background 0.2s;
+  }
+
+  .checkbox-item:hover { background: rgba(196,162,101,0.06); }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 17px; height: 17px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .checkbox-item label {
+    font-size: clamp(13px, 1vw, 16px);
+    color: rgba(250,246,240,0.8);
+    cursor: pointer;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .checkbox-date {
+    font-size: clamp(11px, 0.85vw, 14px);
+    color: rgba(196,162,101,0.7);
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+
+  .form-submit {
+    width: 100%;
+    background: var(--gold);
+    color: var(--dark-brown);
+    border: none;
+    padding: clamp(16px,1.4vw,22px);
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(14px, 1.1vw, 18px);
+    font-weight: 600;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 20px;
+  }
+
+  .form-submit:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
+  }
+
+  .form-field-salon-check {
+    margin-top: 10px;
+  }
+
+  .form-checkbox-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: clamp(13px, 1vw, 15px);
+    color: rgba(250,246,240,0.75);
+  }
+
+  .form-checkbox-inline input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .form-caution {
+    margin-top: 20px;
+    padding: 14px 18px;
+    border: 1px solid rgba(212,164,154,0.5);
+    border-left: 3px solid var(--blush);
+    font-size: clamp(12px, 0.9vw, 14px);
+    color: rgba(212,164,154,0.9);
+    line-height: 2;
+  }
+
+  .form-field-note {
+    font-size: clamp(11px, 0.8vw, 13px);
+    color: rgba(196,162,101,0.7);
+    margin-top: 6px;
+    padding-left: 2px;
+  }
+
+  .form-note {
+    font-size: clamp(11px, 0.85vw, 14px);
+    color: rgba(250,246,240,0.35);
+    text-align: center;
+    margin-top: 14px;
+    line-height: 2;
+  }
+
+  /* ── ENTRY (Square booking) ── */
+  .entry-wrapper {
+    max-width: 680px;
+    margin: 52px auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .payment-notice {
+    background: rgba(196,162,101,0.1);
+    border: 1px solid rgba(196,162,101,0.35);
+    border-left: 3px solid var(--gold);
+    padding: 24px 28px;
+  }
+
+  .payment-notice-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(13px, 1vw, 16px);
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  .payment-notice-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .payment-notice-list li {
+    font-size: clamp(13px, 1vw, 15px);
+    color: rgba(250,246,240,0.8);
+    line-height: 1.8;
+    padding-left: 1.2em;
+    position: relative;
+  }
+
+  .payment-notice-list li::before {
+    content: '・';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+
+  .payment-notice-list li strong {
+    color: var(--ivory);
+  }
+
+  .square-booking {
+    text-align: center;
+    padding: 40px 0 8px;
+  }
+
+  .square-booking-text {
+    font-size: clamp(13px, 1vw, 15px);
+    color: rgba(250,246,240,0.6);
+    line-height: 2;
+    margin-bottom: 28px;
+  }
+
+  .square-booking-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--gold);
+    color: var(--dark-brown);
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(14px, 1.2vw, 18px);
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: clamp(16px,1.4vw,22px) clamp(36px,3vw,56px);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .square-booking-btn:hover {
+    background: var(--light-gold);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(196,162,101,0.3);
+  }
+
+  .square-booking-note {
+    margin-top: 16px;
+    font-size: clamp(11px, 0.8vw, 13px);
+    color: rgba(250,246,240,0.3);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #1A0F0A;
+    padding: 64px 80px 36px;
+  }
+
+  .footer-inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 60px;
+    align-items: start;
+    padding-bottom: 44px;
+    border-bottom: 1px solid rgba(196,162,101,0.15);
+    margin-bottom: 28px;
+  }
+
+  .footer-logo {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: clamp(16px, 1.4vw, 22px);
+    color: var(--gold);
+    letter-spacing: 4px;
+    margin-bottom: 18px;
+  }
+
+  .footer-company { margin-top: 4px; }
+
+  .footer-company-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(14px, 1.1vw, 17px);
+    color: rgba(250,246,240,0.8);
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+  }
+
+  .footer-company-address {
+    font-size: clamp(13px, 1vw, 16px);
+    color: rgba(250,246,240,0.4);
+    line-height: 1.9;
+  }
+
+  .footer-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 210px;
+  }
+
+  .footer-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: clamp(12px,1vw,16px) clamp(20px,1.8vw,32px);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: clamp(12px, 0.9vw, 15px);
+    letter-spacing: 2px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+  }
+
+  .footer-btn-primary {
+    background: var(--gold);
+    color: var(--dark-brown);
+    font-weight: 500;
+  }
+
+  .footer-btn-primary:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
+  }
+
+  .footer-btn-outline {
+    background: transparent;
+    color: rgba(250,246,240,0.7);
+    border: 1px solid rgba(196,162,101,0.35);
+  }
+
+  .footer-btn-outline:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .footer-copyright {
+    text-align: center;
+    font-size: clamp(11px, 0.8vw, 13px);
+    color: rgba(250,246,240,0.2);
+    letter-spacing: 1px;
+    max-width: var(--container-max);
+    margin: 0 auto;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* scroll reveal - CSS animation (no JS) */
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    animation: revealUp 0.9s ease forwards;
+  }
+
+  /* success */
+  .form-success {
+    display: none;
+    background: rgba(122,140,114,0.15);
+    border: 1px solid var(--sage);
+    color: var(--ivory);
+    padding: 24px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 2;
+    margin-top: 20px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    :root {
+      --container-px: 48px;
+      --section-pad: 72px;
+    }
+    .hero-title { font-size: clamp(26px, 3vw, 40px); }
+    .hero-circle { width: 240px; height: 240px; }
+    .hero-circle-num { font-size: 52px; }
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --base: 14px;
+      --container-px: 24px;
+      --section-pad: 56px;
+    }
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .hero-left::after { display: none; }
+    .hero-left { padding: 56px 28px; }
+    .hero-right-content { padding: 48px 28px; }
+    .hero-circle { width: 220px; height: 220px; }
+    .hero-circle-num { font-size: 48px; }
+    .concept-grid,
+    .curriculum-intro,
+    .price-grid,
+    .for-who-grid { grid-template-columns: 1fr; gap: 32px; }
+    .session { grid-template-columns: 64px 1fr; }
+    .session-body { padding: 18px 18px; }
+    footer { padding: 48px 24px 28px; }
+    .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>
+</head>
+<body>
+<div id="lp-wrapper">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Beautician's Face Care Program 2026-2027</div>
+    <h1 class="hero-title">
+      エステの基礎を学ぶ、<br>
+      <span>フェイスケア</span>講習会
+    </h1>
+    <p class="hero-subtitle">
+      髪のプロフェッショナルが、<br>
+      顔も整えるプロになる。<br>
+      月に1回、1年間で身につける<br>
+      美容師のためのフェイスケア習得プログラム。
+    </p>
+    <div class="hero-badges">
+      <span class="badge">初心者歓迎</span>
+      <span class="badge">単発参加OK</span>
+      <span class="badge">フォローアップあり</span>
+      <span class="badge">全12回</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-right-bg"></div>
+    <div class="hero-right-content">
+      <div class="hero-visual">
+        <div class="hero-circle">
+          <div class="hero-circle-inner">
+            <span class="hero-circle-num">12</span>
+            <span class="hero-circle-label">SESSIONS / YEAR</span>
+          </div>
+        </div>
+        <div class="hero-price-info">
+          <div class="hero-price-label">1回あたりの会員受講料</div>
+          <div class="hero-price">¥10,000<sub>（税別）</sub></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT -->
+<section class="concept">
+  <div class="container">
+    <div class="section-label">Concept</div>
+    <h2 class="section-title">美容師だからこそ、<br>できることがある。</h2>
+    <div class="concept-grid reveal">
+      <div class="concept-text">
+        <p>美容室に来るお客様は、髪だけでなく「顔」や「肌」にも悩みを抱えています。セット面で、お客様のさらなる美しさにアプローチできたら---。</p>
+        <br>
+        <p>本プログラムは、そんな美容師のためフェイスケア講習会です。植物美容のプロが監修した知識と手技を、1年間12回のカリキュラムで、広く・実践的に学びます。</p>
+        <br>
+        <p>単価アップ・差別化・身体への負担軽減。これらは求められて当然のこと。まだどこもしていない事、ケミカルフリー、結果重視にこだわります。セット面でできる新しい価値を、あなたのサロンに。</p>
+      </div>
+      <div class="concept-cards">
+        <div class="concept-card">
+          <div class="concept-card-title">単価アップ</div>
+          <div class="concept-card-text">フェイスケアをプラスワンメニューとして導入することで、客単価の向上が期待できます。最終回では「40分・6,000円」などの実践メニュー化を学びます。</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-card-title">サロンの差別化</div>
+          <div class="concept-card-text">頭皮・髪・肌をトータルで整えられるサロンは、まだ少数。「フェイスケアも相談できる」という特別な体験が、リピートと口コミにつながります。</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-card-title">身体への負担軽減</div>
+          <div class="concept-card-text">薬剤を頻繁に使用する一般美容は美容師の身体への負担も大きいもの。フェイスケアは美容師さんの体への負担を抑えながら付加価値を提供できる手技です。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR WHO -->
+<section class="for-who">
+  <div class="container">
+    <div class="section-label">Who is this for</div>
+    <h2 class="section-title">こんな方に</h2>
+    <div class="for-who-grid reveal">
+      <div class="for-who-item">
+        <span class="for-who-num">01</span>
+        <div class="for-who-title">スキンケアを学びたい美容師</div>
+        <div class="for-who-desc">髪のスキルに加えてフェイスケアを身につけ、トータル美容師として活躍したい方。全くの初心者でも安心して受講できます。</div>
+      </div>
+      <div class="for-who-item">
+        <span class="for-who-num">02</span>
+        <div class="for-who-title">サロンメニューを充実させたい方</div>
+        <div class="for-who-desc">客単価アップやリピート率向上を目指して、新しいメニューを取り入れたいオーナー・スタッフの方。</div>
+      </div>
+      <div class="for-who-item">
+        <span class="for-who-num">03</span>
+        <div class="for-who-title">エステサロン開業予定の方</div>
+        <div class="for-who-desc">これからサロンを開業する方にも参加いただけます。基礎知識を網羅的に習得できる良いスタートになります。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CURRICULUM -->
+<section class="curriculum">
+  <div class="container">
+    <div class="curriculum-intro reveal">
+      <div>
+        <div class="section-label">Curriculum</div>
+        <h2 class="section-title">1年間、12回の<br>カリキュラム</h2>
+      </div>
+      <div class="curriculum-meta">
+        <div class="meta-item">
+          <div class="meta-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.3"/><path d="M9 5v4l2.5 2.5" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+          <div>
+            <div class="meta-label">本講座　講習時間</div>
+            <div class="meta-value">10:00〜16:00（食事休憩あり）</div>
+          </div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15c0 0-6-4-6-8a6 6 0 0 1 12 0c0 4-6 8-6 8z" stroke="white" stroke-width="1.3"/><path d="M9 15V9" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+          <div>
+            <div class="meta-label">フォローアップ　講習時間</div>
+            <div class="meta-value">10:00〜13:00 </div>
+          </div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3.5" width="14" height="12" rx="1.5" stroke="white" stroke-width="1.3"/><path d="M2 7.5h14M6 2v3M12 2v3" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+          <div>
+            <div class="meta-label">開催場所</div>
+            <div class="meta-value">兵庫県神戸市灘区大内通1-7-17<br>スロープイースタン1階</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session List -->
+    <div class="sessions reveal">
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">01</span>
+          <span class="session-num-label">Feb</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年3月2日(月)　FU: 3月23日(月)</div>
+          <div class="session-title">リンパドレナージュ - むくみを流して、スッキリ小顔へ</div>
+          <div class="session-subtitle">頭部リンパの理論と手技・スキンケアハーブ</div>
+          <div class="session-desc">リンパの流れを促すことで、顔のむくみやくすみを解消する手技を学びます。解剖学的なリンパ節の位置から、実際のドレナージュの流れまで丁寧に指導します。セット面で完結できるため、時間の無いお客様にも気軽に受けていただけます。ハーブの知識もあわせて学び、香りと手技で上質な体験を提供しましょう。</div>
+          <div class="session-tags">
+            <span class="tag brown">実技と座学</span>
+            <span class="tag">リンパ理論</span>
+            <span class="tag">ドレナージュ手技</span>
+            <span class="tag">ハーブ知識</span>
+          </div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_6hio7unszzg6a2?dateStart=1772413200" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_jpk8zz0ws6al8h?dateStart=1774227600" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">02</span>
+          <span class="session-num-label">Mar</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年3月16日(月)　FU: 3月30日(月)</div>
+          <div class="session-title">4つの肌トラブルを知り、正しいケアを提案する</div>
+          <div class="session-subtitle">乾燥・敏感・皮脂・エイジング対策とハーブスチーマー</div>
+          <div class="session-desc">お客様から最もよく聞ける「肌の悩み」を４つのカテゴリーで体系的に学びます。 乾燥肌・敏感肌・皮脂肌・老化肌、それぞれのメカニズムと、肌タイプに合ったスキンケアの選択を学びます。 ハーブスチーマーの効果的な活用法もマスターし、カウンセリング力を高めましょう。</div>
+          <div class="session-tags">
+            <span class="tag brown">座学のみ</span>
+            <span class="tag">肌トラブルとその対処法</span>
+            <span class="tag">スキンケア提案</span>
+            <span class="tag">ハーブスチーマー</span>
+          </div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_mbrj9e798njb5d?dateStart=1773622800" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_jq66pn9cfx5m4x?dateStart=1774832400" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">03</span>
+          <span class="session-num-label">Apr</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年4月13日(月)　FU: 4月27日(月)</div>
+          <div class="session-title">クレンジング - 肌を整える、クレンジングメソッド</div>
+          <div class="session-subtitle">クレンジング理論・手技・こもれびマスク（ボダイジュ）</div>
+          <div class="session-desc">スキンケアの土台となるクレンジング。正しい理論と手技を身につけることで、お客様の肌への負担を極力抑えながら汚れを取り除きます。今回はクレンジングとメイク落としの異なる考え方やクレンジングの種類について、またその手技を学びます。
+植物由来のボダイジュ（こもれびマスク）の活用法もあわせて学びます。穏やかな香りと使用感で、施術全体のクオリティをワンランクアップします。
+</div>
+          <div class="session-tags">
+            <span class="tag brown">実技と座学</span>
+            <span class="tag">クレンジング理論</span>
+            <span class="tag">手技実習</span>
+            <span class="tag">ボダイジュマスク</span>
+          </div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_mfotecq4ic3abl?dateStart=1776042000" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_jdxgs4360e5h9y?dateStart=1777251600" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">04</span>
+          <span class="session-num-label">May</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年5月11日(月)　FU: 5月25日(月)</div>
+          <div class="session-title">オイルマッサージ - 肌に潤いとツヤを宿す手技</div>
+          <div class="session-subtitle">フェイシャルオイル・クレイパックの理論と手技</div>
+          <div class="session-desc">植物オイルを用いたフェイシャルマッサージで、肌に潤いと血色感を終え施術を学びます。マッサージの基本的な手の使い方から、お客様の肌状態に応じたオイル選びまでを丁寧に学びます。 さらに毛穴汚れを吸着するクレイパック（マスクエルブ）の理論と実践も踏まえ、組み合わせ施術のバリエーションを広げます。
+</div>
+          <div class="session-tags">
+            <span class="tag brown">実技と座学</span>
+            <span class="tag">オイルマッサージ</span>
+            <span class="tag">クレイパック</span>
+            <span class="tag">ハーブスオイルの選び方</span>
+          </div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_64a0bq58lrxjyk?dateStart=1778461200" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_oksy35oxhygou3?dateStart=1779670800" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">05</span>
+          <span class="session-num-label">Jun</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年6月15日(月)　</div>
+          <div class="session-title">体質学基礎Ⅰ - 3つのタイプで、お客様を見極める</div>
+          <div class="session-subtitle">体質学の理論・発生学の基礎・外胚葉/中胚葉/内胚葉の見分け方</div>
+          <div class="session-desc">受精卵から始まる発生学の視点をもとに、外胚葉・中胚葉・内胚葉という3つの体質類型の成り立ちと定義を学びます。
+体型・顔立ちから体質傾向を読み取る「観察の視点」を習得し、カウンセリングの付加価値を上げるための体質学活用法・混合体質の考え方まで、体質学の土台を築きます。</div>
+          <div class="session-tags">
+            <span class="tag brown">座学のみ</span>
+            <span class="tag">体質理論</span>
+            <span class="tag">タイプ判別</span>
+          </div>
+          <div class="session-note">※体質学基礎Ⅱ、Ⅲは本回受講者が対象です</div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://book.squareup.com/classes/jsufqo133zf3ec/location/LEWSC49JS30BF/classDetails/clssch_kqybjfmio6rky0?dateStart=1781485200" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">06</span>
+          <span class="session-num-label">Jul</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年7月13日(月)</div>
+          <div class="session-title">体質学基礎Ⅱ - 体質と気質から、ライフスタイルを提案する</div>
+          <div class="session-subtitle">食・ストレス・ホルモン・加齢 / 植物美容との関連性を学ぶ</div>
+          <div class="session-desc">3つの体質類型の体質や気質を掘り下げ、美容面との関連性を探る。
+各胚葉に起こりやすい疾病に対する植物療法を紹介。
+また、各タイプに見られる気質傾向とライフスタイルの関連性、体への影響などを学びます。
+各タイプの健康体を知ることで、「なぜ今このような状態になっているのか」を読み解くことができます。
+より豊かなカウンセリングに向けた応用編です。
+</div>
+          <div class="session-tags">
+            <span class="tag brown">座学のみ</span>
+            <span class="tag">気質・体質</span>
+            <span class="tag">ライフスタイル提案</span>
+          </div>
+          <div class="session-note">※体質学基礎Ⅰ受講者限定</div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-06-B-260713" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">07</span>
+          <span class="session-num-label">Aug</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年8月10日(月)</div>
+          <div class="session-title">体質学基礎Ⅲ- 肌質・髪質と体のサインを読む</div>
+          <div class="session-subtitle">好発部位・東洋医学的顔診断・季節ケア・ハーブ処方チャート</div>
+          <div class="session-desc">生まれ持った肌質・髪質の傾向を体質学的に読み解き、施術リスクの予測とパーソナルケア提案につなげます。顔のニキビ・シミ・肝斑の好発部位から内臓状態を読み解く東洋医学的顔診断、体質別のスキンケア、季節と体質の関連、体質別ハーブ処方チャートまでを網羅します。</div>
+          <div class="session-tags">
+            <span class="tag brown">座学のみ</span>
+            <span class="tag">肌質・髪質</span>
+            <span class="tag">好発部位</span>
+          </div>
+          <div class="session-note">※体質学基礎Ⅰ受講者限定</div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-07-B-260810" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+           </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">08</span>
+          <span class="session-num-label">Sep</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年9月14日(月)</div>
+          <div class="session-title">体質学基礎Ⅳ　 - 総まとめ＋カウンセリング実践</div>
+          <div class="session-subtitle">5ステップのカウンセリング / 体質別コミュニケーション術 / ロールプレイ</div>
+          <div class="session-desc">これまで学んだ体質学の知識を統合し、「サロンで即戦力となる力」に変える実践回です。
+体質学カウンセリングの5ステップ、体質別コミュニケーション術（外胚葉：感性に響く言葉／中胚葉：論理的な根拠／内胚葉：明るい体験談）を学び、3つのロールプレイシナリオで実践します。
+カウンセリングシートの読み解き方と来店履歴の活用法も習得します。</div>
+          <div class="session-tags">
+            <span class="tag brown">座学のみ</span>
+            <span class="tag">カウンセリング</span>
+            <span class="tag">会話力アップ</span>
+            <span class="tag">信頼の向上</span>
+          </div>
+          <div class="session-note">※体質学基礎コースを2回以上受講した方が対象</div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-08-B-260914" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">09</span>
+          <span class="session-num-label">Oct</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年10月5日(月)　FU: 10月26日(月)</div>
+          <div class="session-title">経絡・ツボ押し - シミ・くすみのない透明感へ</div>
+          <div class="session-subtitle">シミ・くすみの理論・経絡と経穴（ツボ）手技</div>
+          <div class="session-desc">皮膚科学の視点から、シミやくすみのメカニズムを理解する。経絡（気の通り道）と経穴（ツボ）の基礎知識から、顔のくすみ改善・透明感アップに効果的なツボ押し手技まで習得します。指先でできる手技のため道具不要。セット面に座ったまま、短時間で効果を感じていただける施術です。</div>
+          <div class="session-tags">
+            <span class="tag brown">実技と座学</span>
+            <span class="tag">経絡・ツボ理論</span>
+            <span class="tag">ツボ押し手技</span>
+            <span class="tag">透明感ケア</span>
+          </div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-09-B-261005" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-09-F-261026" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">10</span>
+          <span class="session-num-label">Nov</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年11月9日(月)　FU: 11月30日(月)</div>
+          <div class="session-title">筋肉・筋膜ケア - シワとたるみに効く、ハリの手技</div>
+          <div class="session-subtitle">シワ・たるみの理論・筋肉と筋膜のアプローチ</div>
+          <div class="session-desc">顔のシワやたるみは、筋肉・筋膜の状態と深く関係しています。本回では顔の筋肉解剖と、筋膜へのアプローチ理論を学習。ハリや弾力を引き出す施術手技を習得し、エイジングケアメニューとしての活用を目指します。頭皮ケアと組み合わせることで、髪と顔の両方に働きかける独自メニューが生まれます。</div>
+          <div class="session-tags">
+            <span class="tag brown">実技と座学</span>
+            <span class="tag">筋肉・筋膜理論</span>
+            <span class="tag">たるみ改善手技</span>
+            <span class="tag">エイジングケア</span>
+          </div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-10-B-261109" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-10-F-261130" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">11</span>
+          <span class="session-num-label">Dec</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2026年12月7日(月)　FU: 12月21日(月)</div>
+          <div class="session-title">骨格・ゆがみ矯正 - 左右対称の整った顔へ</div>
+          <div class="session-subtitle">骨格・姿勢・ゆがみの理論と手技</div>
+          <div class="session-desc">顔のゆがみの多くは、骨格と姿勢のバランスに起因しています。本回では顔の骨格構造とゆがみのメカニズムを理論から学び、左右差を整えるための手技を習得。姿勢へのアドバイスも組み合わせることで、サロンでの施術効果が持続しやすくなります。「顔のゆがみ」を整えるメニューは、差別化の大きな武器になります。</div>
+          <div class="session-tags">
+            <span class="tag brown">実技と座学</span>
+            <span class="tag">骨格理論</span>
+            <span class="tag">ゆがみ矯正手技</span>
+            <span class="tag">姿勢アドバイス</span>
+          </div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-11-B-261207" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-11-F-261221" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-num">
+          <span class="session-num-text">12</span>
+          <span class="session-num-label">Jan</span>
+        </div>
+        <div class="session-body">
+          <div class="session-date">2027年 1月11日(月)　FU: 1月25日(月)</div>
+          <div class="session-title">[総仕上げ]サロンのパーソナルメニューを作る</div>
+          <div class="session-subtitle">メニュー化・実践演習・顧客満足度とリピート施策</div>
+          <div class="session-desc">1年間で学んだすべてのスキルを統合し、実際にサロンで提供できるメニューへと仕上げる最終回。「40分・6,000円のパーソナルフェイスケア」を例に、料金設定・施術構成・接客フローの作り方を実践的に学びます。お客様が「また来たい」と感じるリピートを生むスキルを確立し、あなた自身のオリジナルメニューを完成させましょう。
+
+</div>
+          <div class="session-tags">
+            <span class="tag">メニュー設計</span>
+            <span class="tag">リピート施策</span>
+            <span class="tag brown">実践演習</span>
+          </div>
+          <div class="session-note">※上記コースを5回以上受講した方が対象</div>
+          <div class="session-footer">
+            <a class="session-btn session-btn-main" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-12-B-270111" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              本講座に申し込む
+            </a>
+            <a class="session-btn session-btn-followup" href="https://ymiyagawatheherbs-tech.github.io/school-apply/apply.html?series=%E3%83%95%E3%82%A7%E3%82%A4%E3%82%B9%E3%82%B1%E3%82%A2%E5%85%A812%E5%9B%9E&course=FA-12-F-270125" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 4v2.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              フォローアップに申し込む
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="price">
+<div class="container">
+<div class="section-label">Price</div>
+<h2 class="section-title">会員受講料</h2>
+<div class="price-grid reveal">
+<div class="price-card">
+<div class="price-card-label">Main Session</div>
+<div class="price-card-title">講習会（本講座）</div>
+<div class="price-amount">¥10,000<sub>（税別）</sub>
+<small>1回 / 10:00〜16:00（昼休憩あり）</small>
+</div>
+<div class="price-divider"></div>
+<div class="price-detail">
+          各回完結のため、興味のある回だけの参加もOKです。<br>
+          体質学の一部の回は、前の回を受講していることが参加条件になります。<br>
+          最終回（メニューづくり）は5回以上の受講が条件です。
+        </div>
+</div>
+<div class="price-card">
+<div class="price-card-label">Follow-up Session</div>
+<div class="price-card-title">フォローアップ</div>
+<div class="price-amount">¥2,000<sub>（税別）</sub>
+<small>1回 / 10:00〜13:00（休憩なし）</small>
+</div>
+<div class="price-divider"></div>
+<div class="price-detail">
+          本講座受講者のみ任意でご参加いただけます。<br>講習会の約2週間後に設定しています。学んだ内容の復習と実践での疑問を解消できる機会です。
+        </div>
+</div>
+</div>
+</div>
+</div>
+<div class="form-section" id="entry">
+<div class="container">
+<div class="section-label">Entry</div>
+<h2 class="section-title" style="color:var(--ivory)">お申し込み</h2>
+<div class="entry-wrapper reveal">
+<div class="payment-notice">
+<div class="payment-notice-title">お支払いについて</div>
+<ul class="payment-notice-list">
+<li>講習日の<strong>7日前まで</strong>にお支払いください。</li>
+<li>お支払い後のご返金はお受けできません。</li>
+</ul>
+</div>
+<div class="form-caution">
+        連絡が取れない方は、受講できない場合がございます。<br>
+        メールアドレス・電話番号を改めてご確認ください。
+      </div>
+</div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Face Care Program</div>
+      <div class="footer-company">
+        <div class="footer-company-name">株式会社THE HERBS</div>
+        <div class="footer-company-address">
+          兵庫県芦屋市南宮町3-10<br>
+          エステの基礎を学ぶ、フェイスケア講習会
+        </div>
+      </div>
+    </div>
+    <div class="footer-btns">
+      <a href="https://www.the-herbs.co.jp/ask" target="_blank" rel="noopener" class="footer-btn footer-btn-outline">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M1 4l6 4 6-4" stroke="currentColor" stroke-width="1.3"/></svg>
+      お問い合わせ
+      <a href="https://www.the-herbs.co.jp" target="_blank" rel="noopener" class="footer-btn footer-btn-outline">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor"
