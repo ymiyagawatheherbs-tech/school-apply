@@ -501,7 +501,7 @@ function renderSeriesGrid() {
   grid.innerHTML = '';
 
   // シリーズ表示順の定義
-  const ORDER = ['フェイスケア全12回','体質学講習会','スカルプハーブケア','ハーブスチーマー','頭皮用ハーブゴマージュ','ビオゴマージュ','スカルプラボ'];
+  const ORDER = ['フェイスケア全12回','体質学講座','スカルプハーブケア','ハーブスチーマー','頭皮用ハーブゴマージュ','ビオゴマージュ','スカルプラボ'];
   const keys  = ORDER.filter(k => COURSES[k] !== undefined)
                      .concat(Object.keys(COURSES).filter(k => !ORDER.includes(k)));
 
@@ -878,7 +878,7 @@ function hideError(){ document.getElementById('errorBanner').classList.remove('s
 // シリーズを追加したら、ここに1行足してください（コードは小文字）
 const SERIES_CODES = {
   fa: 'フェイスケア全12回',
-  ta: '体質学講習会',
+  ta: '体質学講座',
   th: '頭皮用ハーブゴマージュ',   // 講座コード TH-a-…
   hs: 'ハーブスチーマー',         // 講座コード HS-a-…
   sc: 'スカルプラボ',             // 講座コード SC-…
