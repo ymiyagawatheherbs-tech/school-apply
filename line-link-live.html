@@ -67,6 +67,17 @@
   <div class="lead">
     公式LINEにメッセージをくださったお客様のうち、まだ顧客台帳とつながっていない方の一覧です。表示名や最後のメッセージを手がかりに、台帳のお客様を検索して結びつけてください。結びつけると、その方へLINEでご連絡・配信ができるようになります。
   </div>
+
+  <!-- 連携状況をしらべる（紐づけ済みかどうかの確認用。紐づけ操作とは独立） -->
+  <div class="row" style="margin-bottom:12px;">
+    <div style="font-weight:700;font-size:13px;color:var(--deep);margin-bottom:4px;">連携状況をしらべる</div>
+    <div class="meta" style="margin-bottom:8px;">台帳のお客様が本店・神戸阪急のLINEとつながっているか確認できます。氏名・ふりがな・電話番号のどれでも検索できます。</div>
+    <div class="search-box" style="min-width:0;">
+      <input type="text" id="statusQ" placeholder="氏名・ふりがな・電話番号で検索…" autocomplete="off" oninput="onStatusSearch(this.value)" />
+    </div>
+    <div id="statusResults" style="margin-top:8px;"></div>
+  </div>
+
   <div id="listView"><div class="empty">読み込み中…</div></div>
 </div>
 
@@ -177,6 +188,38 @@ async function doLink(idx, i){
     PENDING=PENDING.filter((_,k)=>k!==idx);
     render();
   }catch(e){ toast(e.message); }
+}
+
+// ===== 連携状況をしらべる（確認専用の検索） =====
+let statusTimer=null;
+function onStatusSearch(q){
+  q=(q||'').trim();
+  const box=document.getElementById('statusResults');
+  if(statusTimer) clearTimeout(statusTimer);
+  if(q.length<1){ box.innerHTML=''; return; }
+  statusTimer=setTimeout(async ()=>{
+    try{
+      const d=await post('searchCustomers',{q});
+      renderStatusResults(d.customers||[]);
+    }catch(e){ box.innerHTML=`<div class="meta">${esc(e.message)}</div>`; }
+  }, 300);
+}
+function renderStatusResults(list){
+  const box=document.getElementById('statusResults');
+  if(!list.length){ box.innerHTML='<div class="meta">該当するお客様が見つかりませんでした（台帳に未登録の可能性があります）</div>'; return; }
+  box.innerHTML=list.map(c=>{
+    const honten=c.line_user_id_honten
+      ? '<span class="linked-note">本店LINE 連携済</span>'
+      : '<span class="badge b-cnt">本店LINE 未連携</span>';
+    const hankyu=c.line_user_id_hankyu
+      ? '<span class="linked-note">神戸阪急LINE 連携済</span>'
+      : '<span class="badge b-cnt">神戸阪急LINE 未連携</span>';
+    const sub=[c.nameKana||'', c.phone||''].filter(Boolean).join(' ／ ');
+    return `<div style="border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin-bottom:5px;background:#fff;">
+      <div class="sg-name">${esc(c.name||'（無名）')} ${honten} ${hankyu}</div>
+      ${sub?`<div class="sg-sub">${esc(sub)}</div>`:''}
+    </div>`;
+  }).join('');
 }
 
 async function doIgnore(idx){
