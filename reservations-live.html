@@ -274,11 +274,8 @@ const API='https://herbs-booking-api.vercel.app/api/store';
 const STORE_APP='https://theherbs-store-git-main-yumiko-s-projects.vercel.app';
 let PW = sessionStorage.getItem('resv_pw') || '';
 
-// 販売システムの顧客データベース（顧客照合用）
-const CUST_SB_URL='https://bpogujxrwdpzkfisscox.supabase.co';
-const CUST_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwb2d1anhyd2RwemtmaXNzY294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1OTQ0NjEsImV4cCI6MjA5NzE3MDQ2MX0.b39pjEYrTbS_U49Ud5GTEHh_luveh5wkZdtnWJN2x0M';
-let custClient=null;
-try{ custClient=supabase.createClient(CUST_SB_URL,CUST_SB_KEY); }catch(e){ console.error('顧客DB接続エラー:',e.message); }
+// 顧客照合は予約API（サーバー側）経由で行う。
+// ブラウザに顧客DBの鍵を置かない＝この公開ページから顧客台帳が読めない作りにする（2026-08-19）
 let CUST_MAP={}; // 電話番号(数字のみ) → 顧客 のキャッシュ
 let CUST_MAP8={}; // 電話番号末尾8桁 → 顧客（形式違い吸収用）
 let CUST_DIAG=''; // 顧客照合の状況（診断表示用）
@@ -294,21 +291,14 @@ function findCust(phone){
 
 // 予約一覧の電話番号をまとめて顧客照合
 async function matchCustomers(){
-  if(!custClient){ CUST_DIAG='顧客DB未接続'; return; }
   try{
     CUST_MAP={}; CUST_MAP8={};
     let total=0, matched=0;
-    // 顧客を全件読み込み（1000件ずつページング）し、電話番号を数字だけで突き合わせる
-    for(let page=0; page<15; page++){
-      const from=page*1000;
-      const { data, error } = await custClient.from('customers')
-        .select('id,name,memberId,phone').neq('isDeleted',true).range(from, from+999);
-      if(error){ console.error('顧客照合エラー:',error.message); CUST_DIAG='顧客読込エラー'; return; }
-      if(!data || !data.length) break;
-      data.forEach(c=>{ const p=normPhone(c.phone); if(p.length>=10){ CUST_MAP[p]=c; CUST_MAP8[p.slice(-8)]=c; } });
-      total+=data.length;
-      if(data.length<1000) break;
-    }
+    // 顧客一覧はサーバー側（予約API）から取得する
+    const res = await post('listCustomersForMatch');
+    const list = (res && res.customers) || [];
+    list.forEach(c=>{ const p=normPhone(c.phone); if(p.length>=10){ CUST_MAP[p]=c; CUST_MAP8[p.slice(-8)]=c; } });
+    total = list.length;
     // 予約のうち何件が顧客とひもづいたか
     const seen=new Set();
     ALL.forEach(r=>{ const c=findCust(r.phone); if(c){ const k=String(r.phone); if(!seen.has(k)){ seen.add(k); matched++; } } });
