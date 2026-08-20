@@ -78,6 +78,7 @@
     <div id="statusResults" style="margin-top:8px;"></div>
   </div>
 
+  <div id="failView"></div>
   <div id="listView"><div class="empty">読み込み中…</div></div>
 </div>
 
@@ -87,6 +88,7 @@
 const API='https://herbs-booking-api.vercel.app/api/store';
 let PW = sessionStorage.getItem('resv_pw') || '';
 let PENDING=[];
+let FAILURES=[];
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
@@ -98,7 +100,32 @@ async function post(action, extra={}){
   const d=await r.json(); if(!r.ok) throw new Error(d.error||'エラー'); return d;
 }
 
+function renderFailures(){
+  const box=document.getElementById('failView');
+  if(!FAILURES.length){ box.innerHTML=''; return; }
+  let h='<div style="background:#FBEAE7;border:1px solid #E4BDB6;border-radius:11px;padding:13px 15px;margin-bottom:14px;">';
+  h+='<div style="font-weight:800;color:#B5483A;font-size:14px;margin-bottom:6px;">⚠ 記録できなかったLINEが '+FAILURES.length+' 件あります</div>';
+  h+='<div style="font-size:12.5px;color:#7d5a54;line-height:1.6;margin-bottom:10px;">下の方がメッセージを送ってくださいましたが、システムの不調で未紐づけ一覧に登録できませんでした。'
+   +'お手数ですが、その方にご返信いただき、返信をもらってから紐づけてください。対応が済んだら「対応済みにする」を押してください。</div>';
+  FAILURES.forEach(f=>{
+    h+='<div style="background:#fff;border:1px solid #EBE5DB;border-radius:9px;padding:10px 12px;margin-bottom:7px;">'
+     +'<div style="font-size:13px;font-weight:700;">'+esc(chName(f.line_channel))+'　'+fmtDT(f.received_at)+'</div>'
+     +'<div style="font-size:12.5px;color:#766A5B;margin-top:3px;">本文：'+esc(String(f.last_message||'').slice(0,40))+'</div>'
+     +'<div style="font-size:11.5px;color:#9A8E7E;margin-top:3px;">LINE ID：'+esc(String(f.line_user_id||'').slice(0,10))+'…</div>'
+     +'<button onclick="resolveFail('+f.id+')" style="margin-top:8px;padding:7px 14px;border:1px solid #D8B9B9;background:#fff;color:#9A3F3F;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">対応済みにする</button>'
+     +'</div>';
+  });
+  h+='</div>';
+  box.innerHTML=h;
+}
+
+async function resolveFail(id){
+  try{ await post('resolveLineFailure',{id}); FAILURES=FAILURES.filter(x=>x.id!==id); renderFailures(); toast('対応済みにしました'); }
+  catch(e){ toast(e.message); }
+}
+
 function render(){
+  renderFailures();
   document.getElementById('countBadge').textContent=`未紐づけ ${PENDING.length}件`;
   if(!PENDING.length){ document.getElementById('listView').innerHTML='<div class="empty">未紐づけのLINEユーザーはいません</div>'; return; }
   let h='';
@@ -236,6 +263,7 @@ async function doIgnore(idx){
 async function load(){
   const d=await post('listPendingLine');
   PENDING=d.pending||[];
+  FAILURES=d.failures||[];
   render();
 }
 
