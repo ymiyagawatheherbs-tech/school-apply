@@ -259,7 +259,7 @@ async function initLine(){
 
 const C_STORES = [
   { value:'神戸阪急', label:'THE HERBS神戸阪急店', address:'神戸阪急本館6階 モーニングフロー内', hours:'10:00 〜 20:00', checkHours:'頭皮チェック受付：12:00 〜 16:00（随時受付も可）', phone:'070-2642-7366', lineUrl:'https://line.me/ti/p/@theherbs_kobe', lineName:'THE HERBS 神戸阪急', notes:[] },
-  { value:'本店', label:'THE HERBS植物美容サロン', address:'兵庫県神戸市灘区大内通1-7-17 1F', hours:'水・金・土曜日 10:00〜20:00（不定期で月曜日）', checkHours:'完全予約制／クレジットカード決済のみ', phone:'070-2642-7366', lineUrl:'https://line.me/ti/p/@theherbs39', lineName:'THE HERBS サロン', notes:['初回はカウンセリングに約10分程度お時間をいただきます。','現金はご利用いただけません。クレジットカード決済のみとなります。','完全予約制です。お気軽にお問い合わせください。'] },
+  { value:'本店', label:'THE HERBS植物美容サロン', address:'兵庫県神戸市灘区大内通1-7-17 1F', hours:'月・水・金・土曜日 10:00〜20:00', checkHours:'完全予約制／クレジットカード決済のみ', phone:'070-2642-7366', lineUrl:'https://line.me/ti/p/@theherbs39', lineName:'THE HERBS サロン', notes:['初回はカウンセリングに約10分程度お時間をいただきます。','現金はご利用いただけません。クレジットカード決済のみとなります。','完全予約制です。お気軽にお問い合わせください。'] },
 ];
 const TIME_HANKYU = ['12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'];
 const TIME_SALON = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
@@ -454,7 +454,7 @@ function renderForm(){
       <div class="field-group">
         <label class="field">ご希望日<span class="req">*</span></label>
         <input type="date" id="i_date" min="${minDate()}" value="${esc(form.date)}" />
-        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">水・金・土曜日のみの営業です（月曜は不定期）</div>`:''}
+        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">月・水・金・土曜日の営業です</div>`:''}
         <div id="date_err">${errors.date?`<div class="err-msg">${errors.date}</div>`:''}</div>
       </div>
       <div class="field-group">
@@ -493,15 +493,15 @@ function bindFormEvents(){
   const d=document.getElementById('i_date'); if(d) d.onchange=async e=>{
     const v=e.target.value;
     const dateErr=document.getElementById('date_err');
-    // 本店の営業日は水・金・土（不定期で月曜）。それ以外は休業。
+    // 本店の営業日は月・水・金・土。それ以外は休業。
     // v は 'YYYY-MM-DD'。文字列から直接、実行環境のタイムゾーンに影響されない形で曜日を出す。
     if(v&&store==='本店'){
       const [dy,dm,dd]=v.split('-').map(Number);
       const wd=new Date(Date.UTC(dy,dm-1,dd)).getUTCDay(); // 0=日,1=月,2=火,3=水,4=木,5=金,6=土
-      const isOpenDay = wd===3||wd===5||wd===6||wd===1;
+      const isOpenDay = wd===1||wd===3||wd===5||wd===6;
       if(!isOpenDay){
         form.date=''; form.time=''; busyTimes=[];
-        if(dateErr) dateErr.innerHTML='<div class="err-msg">本店は水・金・土曜日のみの営業です（月曜は不定期）。別の日をお選びください。</div>';
+        if(dateErr) dateErr.innerHTML='<div class="err-msg">本店は月・水・金・土曜日の営業です。別の日をお選びください。</div>';
         refreshTimeField();
         return;
       }
