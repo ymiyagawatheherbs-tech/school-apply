@@ -246,6 +246,7 @@
       <div class="tab" id="tabBookings">予約管理</div>
       <div class="tab" id="tabCourses">講座管理</div>
       <div class="tab" id="tabMembers">会員管理</div>
+      <div class="tab" id="tabStaff">スタッフ管理</div>
       <div class="tab" id="tabSalon">サロン予約</div>
       <div class="tab" id="tabMenus">メニュー管理</div>
     </div>
@@ -485,6 +486,36 @@
       </div>
 
       <div id="mbrList"><div class="empty">読み込み中…</div></div>
+    </div>
+
+    <!-- スタッフ管理 -->
+    <div id="viewStaff" class="hide">
+      <div class="toolbar" style="margin-bottom:14px;">
+        <div style="font-size:11.5px;color:var(--muted);">サロン予約の「担当者」の選択肢はここで管理します。退職した方は削除せず「退職済み」にしてください（一覧から自動的に消えます）。</div>
+        <button class="btn btn-primary btn-sm" onclick="openStaffForm(null)">＋ 担当者を追加</button>
+      </div>
+
+      <!-- 追加・編集フォーム -->
+      <div class="form-panel hide" id="staffForm" style="margin-bottom:16px;">
+        <h3 id="staffFormTitle" style="margin:0 0 12px;font-size:15px;">担当者を追加</h3>
+        <input type="hidden" id="sf_editing" value="" />
+        <div class="frow">
+          <div class="fg">
+            <label>担当者名 <span style="color:#a04a3a;font-size:11px;">必須</span></label>
+            <input id="sf_name" placeholder="山田 花子" />
+          </div>
+          <div class="fg">
+            <label>ログイン用パスコード（任意）</label>
+            <input id="sf_passcode" placeholder="変更する場合のみ入力" />
+          </div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" id="sf_submitBtn" onclick="saveStaff()">追加する</button>
+          <button class="btn btn-sm" style="background:var(--bg);" onclick="closeStaffForm()">キャンセル</button>
+        </div>
+      </div>
+
+      <div id="staffList"><div class="empty">読み込み中…</div></div>
     </div>
 
     <!-- メニュー管理 -->
@@ -903,8 +934,8 @@ function logout(){
 function showApp(){
   $('loginView').classList.add('hide'); $('staffView').classList.add('hide'); $('appView').classList.remove('hide');
 
-  const ALL_TABS=['tabCalendar','tabBookings','tabCourses','tabMembers','tabSalon','tabMenus'];
-  const ALL_VIEWS=['viewCalendar','viewBookings','viewCourses','viewMembers','viewSalon','viewMenus'];
+  const ALL_TABS=['tabCalendar','tabBookings','tabCourses','tabMembers','tabStaff','tabSalon','tabMenus'];
+  const ALL_VIEWS=['viewCalendar','viewBookings','viewCourses','viewMembers','viewStaff','viewSalon','viewMenus'];
   function switchTab(tabId,viewId,loader){
     ALL_TABS.forEach(id=>$(id).classList.remove('active'));
     ALL_VIEWS.forEach(id=>$(id) && $(id).classList.add('hide'));
@@ -945,6 +976,7 @@ function showApp(){
   $('tabBookings').style.display = (isAdmin||isHonten) ? '' : 'none';
   $('tabCourses').style.display  = (isAdmin||isHonten) ? '' : 'none';
   $('tabMembers').style.display  = isAdmin ? '' : 'none';
+  $('tabStaff').style.display    = isAdmin ? '' : 'none';
   $('tabSalon').style.display    = '';
   $('tabMenus').style.display    = (isAdmin||isHonten) ? '' : 'none';
 
@@ -963,6 +995,7 @@ function showApp(){
   $('tabBookings').onclick=()=>switchTab('tabBookings','viewBookings',()=>{ loadBookings(); loadCourses(); });
   $('tabCourses').onclick =()=>switchTab('tabCourses','viewCourses',loadCourses);
   $('tabMembers').onclick =()=>switchTab('tabMembers','viewMembers',loadMembers);
+  $('tabStaff').onclick   =()=>switchTab('tabStaff','viewStaff',loadStaffAdmin);
   $('tabSalon').onclick   =()=>switchTab('tabSalon','viewSalon',loadSalon);
   $('tabMenus').onclick   =()=>switchTab('tabMenus','viewMenus',loadMenus);
 }
@@ -1131,6 +1164,97 @@ async function deleteMember(id,email){
     await call('deleteMember',{id,email});
     toast('削除しました');
     await loadMembers();
+  }catch(e){ toast(e.message); }
+}
+
+/* ===== スタッフ管理 =====
+   サロン予約の「担当者」プルダウンの選択肢はここで管理する。
+   このテーブルは会社共通の販売システムとも共有しているため、退職者は物理削除せず
+   「退職済み」に切り替える運用（一覧・予約フォームの選択肢からは自動的に消える）。 */
+let STAFF_ALL=[];
+async function loadStaffAdmin(){
+  $('staffList').innerHTML='<div class="empty">読み込み中…</div>';
+  try{
+    const d=await call('listStaff',{withInactive:true});
+    STAFF_ALL=d.staff||[];
+    renderStaffAdmin();
+  }catch(e){ $('staffList').innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
+}
+function renderStaffAdmin(){
+  if(!STAFF_ALL.length){ $('staffList').innerHTML='<div class="empty">担当者が登録されていません</div>'; return; }
+  // 在籍中を先に、退職済みを後ろに表示
+  const sorted=[...STAFF_ALL].sort((a,b)=>(a.isActive===b.isActive)?0:(a.isActive?-1:1));
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:14px;">
+    <thead><tr style="border-bottom:2px solid var(--line);text-align:left;">
+      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">担当者名</th>
+      <th style="padding:10px 12px;color:var(--muted);font-weight:500;">状態</th>
+      <th style="padding:10px 12px;"></th>
+    </tr></thead><tbody>`;
+  sorted.forEach(s=>{
+    const badge = s.isActive
+      ? '<span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#6E8E7B;border-radius:8px;padding:1px 10px;">在籍中</span>'
+      : '<span style="display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#8a8a80;border-radius:8px;padding:1px 10px;">退職済み</span>';
+    h+=`<tr style="border-bottom:1px solid var(--line);${s.isActive?'':'opacity:.6;'}">
+      <td style="padding:10px 12px;font-weight:500;">${esc(s.name||'—')}</td>
+      <td style="padding:10px 12px;">${badge}</td>
+      <td style="padding:10px 12px;text-align:right;white-space:nowrap;">
+        <button class="btn btn-sm" style="background:var(--bg);margin-right:6px;" onclick="openStaffForm('${esc(s.id)}')">編集</button>
+        <button class="btn btn-sm ${s.isActive?'btn-del':''}" ${s.isActive?'':'style="background:#6E8E7B;color:#fff;"'} onclick="toggleStaffActive('${esc(s.id)}',${s.isActive?'false':'true'})">${s.isActive?'退職済みにする':'在籍中に戻す'}</button>
+      </td>
+    </tr>`;
+  });
+  h+=`</tbody></table>`;
+  h+=`<div style="margin-top:10px;font-size:13px;color:var(--muted);">在籍中 ${STAFF_ALL.filter(s=>s.isActive).length} 名／退職済み ${STAFF_ALL.filter(s=>!s.isActive).length} 名</div>`;
+  $('staffList').innerHTML=h;
+}
+/* スタッフフォームを開く：editId=null なら追加モード、id指定で編集モード */
+function openStaffForm(editId){
+  const form=$('staffForm');
+  if(editId){
+    const s=STAFF_ALL.find(x=>String(x.id)===String(editId));
+    if(!s){ toast('担当者が見つかりません'); return; }
+    $('sf_editing').value=s.id;
+    $('sf_name').value=s.name||'';
+    $('sf_passcode').value='';
+    $('staffFormTitle').textContent='担当者を編集';
+    $('sf_submitBtn').textContent='保存する';
+  }else{
+    $('sf_editing').value='';
+    $('sf_name').value=''; $('sf_passcode').value='';
+    $('staffFormTitle').textContent='担当者を追加';
+    $('sf_submitBtn').textContent='追加する';
+  }
+  form.classList.remove('hide');
+  form.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeStaffForm(){
+  $('staffForm').classList.add('hide');
+  $('sf_editing').value='';
+}
+async function saveStaff(){
+  const name=$('sf_name').value.trim();
+  const passcode=$('sf_passcode').value.trim();
+  const editing=$('sf_editing').value;
+  if(!name){ toast('担当者名を入力してください'); return; }
+  try{
+    if(editing){
+      await call('updateStaff',{id:editing,name,passcode:passcode||undefined});
+      toast('担当者情報を更新しました');
+    }else{
+      await call('addStaff',{name,passcode:passcode||undefined});
+      toast('担当者を追加しました');
+    }
+    closeStaffForm();
+    await loadStaffAdmin();
+  }catch(e){ toast(e.message); }
+}
+async function toggleStaffActive(id,makeActive){
+  const msg = makeActive ? 'この担当者を「在籍中」に戻しますか？' : 'この担当者を「退職済み」にします。\n\n予約の担当者プルダウンの選択肢から消えます（過去の予約記録は残ります）。よろしいですか？';
+  if(!confirm(msg)) return;
+  try{
+    await call('toggleStaffActive',{id,isActive:makeActive});
+    toast(makeActive?'在籍中に戻しました':'退職済みにしました');
+    await loadStaffAdmin();
   }catch(e){ toast(e.message); }
 }
 
