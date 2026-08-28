@@ -454,7 +454,7 @@ function renderForm(){
       <div class="field-group">
         <label class="field">ご希望日<span class="req">*</span></label>
         <input type="date" id="i_date" min="${minDate()}" value="${esc(form.date)}" />
-        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">木曜・日曜はお休みです</div>`:''}
+        ${store==='本店'?`<div style="font-size:.7rem;color:var(--textMuted);margin-top:4px;">水・金・土曜日のみの営業です（月曜は不定期）</div>`:''}
         <div id="date_err">${errors.date?`<div class="err-msg">${errors.date}</div>`:''}</div>
       </div>
       <div class="field-group">
@@ -493,12 +493,15 @@ function bindFormEvents(){
   const d=document.getElementById('i_date'); if(d) d.onchange=async e=>{
     const v=e.target.value;
     const dateErr=document.getElementById('date_err');
-    // 本店は木曜・日曜が休み
+    // 本店の営業日は水・金・土（不定期で月曜）。それ以外は休業。
+    // v は 'YYYY-MM-DD'。文字列から直接、実行環境のタイムゾーンに影響されない形で曜日を出す。
     if(v&&store==='本店'){
-      const wd=new Date(v+'T00:00:00+09:00').getDay(); // 0=日,4=木
-      if(wd===0||wd===4){
+      const [dy,dm,dd]=v.split('-').map(Number);
+      const wd=new Date(Date.UTC(dy,dm-1,dd)).getUTCDay(); // 0=日,1=月,2=火,3=水,4=木,5=金,6=土
+      const isOpenDay = wd===3||wd===5||wd===6||wd===1;
+      if(!isOpenDay){
         form.date=''; form.time=''; busyTimes=[];
-        if(dateErr) dateErr.innerHTML='<div class="err-msg">本店は木曜・日曜はお休みです。別の日をお選びください。</div>';
+        if(dateErr) dateErr.innerHTML='<div class="err-msg">本店は水・金・土曜日のみの営業です（月曜は不定期）。別の日をお選びください。</div>';
         refreshTimeField();
         return;
       }
