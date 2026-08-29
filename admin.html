@@ -1951,8 +1951,12 @@ function renderCourses(){
   $('csList').classList.remove('hide');
   $('csMonthFilters').classList.remove('hide');
 
-  // 月の絞り込みボタン
-  const monthsAvail=[...new Set(COURSES.filter(c=>c.course_date).map(c=>ymJST(c.course_date)))].sort();
+  // 月の絞り込みボタン（「過去も表示」がオフの間は、過去の月のタブ自体を出さない）
+  const nowJST_ym = ymJST(new Date().toISOString());
+  let monthsAvail=[...new Set(COURSES.filter(c=>c.course_date).map(c=>ymJST(c.course_date)))].sort();
+  if(!SHOW_PAST) monthsAvail = monthsAvail.filter(mk=>mk>=nowJST_ym);
+  // 現在選択中の月が、非表示になった過去月だった場合は「全月」に戻す
+  if(CS_MONTH!=='all' && !monthsAvail.includes(CS_MONTH)) CS_MONTH='all';
   $('csMonthFilters').innerHTML=monthChipsHTML(monthsAvail,CS_MONTH);
   $('csMonthFilters').querySelectorAll('.schip').forEach(c=>c.onclick=()=>{ CS_MONTH=c.dataset.m; renderCourses(); });
 
